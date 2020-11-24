@@ -42,9 +42,11 @@ class TestPlace(View):
   def post(self, request, *args, **kwargs):
     # session id を取得
     client_id = '1'
+
     # 実行場所
-    add_task = 'http://localhost:8000/calculator/add_task'
-    do_task = 'http://localhost:8000/calculator/do_task'
+    edge = 'http://172.21.34.203/'
+    add_task = 'calculator/add_task'
+    do_task = 'calculator/do_task'
 
     # ファイルの変換
     img_b = f2b(request.FILES['img'])
@@ -60,11 +62,11 @@ class TestPlace(View):
     for i in range(3):
       task_info['task_id'] = str(i+1)
       task_info['next_task'] = str(i+2) if i != (max-1) else '0'
-      task_info['next_url'] = 'localhost:8000'
-      requests.post(add_task, data=task_info)
+      task_info['next_url'] = edge
+      requests.post(edge+add_task, data=task_info)
 
     # 実行
-    res_j = requests.post(do_task, data={'client_id': client_id, 'task_id': '1', 'data': img_b})
+    res_j = requests.post(edge+do_task, data={'client_id': client_id, 'task_id': '1', 'data': img_b})
     return HttpResponse(res_j)
     res = json.loads(res_j.text)
 
