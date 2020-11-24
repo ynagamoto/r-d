@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset='utf-8'>
+  <title>{{ title }}</title>
+</head><body>
+  <h1>{{ title }}</h1>
+  <h2>{{ msg1 }}</h2>
+
+  <form action="{% url 'testPlace' %}" method="post", enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="img">
+    <br>
+    <!-- 顔検出 -->
+    <select name="detec">
+      <option value="edge">Edge</option>
+    </select>
+    <!-- 前処理 -->
+    <select name="prep">
+      <option value="edge">Edge</option>
+    </select>
+    <!-- マッチング -->
+    <select name="match">
+      <option value="edge">Edge</option>
+    </select>
+
+    <input type="submit" value="submit">
+  </form>
+
+</body></html>
