@@ -74,7 +74,7 @@ class DoTask(View):
       res = face_matching(data)
 
     if task['next_task'] != '0': # next_task が '0' でないならを実行
-      url = 'http://{}/calculator/do_task'.format(task['next_url']) 
+      url = '{}calculator/do_task'.format(task['next_url']) 
       context = {
         'client_id': task['client_id'],
         'task_id': task['next_task'],
