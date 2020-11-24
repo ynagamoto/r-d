@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'calculator/css/show_task.css' %}">
+</head><body>
+  <h1>{{ title }}</h1>
+  <p>{{ msg }}</p>
+
+<!--
+  <form action="" method="get">
+
+  </form>
+-->
+  
+  <table border="1">
+    <tr>
+      <th>Client ID</th>
+      <th>Task ID</th>
+      <th>Next Task</th>
+      <th>Next URL</th>
+    </tr>
+    {% for item in data %}
+    <tr>
+      <td>{{ item.client_id }}</td>
+      <td>{{ item.task_id }}</td>
+      <td>{{ item.next_task }}</td>
+      <td>{{ item.next_url }}</td>
+      <td><a href="{% url 'editTask' item.client_id item.task_id %}">edit</a></td>
+      <td><a href="{% url 'deleteTask' item.client_id item.task_id %}">delete</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  <p><a href="{% url 'addTask' %}">add</a></p>
+  <p><a href="{% url 'deleteAllTask' %}">delete_all</a></p>
+</body></html>
