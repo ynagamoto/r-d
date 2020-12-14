@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+</head><body>
+  <h1>{{ title }}</h1>
+  <table>
+    <tr>
+      <th>Edge</th>
+      <th><a href="{% url 'editCalcInfo' edge.id %}">edit</a></th>
+    </tr>
+    <tr>
+      <td>server</td>
+      <td id="server">{{ edge.name }}</td>
+    </tr>
+    <tr>
+      <td>ip_addr</td>
+      <td id="ip_addr">{{ edge.ip_addr }}</td>
+    </tr>
+    <tr>
+      <td>local_addr</td>
+      <td id="local_addr">{{ edge.local_addr }}</td>
+    </tr>
+    <tr>
+      <td>bandwidth</td>
+      <td id="bw">{{ edge.bandwidth }}</td>
+    </tr>
+    <tr>
+      <td>delay</td>
+      <td id="delay">{{ edge.delay }}</td>
+    </tr>
+  </table>
+  <br>
+  <table>
+    <tr>
+      <th>Cloud</th>
+      <th><a href="{% url 'editCalcInfo' cloud.id %}">edit</a></th>
+    </tr>
+    <tr>
+      <td>server</td>
+      <td id="server">{{ cloud.name }}</td>
+    </tr>
+    <tr>
+      <td>ip_addr</td>
+      <td id="ip_addr">{{ cloud.ip_addr }}</td>
+    </tr>
+    <tr>
+      <td>local_addr</td>
+      <td id="local_addr">{{ cloud.local_addr }}</td>
+    </tr>
+    <tr>
+      <td>bandwidth</td>
+      <td id="bw">{{ cloud.bandwidth }}</td>
+    </tr>
+    <tr>
+      <td>delay</td>
+      <td id="delay">{{ cloud.delay }}</td>
+    </tr>
+  </table> 
+
+  <script type="text/javascript">
+let time = 10 * 1000
+window.addEventListener('load', function() {
+  setInterval('location.reload()', time);
+});
+  </script>
+</body></html>

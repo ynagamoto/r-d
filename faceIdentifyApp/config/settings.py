@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # add
     'calculator.apps.CalculatorConfig',
+    'controller.apps.ControllerConfig',
 ]
 
 MIDDLEWARE = [
@@ -79,9 +80,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
+        'PORT': '3306',
         'NAME': 'face_identify_app',
         'USER': 'django_user',
-        'PASSWORD': 'Django0!',
+        'PASSWORD': 'C%ZnBP$jQian',
     }
 }
 
@@ -127,3 +130,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+SESSION_ENGINE='django.contrib.sessions.backends.cache'
+SESSION_COOKIE_AGE = 60
