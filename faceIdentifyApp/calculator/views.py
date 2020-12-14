@@ -6,8 +6,7 @@ import json
 import requests
 import threading
 
-from calculator.scripts.get_info import getCpuUsage,getNwBw,getNwDelay
-import calculator.scripts.server as server
+from calculator.scripts.get_cpu_usage import getCpuUsage
 from calculator.scripts.tasks import get_face,prep_img,face_matching
 
 from .models import TaskInfo
@@ -23,30 +22,9 @@ def index(request):
   return HttpResponse("Hello. This is calc index.")
 
 # CPU使用率，ネットワーク遅延，ネットワーク帯域幅
+@csrf_exempt
 def info(request):
-  # IPアドレス
-  caddr = request.META.get('REMOTE_ADDR')
-  saddr = server.info()
-
-  info = {
-    'caddr': caddr,
-    'saddr': saddr,
-    'cpu_u': 0.0,
-    'nw_b': 0.0,
-    'nw_d': 0.0,
-  }
-  getcu = threading.Thread(target=getCpuUsage, args=(info,)) # CPU使用率
-  getnb = threading.Thread(target=getNwBw, args=(caddr, info)) # 帯域幅
-  getnd = threading.Thread(target=getNwDelay, args=(caddr, info)) # 遅延
-
-  getcu.start()
-  getnb.start()
-  getnd.start()
-  getcu.join()
-  getnb.join()
-  getnd.join()
-  
-  resj = json.dumps(info, ensure_ascii=False, indent=2)
+  resj = json.dumps({'cpu': getCpuUsage()}, ensure_ascii=False, indent=2).encode('utf-8')
   return HttpResponse(resj)
 
 class DoTask(View):
@@ -73,8 +51,8 @@ class DoTask(View):
     elif task['task_id'] == '3': # face matching
       res = face_matching(data)
 
-    if task['next_task'] != '0': # next_task が '0' でないならを実行
-      url = '{}calculator/do_task'.format(task['next_url']) 
+    if task['next_task'] != '0': # next_task が '0' でないなら実行
+      url = '{}/calculator/do_task'.format(task['next_url']) 
       context = {
         'client_id': task['client_id'],
         'task_id': task['next_task'],
