@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+</head><body>
+  <h1>{{ title }}</h1>
+  <table>
+    <tr>
+      <th>latest_id</th>
+      <th>latest_addr</th>
+      <th>client_task1</th>
+      <th>client_task2</th>
+      <th>edge_task1</th>
+      <th>edge_task2</th>
+      <th>edge_task3</th>
+      <th>cloud_task1</th>
+      <th>cloud_task2</th>
+      <th>cloud_taks3</th>
+      <th>cl-ed</th>
+      <th>cl-co</th>
+      <th>ed-co</th>
+    </tr>
+    {% for item in data %}
+    <tr>
+      <td>{{ item.latest_id }}</td>
+      <td>{{ item.latest_addr }}</td>
+      <td>{{ item.client_task1 }}</td>
+      <td>{{ item.client_task2 }}</td>
+      <td>{{ item.edge_task1 }}</td>
+      <td>{{ item.edge_task2 }}</td>
+      <td>{{ item.edge_task3 }}</td>
+      <td>{{ item.cloud_task1 }}</td>
+      <td>{{ item.cloud_task2 }}</td>
+      <td>{{ item.cloud_task3 }}</td>
+      <td>{{ item.client_edge }}</td>
+      <td>{{ item.client_cloud }}</td>
+      <td>{{ item.edge_cloud }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</body></html>

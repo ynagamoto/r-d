@@ -5,6 +5,7 @@ from django.views import View
 import json
 import requests
 import threading
+import time
 
 from calculator.scripts.get_cpu_usage import getCpuUsage
 from calculator.scripts.tasks import get_face,prep_img,face_matching
@@ -32,6 +33,8 @@ class DoTask(View):
     return HttpResponse('do task')
 
   def post(self, request, *args, **kwargs):
+    mycalcname = 'edge'
+    start = time.perf_counter()
     cid, tid = request.POST['client_id'], request.POST['task_id']
     task_info = TaskInfo.objects.get(client_id=cid, task_id=tid)
     task = {
@@ -41,7 +44,7 @@ class DoTask(View):
       'next_task': task_info.next_task,
       'next_url': task_info.next_url,
     } 
-    task_info.delete()
+    times = json.loads(request.POST['times'])
 
     data = task['data']
     if task['task_id'] == '1': # get face
@@ -50,6 +53,8 @@ class DoTask(View):
       res = prep_img(data)
     elif task['task_id'] == '3': # face matching
       res = face_matching(data)
+    task_info.delete()
+    times[task['task_id']] = time.perf_counter()-start
 
     if task['next_task'] != '0': # next_task が '0' でないなら実行
       url = '{}/calculator/do_task'.format(task['next_url']) 
@@ -57,16 +62,25 @@ class DoTask(View):
         'client_id': task['client_id'],
         'task_id': task['next_task'],
         'data': res,
+        'times': json.dumps(times, ensure_ascii=False, indent=2).encode('utf-8'),
       }
+      start = time.perf_counter()
       res_j = requests.post(url, data=context)
+      res = json.loads(res_j.text)
+      res['times'][mycalcname+request.POST['task_id']] = time.perf_counter() - start
+      print(res)
+      res_j = json.dumps(res, ensure_ascii=False, indent=2).encode('utf-8')
+      return HttpResponse(res_j)
     else: # next_task が '0' なら最後のタスク
-      res_j = res
-    return HttpResponse(res_j)
+      res = json.loads(res)
+      res['client_id'] = task['client_id']
+      res['times'] = times
+      res_j = json.dumps(res, ensure_ascii=False, indent=2).encode('utf-8')
+      return HttpResponse(res_j)
 
   @method_decorator(csrf_exempt)
   def dispatch(self, *args, **kwargs):
     return super(DoTask, self).dispatch(*args, **kwargs)
-
 
 
 def showTask(request):
@@ -137,18 +151,6 @@ def deleteAllTask(request):
   tasks = TaskInfo.objects.all()
   for task in tasks:
     task.delete()
-  return redirect(to='/calculator/show_task')
-
-
-def sendTask(request):
-  url = 'http://localhost:8000/calculator/add_task'  
-  item = {
-    'client_id': '333333',
-    'task_id': '1',
-    'next_task': '2',
-    'next_url': 'edge',
-  }
-  res = requests.post(url, data=item) 
   return redirect(to='/calculator/show_task')
 
 

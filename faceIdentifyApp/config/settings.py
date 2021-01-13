@@ -84,7 +84,8 @@ DATABASES = {
         'PORT': '3306',
         'NAME': 'face_identify_app',
         'USER': 'django_user',
-        'PASSWORD': 'C%ZnBP$jQian',
+        'PASSWORD': 'Django0!',
+        #'PASSWORD': 'C%ZnBP$jQian',
     }
 }
 
@@ -113,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tokyo'
 
 USE_I18N = True
 
@@ -133,3 +134,4 @@ STATICFILES_DIRS = [
 
 SESSION_ENGINE='django.contrib.sessions.backends.cache'
 SESSION_COOKIE_AGE = 60
+
