@@ -1,8 +1,8 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.views import View
-from .models import CalcInfo
-from .forms import CalcInfoForm
+from .models import CalcInfo,PrevInfo,Result
+from .forms import CalcInfoForm,PrevInfoForm,ResultForm
 
 import requests
 import json
@@ -157,12 +157,14 @@ class ReproduceExisting(View):
         run_times[calc][i] = (tasks[calc][i]*data_size) / (100.0-info[calc]['cpu']) 
 
     # 転送時間の推定 
+    ratio = [0.45397, 0.39966]
     trans_times = {'client': {'edge': [0]*tasks['num'], 'cloud': [0]*tasks['num']}, 'edge': {'cloud': [0]*tasks['num']}}
     for calc in ['edge', 'cloud']:
       for i in range(tasks['num']): 
-        trans_times['client'][calc][i] = (data_size/info['client']['to '+calc]['bw']) + info['client']['to '+calc]['ping']/1000 # client
+        temp = 1 if i == 0 else (ratio[0] if i == 1 else ratio[0]*ratio[1])
+        trans_times['client'][calc][i] = (data_size*temp/info['client']['to '+calc]['bw']) + info['client']['to '+calc]['ping']/1000 # client
         if calc != 'edge':
-          trans_times['edge'][calc][i] = (data_size/info['edge']['to '+calc]['bw']) + info['edge']['to '+calc]['ping']/1000 # edge
+          trans_times['edge'][calc][i] = (data_size*temp/info['edge']['to '+calc]['bw']) + info['edge']['to '+calc]['ping']/1000 # edge
 
     # 最も短いものを求める
     est_time = 100000.0
@@ -208,9 +210,6 @@ class ReproduceExisting(View):
           place['edge'] = task_edge[:]
           place['cloud'] = task_cloud[:]
 
-    test = {'client': [1, 2], 'edge': [3], 'cloud': []}
-    #place = test
-
     # タスクの配置
     def send_task(url, task_info):
       res = requests.post(url, data=task_info)
@@ -239,6 +238,128 @@ class ReproduceExisting(View):
   def dispatch(self, *args, **kwargs):
     return super(ReproduceExisting, self).dispatch(*args, **kwargs)
 
+class UsePrevInfo(View):
+  def get(self, request, *args, **kwargs):
+    edge = CalcInfo.objects.get(name='edge')
+    cloud = CalcInfo.objects.get(name='cloud')
+    context = {
+      'edge': edge.ip_addr,
+      'cloud': cloud.ip_addr,
+    }
+    return HttpResponse(json.dumps(context, ensure_ascii=False, indent=2).encode('utf-8'))
+
+  def post(self, request, *args, **kwargs):
+    # 実行場所
+    edge_info = CalcInfo.objects.get(name='edge') 
+    cloud_info = CalcInfo.objects.get(name='cloud')  
+    edge = 'http://' + edge_info.ip_addr
+    edge_local = 'http://' + edge_info.local_addr
+    cloud = 'http://' + cloud_info.ip_addr
+    cloud_local = 'http://' + cloud_info.local_addr
+    add_task = '/calculator/add_task'
+    do_task = '/calculator/do_task'
+    urls = {'edge': edge, 'edge_local': edge_local, 'cloud': cloud, 'cloud_local': cloud_local}
+    calc_addr = {'edge': edge_info.ip_addr, 'cloud': cloud_info.ip_addr}
+    
+    # session id を取得
+    request.session.create()
+    client_id = request.session.session_key
+    data_size = float(request.POST['data_size'])
+    task_info = {
+      'client_id': client_id,
+      'task_id': '',
+      'next_task': '',
+      'next_url': '',
+    }
+
+    # 計算時間の推定
+    tasks = {
+      'num': 3,
+    }
+    info = PrevInfo.objects.get(prev_id=0)
+
+    # 転送時間の推定 
+    trans_times = {'client': {'edge': [0]*tasks['num'], 'cloud': [0]*tasks['num']}, 'edge': {'cloud': [0]*tasks['num']}}
+    ratio = [0.45397, 0.39966]
+    for calc in ['edge', 'cloud']:
+      for i in range(tasks['num']): 
+        temp = 1 if i == 0 else (ratio[0] if i == 1 else ratio[0]*ratio[1])
+        trans_times['client'][calc][i] = (data_size*temp/info['client_'+calc]) # client
+        if calc != 'edge':
+          trans_times['edge'][calc][i] = (data_size*temp/info['edge_'+calc]) # edge
+
+    ''' 配置先を決めるアルゴリズム ''' 
+    # 最も短いものを求める
+    est_time = 100000.0
+    place = {'client': [], 'edge': [], 'cloud': []}
+    time_client = 0.0
+    task_client = []
+    for i in range(tasks['num']): # client
+      if i != 0:
+        task_client.append(i)
+        time_client += getattr(info, 'client_task'+str(i))
+      print("client: %d" % i)
+      print('time_client: %f' % (time_client))
+      
+      time_edge = 0.0
+      task_edge = []
+      for j in range(tasks['num']+1): # edge
+        if j != 0 and j <= i: continue
+        time_edge += trans_times['client']['edge'][i] if j != 0 else 0.0
+        if j != 0: 
+          task_edge.append(j)
+          time_edge += getattr(info, 'edge_task'+str(j))
+        print("  edge: %d" % j)
+        print('  time_edge: %f' % (time_edge))
+
+        time_cloud = 0.0
+        task_cloud = []
+        for k in range(tasks['num']+1): # cloud
+          if not((j == tasks['num'] and k == 0) or (i < k and j < k and j != tasks['num'])): continue
+          time_cloud += 0.0 if k == 0 else (trans_times['client']['cloud'][i] if j == 0 else trans_times['edge']['cloud'][j])
+          if k != 0: 
+            task_cloud.append(k)
+            time_cloud += getattr(info, 'cloud_task'+str(k))
+          print("    cloud: %d" % k)
+          print('    time_cloud: %f' % (time_cloud))
+
+        #print("\'client\': {}, \'edge\': {}, \'cloud\': {}".format(time_client, time_edge, time_cloud))
+        #print("\'client\': {}, \'edge\': {}, \'cloud\': {}\n".format(task_client, task_edge, task_cloud))
+        temp_t = time_client + time_edge + time_cloud
+        print('判定')
+        if est_time > temp_t:
+          est_time = temp_t
+          place['client'] = task_client[:]
+          place['edge'] = task_edge[:]
+          place['cloud'] = task_cloud[:]
+
+    # タスクの配置
+    def send_task(url, task_info):
+      res = requests.post(url, data=task_info)
+    
+    threads = []
+    for calc in ['edge', 'cloud']:   
+      for i in place[calc]:
+        task_info['task_id'] = str(i)
+        task_info['next_task'] = str(i+1) if i < tasks['num'] else str(0) 
+        if task_info['next_task'] != '0':
+          for hoge in ['edge', 'cloud']:
+            if i+1 in place[hoge]: task_info['next_url'] = urls[hoge]
+        else:
+          task_info['next_url'] = 'client'
+
+        url = urls[calc]+add_task
+        thread = threading.Thread(target=send_task, args=(url, task_info))
+        thread.start()
+        threads.append(thread)
+    for thread in threads:
+      thread.join()
+
+    return HttpResponse(json.dumps({'client_id': client_id, 'est_time': est_time, 'place': place, 'calc_addr': calc_addr}, ensure_ascii=False, indent=2).encode('utf-8'))
+
+  @method_decorator(csrf_exempt)
+  def dispatch(self, *args, **kwargs):
+    return super(UsePrevInfo, self).dispatch(*args, **kwargs)
 
 
 class TestPlace(View):
@@ -256,60 +377,56 @@ class TestPlace(View):
     client_id = request.session.session_key
 
     # 実行場所
-    edge = CalcInfo.objects.get(name='edge') 
-    cloud = CalcInfo.objects.get(name='cloud') 
- 
-    edge = 'http://' + edge.ip_addr
-    cloud = 'http://' + cloud.ip_addr
-    cloud_local = 'http://' + cloud.local_addr
-    add_task = 'calculator/add_task'
-    do_task = 'calculator/do_task'
+    edge_info = CalcInfo.objects.get(name='edge') 
+    cloud_info = CalcInfo.objects.get(name='cloud')  
+    edge = 'http://' + edge_info.ip_addr
+    edge_local = 'http://' + edge_info.local_addr
+    cloud = 'http://' + cloud_info.ip_addr
+    cloud_local = 'http://' + cloud_info.local_addr
+    add_task = '/calculator/add_task'
+    do_task = '/calculator/do_task'
+    urls = {'edge': edge, 'edge_local': edge_local, 'cloud': cloud, 'cloud_local': cloud_local}
+    
+    # タスクの配置
+    tasks = {}
+    tasks['num'] = 3
+    def send_task(url, task_info):
+      res = requests.post(url, data=task_info)
+    
+    place = json.loads(request.POST['place'])
+    threads = []
+    for calc in ['edge', 'cloud']:   
+      for i in place[calc]:
+        task_info = {
+          'client_id': client_id,
+          'task_id': '',
+          'next_task': '',
+          'next_url': '',
+        }
+        task_info['task_id'] = str(i)
+        task_info['next_task'] = str(i+1) if i < tasks['num'] else str(0) 
+        if task_info['next_task'] != '0':
+          for hoge in ['edge', 'cloud']:
+            if i+1 in place[hoge]: task_info['next_url'] = urls[hoge]
+        else:
+          task_info['next_url'] = 'client'
 
-    # ファイルの変換
-    img_b = f2b(request.FILES['img']) 
-    task_info = {
-      'client_id': client_id,
-      'task_id': '',
-      'next_task': '',
-      'next_url': '',
-    }
-
-    """
-    max = 3
-    for i in range(3):
-      task_info['task_id'] = str(i+1)
-      task_info['next_task'] = str(i+2) if i != (max-1) else '0'
-      task_info['next_url'] = edge
-      requests.post(edge+add_task, data=task_info)
-    """
-
-    task_info['task_id'] = '1'
-    task_info['next_task'] = '2'
-    task_info['next_url'] = cloud
-    requests.post(edge+add_task, data=task_info)
-
-    task_info['task_id'] = '2'
-    task_info['next_task'] = '3'
-    task_info['next_url'] = cloud_local
-    requests.post(cloud+add_task, data=task_info)
-
-    task_info['task_id'] = '3'
-    task_info['next_task'] = '0'
-    task_info['next_url'] = cloud_local
-    requests.post(cloud+add_task, data=task_info)
-
-    # 実行
-    res_j = requests.post(edge+do_task, data={'client_id': client_id, 'task_id': '1', 'data': img_b})
-    return HttpResponse(res_j)
-    res = json.loads(res_j.text)
-    request.session.flush()
-
+        url = urls[calc]+add_task
+        thread = threading.Thread(target=send_task, args=(url, task_info))
+        thread.start()
+        threads.append(thread)
+    for thread in threads:
+      thread.join()
+    
     context = {
-      'title': 'Result',
-      'label': res['label'],
-      'confidence': res['confidence'],
+      'data': request.POST['data'],
+      'client_id': client_id,
+      'task_id': '1',
+      'times': '{}',
     }
-    return render(request, 'faceIdentify/result.html', context)
+    res = requests.post('http://localhost:8000/calculator/do_task', data=context)
+
+    return HttpResponse(res)
 
   @method_decorator(csrf_exempt)
   def dispatch(self, *args, **kwargs):
@@ -339,6 +456,74 @@ def editCalcInfo(request, id):
   }
   return render(request, 'controller/edit_calc_info.html', context)
 
+
+def showPrevInfo(request):
+  prev_info = PrevInfo.objects.all()
+  context = {
+    'title': 'show prev info',
+    'data': prev_info,
+  }
+  return render(request, 'controller/show_prev_info.html', context)
+
+@csrf_exempt
+def editPrevInfo(request):
+  prev_info = PrevInfo.object.get(prev_id=0)
+  if request.method == 'POST':
+    prev_info = PrevFrom(request.POST, instance=prev_info)
+    prev_info.save()
+    return redirect(to='showPrevInfo')
+
+  context = {
+    'title': 'edit prev info',
+    'form': prev_info,
+  }
+  return render(request, 'controller/edit_prev_info.html', context)
+
+def showResult(request):
+  results = Result.objects.all()
+  context = {
+    'title': 'show result',
+    'data': results,
+  }
+  return render(request, 'controller/show_result.html', context)
+
+@csrf_exempt
+def addResult(request):
+  tasks = 3
+  if request.method == 'POST':
+    form = ResultForm(request.POST, instance=Result())
+    form.save()
+    result = Result.objects.get(client_id=request.POST['client_id'])
+    result.ip_addr = request.META.get('REMOTE_ADDR')
+    result.save()
+
+    prev_info = PrevInfo.objects.get(prev_id=0)
+    prev_info.latest_id = request.POST['client_id'] 
+    prev_info.latest_addr = request.META.get('REMOTE_ADDR')
+    for task in range(1, tasks+1): 
+      setattr(prev_info, request.POST['task'+str(task)+'_calc']+'_task'+str(task), request.POST['task'+str(task)])
+
+    if request.POST['calc'] == 'c-e':
+      prev_info.client_edge = request.POST['c-e']
+    elif request.POST['calc'] == 'c-c':
+      prev_info.client_cloud = request.POST['c-c']
+    elif request.POST['calc'] == 'c-e-c':
+      prev_info.client_edge = request.POST['c-e']
+      prev_info.edge_cloud = request.POST['e-c']
+      prev_info.client_cloud = request.POST['c-c']
+    prev_info.save()
+
+    return redirect(to='showResult')
+
+  context = {
+    'title': 'add result',
+    'form': ResultForm(),
+  }
+  return render(request, 'controller/add_result.html', context)
+  
+
 info = GatherCalcInfo.as_view()
 repro = ReproduceExisting.as_view()
+prev = UsePrevInfo.as_view()
 testPlace = TestPlace.as_view()
+

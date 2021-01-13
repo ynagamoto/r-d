@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+</head><body>
+  <h1>{{ title }}</h1>
+  <table>
+    <tr>
+      <th>client_id</th>
+      <th>ip_addr</th>
+      <th>algorithm</th>
+      <th>prediction</th>
+      <th>result</th>
+      <th>input_name</th>
+      <th>input_size</th>
+      <th>ans</th>
+      <th>confidence</th>
+      <th>pre_task1</th>
+      <th>pre_task2</th>
+      <th>pre_task3</th>
+      <th>res_task1</th>
+      <th>res_task2</th>
+      <th>res_task3</th>
+      <th>datetime</th>
+    </tr>
+    {% for item in data %}
+    <tr>
+      <td>{{ item.client_id }}</td>
+      <td>{{ item.ip_addr }}</td>
+      <td>{{ item.alg }}</td>
+      <td>{{ item.pre }}</td>
+      <td>{{ item.result }}</td>
+      <td>{{ item.input_name }}</td>
+      <td>{{ item.input_size }}</td>
+      <td>{{ item.ans }}</td>
+      <td>{{ item.confidence }}</td>
+      <td>{{ item.pre_task1 }}</td>
+      <td>{{ item.pre_task2 }}</td>
+      <td>{{ item.pre_task3 }}</td>
+      <td>{{ item.res_task1 }}</td>
+      <td>{{ item.res_task2 }}</td>
+      <td>{{ item.res_task3 }}</td>
+      <td>{{ item.datetime }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</body></html>

@@ -28,7 +28,7 @@ def prep_img(img_b):
 
 def face_matching(img_b):
   # 学習したYAMLファイル
-  dir_path = '/root/workspace/r-d/faceIdentifyApp/calculator/scripts/'
+  dir_path = '/home/munvei/workspace/git/r-d/faceIdentifyApp/calculator/scripts/'
   trainer_path = 'trainer.yaml'
 
   # YAMLファイルの読み込み
