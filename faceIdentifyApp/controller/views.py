@@ -6,7 +6,8 @@ from .forms import CalcInfoForm,PrevInfoForm,ResultForm
 
 import requests
 import json
-import threading
+#import threading
+from multiprocessing import Process,Value,Array
 
 from faceIdentify.scripts.converter import f2b
 from controller.scripts.get_info import getECInfo
@@ -214,7 +215,7 @@ class ReproduceExisting(View):
     def send_task(url, task_info):
       res = requests.post(url, data=task_info)
     
-    threads = []
+    processes = []
     for calc in ['edge', 'cloud']:   
       for i in place[calc]:
         task_info['task_id'] = str(i)
@@ -226,11 +227,11 @@ class ReproduceExisting(View):
           task_info['next_url'] = 'client'
 
         url = urls[calc]+add_task
-        thread = threading.Thread(target=send_task, args=(url, task_info))
-        thread.start()
-        threads.append(thread)
-    for thread in threads:
-      thread.join()
+        process = Process(target=send_task, args=(url, task_info))
+        process.start()
+        processes.append(process)
+    for process in processes:
+      process.join()
 
     return HttpResponse(json.dumps({'client_id': client_id, 'est_time': est_time, 'place': place}, ensure_ascii=False, indent=2).encode('utf-8'))
 
@@ -337,7 +338,7 @@ class UsePrevInfo(View):
     def send_task(url, task_info):
       res = requests.post(url, data=task_info)
     
-    threads = []
+    processes = []
     for calc in ['edge', 'cloud']:   
       for i in place[calc]:
         task_info['task_id'] = str(i)
@@ -349,11 +350,11 @@ class UsePrevInfo(View):
           task_info['next_url'] = 'client'
 
         url = urls[calc]+add_task
-        thread = threading.Thread(target=send_task, args=(url, task_info))
-        thread.start()
-        threads.append(thread)
-    for thread in threads:
-      thread.join()
+        process = Process(target=send_task, args=(url, task_info))
+        process.start()
+        processes.append(process)
+    for process in processes:
+      process.join()
 
     return HttpResponse(json.dumps({'client_id': client_id, 'est_time': est_time, 'place': place, 'calc_addr': calc_addr}, ensure_ascii=False, indent=2).encode('utf-8'))
 
@@ -394,7 +395,7 @@ class TestPlace(View):
       res = requests.post(url, data=task_info)
     
     place = json.loads(request.POST['place'])
-    threads = []
+    process = []
     for calc in ['edge', 'cloud']:   
       for i in place[calc]:
         task_info = {
@@ -412,11 +413,11 @@ class TestPlace(View):
           task_info['next_url'] = 'client'
 
         url = urls[calc]+add_task
-        thread = threading.Thread(target=send_task, args=(url, task_info))
-        thread.start()
-        threads.append(thread)
-    for thread in threads:
-      thread.join()
+        process = Process(target=send_task, args=(url, task_info))
+        process.start()
+        processes.append(process)
+    for process in processes:
+      process.join()
     
     context = {
       'data': request.POST['data'],
