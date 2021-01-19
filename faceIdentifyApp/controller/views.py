@@ -286,9 +286,9 @@ class UsePrevInfo(View):
     for calc in ['edge', 'cloud']:
       for i in range(tasks['num']): 
         temp = 1 if i == 0 else (ratio[0] if i == 1 else ratio[0]*ratio[1])
-        trans_times['client'][calc][i] = (data_size*temp/info['client_'+calc]) # client
+        trans_times['client'][calc][i] = (data_size*temp/getattr(info, 'client_'+calc)) # client
         if calc != 'edge':
-          trans_times['edge'][calc][i] = (data_size*temp/info['edge_'+calc]) # edge
+          trans_times['edge'][calc][i] = (data_size*temp/getattr(info, 'edge_'+calc)) # edge
 
     ''' 配置先を決めるアルゴリズム ''' 
     # 最も短いものを求める
