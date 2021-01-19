@@ -21,7 +21,7 @@ url = 'http://%s/controller/prev' % edge
 # ファイルの読み込み
 def open_file(file_name):
   img = cv2.imread(file_name)
-  data_size = len(img_b) * 8 / 1000000
+  data_size = len(i2b(img)) * 8 / 1000000
   return img, data_size
 
 # 実行先をedgeに聞いて実行 -> 結果送信
