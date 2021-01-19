@@ -100,6 +100,7 @@ class ReproduceExisting(View):
     add_task = '/calculator/add_task'
     do_task = '/calculator/do_task'
     urls = {'edge': edge, 'edge_local': edge_local, 'cloud': cloud, 'cloud_local': cloud_local}
+    calc_addr = {'edge': edge_info.ip_addr, 'cloud': cloud_info.ip_addr}
     
     # 集める
     ec_info = getECInfo({'edge': edge_info.ip_addr, 'cloud': cloud_info.ip_addr})
@@ -233,7 +234,7 @@ class ReproduceExisting(View):
     for process in processes:
       process.join()
 
-    return HttpResponse(json.dumps({'client_id': client_id, 'est_time': est_time, 'place': place}, ensure_ascii=False, indent=2).encode('utf-8'))
+    return HttpResponse(json.dumps({'client_id': client_id, 'est_time': est_time, 'place': place, 'calc_addr': calc_addr}, ensure_ascii=False, indent=2).encode('utf-8'))
 
   @method_decorator(csrf_exempt)
   def dispatch(self, *args, **kwargs):
