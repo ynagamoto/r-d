@@ -25,7 +25,7 @@ def open_file(file_name):
   return img, data_size
 
 # 実行先をedgeに聞いて実行 -> 結果送信
-def do_task(context):
+def do_task(url, context):
   res_j = requests.post(url, data=context)
   res = json.loads(res_j.text)
   task = 0
@@ -112,13 +112,15 @@ def do_exis(file_name, url):
   calc_addr = json.loads(res_j.text)
   context = getCECInfo(calc_addr)
   context['data_size'] = data_size
-  result = do_task(context)  
+  url = 'http://%s/controller/repro'%url
+  result = do_task(url, context)  
   print(result)
 
 def do_prev(file_name, url):
   img, data_size = open_file(file_name)
   context['data_size'] = data_size
-  result = do_task(context)  
+  url = 'http://%s/controller/prev'%url
+  result = do_task(url, context)  
   print(result)
 
 def multi_do_exis(file_name, url, n):
