@@ -54,6 +54,7 @@ def do_task(url, context, img, data_size):
   }
 
   place = res['place']
+  calc_addr = res['calc_addr']
   start = time.perf_counter()
   res_j = requests.post('http://{}/calculator/do_task'.format(next_url), data=context)
   run_time = time.perf_counter() - start
@@ -102,7 +103,7 @@ def do_task(url, context, img, data_size):
     result['calc'] = 'c-c'
     result['c-c'] = data_size*(1 if 1 in place['cloud'] else (ratio[0] if 2 in place['cloud'] else ratio[1]))/((run_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
 
-  ar_url = 'http://{}/controller/add_result'%res['calc_addr']['edge']
+  ar_url = 'http://{}/controller/add_result'%calc_addr['edge']
   requests.post(ar_url, data=result)
   return result
 
