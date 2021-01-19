@@ -130,7 +130,7 @@ def multi_do_exis(file_name, url, n):
   async def do_async(loop):
     async def do_req(i):
       #print('do %d request'%i)
-      res = await loop.run_in_executor(None, do_exis, [file_name, url])
+      res = await loop.run_in_executor(None, do_exis, file_name, url)
       return res
 
     tasks = [ do_req(i) for i in range(n) ]
@@ -144,7 +144,7 @@ def multi_do_prev(file_name, url, n):
   async def do_async(loop):
     async def do_req(i):
       #print('do %d request'%i)
-      res = await loop.run_in_executor(None, do_prev, [file_name, url])
+      res = await loop.run_in_executor(None, do_prev, file_name, url)
       return res
 
     tasks = [ do_req(i) for i in range(n) ]
