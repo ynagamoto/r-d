@@ -118,7 +118,9 @@ def do_exis(file_name, url):
 
 def do_prev(file_name, url):
   img, data_size = open_file(file_name)
-  context['data_size'] = data_size
+  context = {
+    'data_size': data_size,
+  }
   url = 'http://%s/controller/prev'%url
   result = do_task(url, context)  
   print(result)
