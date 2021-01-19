@@ -105,7 +105,7 @@ def do_task(url, context, img, data_size):
 
   ar_url = 'http://%s/controller/add_result'%calc_addr['edge']
   requests.post(ar_url, data=result)
-  return result
+  #return result
 
 def do_exis(file_name, url):
   img, data_size = open_file(file_name)
@@ -115,7 +115,6 @@ def do_exis(file_name, url):
   context['data_size'] = data_size
   url = 'http://%s/controller/repro'%url
   result = do_task(url, context, img, data_size)  
-  print(result)
 
 def do_prev(file_name, url):
   img, data_size = open_file(file_name)
@@ -124,7 +123,6 @@ def do_prev(file_name, url):
   }
   url = 'http://%s/controller/prev'%url
   result = do_task(url, context, img, data_size)  
-  print(result)
 
 def multi_do_exis(file_name, url, n):
   async def do_async(loop):
@@ -139,7 +137,6 @@ def multi_do_exis(file_name, url, n):
 
   loop = asyncio.get_event_loop()
   results = loop.run_until_complete(do_async(loop))
-  print(results)
 
 def multi_do_prev(file_name, url, n):
   async def do_async(loop):
@@ -154,7 +151,6 @@ def multi_do_prev(file_name, url, n):
 
   loop = asyncio.get_event_loop()
   results = loop.run_until_complete(do_async(loop))
-  print(results)
 
 def multi_process_access(file_name, url, multi_n, process_n):
   for i in range(process_n):
