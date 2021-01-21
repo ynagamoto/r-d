@@ -177,8 +177,8 @@ class ReproduceExisting(View):
       if i != 0:
         task_client.append(i)
         time_client += run_times['client'][i-1]
-      print("client: %d" % i)
-      print('time_client: %f' % (time_client))
+      #print("client: %d" % i)
+      #print('time_client: %f' % (time_client))
       
       time_edge = 0.0
       task_edge = []
@@ -188,8 +188,8 @@ class ReproduceExisting(View):
         if j != 0: 
           task_edge.append(j)
           time_edge += run_times['edge'][j-1]
-        print("  edge: %d" % j)
-        print('  time_edge: %f' % (time_edge))
+        #print("  edge: %d" % j)
+        #print('  time_edge: %f' % (time_edge))
 
         time_cloud = 0.0
         task_cloud = []
@@ -199,13 +199,13 @@ class ReproduceExisting(View):
           if k != 0: 
             task_cloud.append(k)
             time_cloud += run_times['cloud'][k-1]
-          print("    cloud: %d" % k)
-          print('    time_cloud: %f' % (time_cloud))
+          #print("    cloud: %d" % k)
+          #print('    time_cloud: %f' % (time_cloud))
 
         #print("\'client\': {}, \'edge\': {}, \'cloud\': {}".format(time_client, time_edge, time_cloud))
         #print("\'client\': {}, \'edge\': {}, \'cloud\': {}\n".format(task_client, task_edge, task_cloud))
         temp_t = time_client + time_edge + time_cloud
-        print('判定')
+        #print('判定')
         if est_time > temp_t:
           est_time = temp_t
           place['client'] = task_client[:]
@@ -300,8 +300,8 @@ class UsePrevInfo(View):
       if i != 0:
         task_client.append(i)
         time_client += getattr(info, 'client_task'+str(i))
-      print("client: %d" % i)
-      print('time_client: %f' % (time_client))
+      #print("client: %d" % i)
+      #print('time_client: %f' % (time_client))
       
       time_edge = 0.0
       task_edge = []
@@ -311,8 +311,8 @@ class UsePrevInfo(View):
         if j != 0: 
           task_edge.append(j)
           time_edge += getattr(info, 'edge_task'+str(j))
-        print("  edge: %d" % j)
-        print('  time_edge: %f' % (time_edge))
+        #print("  edge: %d" % j)
+        #print('  time_edge: %f' % (time_edge))
 
         time_cloud = 0.0
         task_cloud = []
@@ -322,13 +322,13 @@ class UsePrevInfo(View):
           if k != 0: 
             task_cloud.append(k)
             time_cloud += getattr(info, 'cloud_task'+str(k))
-          print("    cloud: %d" % k)
-          print('    time_cloud: %f' % (time_cloud))
+          #print("    cloud: %d" % k)
+          #print('    time_cloud: %f' % (time_cloud))
 
         #print("\'client\': {}, \'edge\': {}, \'cloud\': {}".format(time_client, time_edge, time_cloud))
         #print("\'client\': {}, \'edge\': {}, \'cloud\': {}\n".format(task_client, task_edge, task_cloud))
         temp_t = time_client + time_edge + time_cloud
-        print('判定')
+        #print('判定')
         if est_time > temp_t:
           est_time = temp_t
           place['client'] = task_client[:]
