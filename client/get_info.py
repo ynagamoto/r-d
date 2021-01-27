@@ -16,19 +16,33 @@ def getCpuU(ip_addr, result):
 
 def getNwBw(ip_addr, result):
   # command = 'iperf3 -c {} -JZ -t1'.format(ip_addr)
-  command = 'iperf -c {} -t 0.2'.format(ip_addr)
-  res = subprocess.run(command, shell=True, stdout=subprocess.PIPE, check=True).stdout
-  # res_j = json.loads(res.decode())
-  # bps = res_j['end']['sum_sent']['bits_per_second'] 
-  bps = res.decode().splitlines()[-1].rsplit(' ', 2)[-2]
-  result.value = float(bps)
+  command = 'iperf -c {} -t 0.3'.format(ip_addr)
+  flag = False
+  while not flag:
+    try:
+      res = subprocess.run(command, shell=True, stdout=subprocess.PIPE, check=True).stdout
+      # res_j = json.loads(res.decode())
+      # bps = res_j['end']['sum_sent']['bits_per_second'] 
+      bps = res.decode().splitlines()[-1].rsplit(' ', 2)[-2]
+      if bps == 0.0: continue
+      flag = True
+      result.value = float(bps)
+    except Exception as e:
+      print(e)
 
 def getPing(ip_addr, result):
   n = 1
-  command = 'ping -c{} -i0.2 {}'.format(n, ip_addr)
-  res = subprocess.run(command, shell=True, stdout=subprocess.PIPE, check=True).stdout
-  ave = res.decode().splitlines()[-1].split('=')[-1].split('/')[1]
-  result.value = float(ave)
+  # command = 'ping -c{} -i0.2 {}'.format(n, ip_addr)
+  command = 'ping -c{} {}'.format(n, ip_addr)
+  flag = False
+  while not flag:
+    try:
+      res = subprocess.run(command, shell=True, stdout=subprocess.PIPE, check=True).stdout
+      ave = res.decode().splitlines()[-1].split('=')[-1].split('/')[1]
+      flag = True
+      result.value = float(ave)
+    except Exception as e:
+      print(e)
 
 def getCalcInfo(ip_addr, result):
   cpu_usage = Value('f',0.0)
