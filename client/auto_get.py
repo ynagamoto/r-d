@@ -15,6 +15,8 @@ def getNwBw(ip_addr, result):
       # res_j = json.loads(res.decode())
       # bps = res_j['end']['sum_sent']['bits_per_second'] 
       bps = res.decode().splitlines()[-1].rsplit(' ', 2)[-2]
+      if res.decode().splitlines()[-1].rsplit(' ', 2)[-1][0] == 'M': 
+        bps = float(bps)/1000.0
       flag = True
       result.value = float(bps)
     except Exception as e:
