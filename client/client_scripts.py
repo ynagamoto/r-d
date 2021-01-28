@@ -113,18 +113,20 @@ def do_task(url, context, img, data_size):
     for task_num in place['cloud']:
       ec_time -= res['times'][str(task_num)]
     ec_time /= 2
-    ce_time = (other_run_time - res[times]['edge'+str(place['edge'][0])]) / 2
+    ce_time = (other_run_time - res['times']['edge'+str(place['edge'][0])]) / 2
     result['e-c'] = data_size*(ratio[0] if 2 in place['cloud'] else ratio[0]*ratio[1]) / ec_time
     result['c-e'] = data_size*(1 if 1 in place['edge'] else ratio[0]) / ce_time
     result['c-c'] = 1/((ce_time/(data_size*(1 if 1 in place['edge'] else ratio[0]))) + (ec_time/(data_size*(ratio[0] if 2 in place['cloud'] else ratio[0]*ratio[1]))))
   elif (len(place['edge']) != 0) and (len(place['cloud']) == 0): # do client and edge 
     #print('c-e')
+    ce_time = (other_run_time - res['times']['edge'+str(place['edge'][0])]) / 2
     result['calc'] = 'c-e'
-    result['c-e'] = data_size*(1 if 1 in place['edge'] else (ratio[0] if 2 in place['edge'] else ratio[1]))/((run_all_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
+    result['c-e'] = data_size*(1 if 1 in place['edge'] else (ratio[0] if 2 in place['edge'] else ratio[1])) / ce_time
   elif (len(place['cloud']) != 0) and (len(place['edge']) == 0): # do client and cloud
     #print('c-c')
+    cc_time = (other_run_time - res['times']['cloud'+str(place['cloud'][0])]) / 2
     result['calc'] = 'c-c'
-    result['c-c'] = data_size*(1 if 1 in place['cloud'] else (ratio[0] if 2 in place['cloud'] else ratio[1]))/((run_all_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
+    result['c-c'] = data_size*(1 if 1 in place['cloud'] else (ratio[0] if 2 in place['cloud'] else ratio[1])) / cc_time
 
   ar_url = 'http://%s/controller/add_result'%calc_addr['edge']
   flag = False
