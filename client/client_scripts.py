@@ -40,7 +40,7 @@ def do_task(url, context, img, data_size):
     res = json.loads(res_j.text)
   except Exception as e:
     print(e)
-    print('\n'+resj)
+    print('\n'+res_j)
   think_time = time.perf_counter() - start
 
   run_all_start = time.perf_counter()
