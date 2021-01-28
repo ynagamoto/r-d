@@ -36,8 +36,11 @@ def do_task(url, context, img, data_size):
       flag = True
     except Exception as e:
       print(e)
-
-  res = json.loads(res_j.text)
+  try:
+    res = json.loads(res_j.text)
+  except Exception as e:
+    print(e)
+    print('\n'+resj)
   think_time = time.perf_counter() - start
 
   run_all_start = time.perf_counter()
@@ -94,7 +97,7 @@ def do_task(url, context, img, data_size):
     'res_task3': res['times']['3'],
   }
 
-  # '''
+  #'''
   # 転送時間の計算
   ratio = [0.45397, 0.39966]
   for calc in place:
@@ -127,7 +130,7 @@ def do_task(url, context, img, data_size):
       flag = True
     except Exception as e:
       print(e)
-  # ''' 
+  #''' 
 
   result['place'] = place
   result['think_time'] = think_time
