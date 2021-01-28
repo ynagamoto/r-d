@@ -7,19 +7,31 @@ import MySQLdb
 
 def getNwBw(ip_addr, result):
   #command = 'iperf3 -c {} -JZ -t1'.format(ip_addr)
-  command = 'iperf -c {} -t 0.2'.format(ip_addr)
-  res = subprocess.run(command, shell=True, stdout=subprocess.PIPE, check=True).stdout
-  # res_j = json.loads(res.decode())
-  # bps = res_j['end']['sum_sent']['bits_per_second'] 
-  bps = res.decode().splitlines()[-1].rsplit(' ', 2)[-2]
-  result.value = float(bps)
+  command = 'iperf -c {} -t 0.5'.format(ip_addr)
+  flag = False
+  while not flag:
+    try:
+      res = subprocess.run(command, shell=True, stdout=subprocess.PIPE, check=True).stdout
+      # res_j = json.loads(res.decode())
+      # bps = res_j['end']['sum_sent']['bits_per_second'] 
+      bps = res.decode().splitlines()[-1].rsplit(' ', 2)[-2]
+      flag = True
+      result.value = float(bps)
+    except Exception as e:
+      print(e)
 
 def getNwDelay(ip_addr, result):
   n = 3
-  command = 'ping -c{} -i0.2 {}'.format(n, ip_addr)
-  res = subprocess.run(command, shell=True, stdout=subprocess.PIPE, check=True).stdout
-  ave = res.decode().splitlines()[-1].split('=')[-1].split('/')[1]
-  result.value = float(ave)
+  command = 'ping -c{} {}'.format(n, ip_addr)
+  flag = False
+  while not flag:
+    try:
+      res = subprocess.run(command, shell=True, stdout=subprocess.PIPE, check=True).stdout
+      ave = res.decode().splitlines()[-1].split('=')[-1].split('/')[1]
+      flag = True
+      result.value = float(ave)
+    except Exception as e:
+      print(e)
 
 # データベースに接続
 conn = MySQLdb.connect(
@@ -50,9 +62,10 @@ info = {
     'bw': Value('f', 0.0),
     'ping': Value('f', 0.0),
   },
-  calcs[1]: {},
+  calcs[1]: {
     'bw': Value('f', 0.0),
     'ping': Value('f', 0.0),
+  },
 }
 
 # 並列で実行
@@ -64,18 +77,19 @@ for calc in calcs:
   tasks[calc].append(Process(target=getNwBw, args=(ip_addr[calc], info[calc]['bw'])))
   tasks[calc].append(Process(target=getNwDelay, args=(ip_addr[calc], info[calc]['ping'])))
 for calc in calcs:
-  for i in range(len(tasks[calc]))
+  for i in range(len(tasks[calc])):
     tasks[calc][i].start()
 for calc in calcs:
-  for i in range(len(tasks[calc]))
+  for i in range(len(tasks[calc])):
     tasks[calc][i].join()
+    
 
 # 結果をデータベースへ
 for calc in calcs:
-  sql = "update controller_calcinfo set bandwidth={},delay={} where name='{}';"
-  cur.execute(sql, (info[calc]['bw'].value, info[calc]['ping'].value, calc))
-conn.commit()
+  sql = "update controller_calcinfo set bandwidth=%s,delay=%s where name=%s;"
+  cur.execute(sql, [info[calc]['bw'].value, info[calc]['ping'].value, calc])
 
+conn.commit()
 cur.close
 conn.close
 
