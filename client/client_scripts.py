@@ -74,9 +74,15 @@ def do_task(url, context, img, data_size):
   calc_addr = res['calc_addr']
   pre_time = res['est_time']
   start = time.perf_counter()
-  res_j = requests.post('http://{}/calculator/do_task'.format(next_url), data=context)
+  flag = False
+  while not flag:
+    try:
+      res_j = requests.post('http://{}/calculator/do_task'.format(next_url), data=context)
+      res = json.loads(res_j.text) 
+      flag = True
+    except Exception as e:
+      print(e)
   other_run_time = time.perf_counter() - start
-  res = json.loads(res_j.text) 
   run_all_time = time.perf_counter() - run_all_start
 
   result = {
