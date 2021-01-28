@@ -102,11 +102,11 @@ def do_task(url, context, img, data_size):
     result['e-c'] = data_size*(ratio[0] if 2 in place['cloud'] else ratio[0]*ratio[1])/(result['e-c']/2)
     result['c-e'] = data_size*(1 if 1 in place['edge'] else ratio[0])/((run_all_time - (res['times']['1']+res['times']['2']+res['times']['3']) - 2*result['e-c'])/2)
     result['c-c'] = result['c-e']+result['e-c']
-  elif (len(place['edge']) != 0) and (len(place['cloud']) == 0): do client and edge 
+  elif (len(place['edge']) != 0) and (len(place['cloud']) == 0): # do client and edge 
     #print('c-e')
     result['calc'] = 'c-e'
     result['c-e'] = data_size*(1 if 1 in place['edge'] else (ratio[0] if 2 in place['edge'] else ratio[1]))/((run_all_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
-  elif (len(place['cloud']) != 0) and (len(place['edge']) == 0): do client and cloud
+  elif (len(place['cloud']) != 0) and (len(place['edge']) == 0): # do client and cloud
     #print('c-c')
     result['calc'] = 'c-c'
     result['c-c'] = data_size*(1 if 1 in place['cloud'] else (ratio[0] if 2 in place['cloud'] else ratio[1]))/((run_all_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
