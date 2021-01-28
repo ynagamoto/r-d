@@ -197,7 +197,7 @@ def multi_process_exis(file_name, url, mn, n):
   for i in range(n):
     processes.append(Process(target=multi_do_exis, args=(file_name, url, mn)))
     processes[i].start()
-    time.sleep(1)
+    time.sleep(3)
 
   for i in range(n):
     processes[i].join()
@@ -208,7 +208,7 @@ def multi_process_prev(file_name, url, mn, n):
   for i in range(n):
     processes.append(Process(target=multi_do_prev, args=(file_name, url, mn)))
     processes[i].start()
-    time.sleep(1)
+    time.sleep(3)
 
   for i in range(n):
     processes[i].join()
@@ -230,6 +230,7 @@ def client_test_exis(file_name, url, n):
     #results.append(result)
     result = do_exis(file_name, url)
     results.append(result)
+    print('fin %s'%n)
     time.sleep(0.5)
 
   book = openpyxl.Workbook()
@@ -290,6 +291,7 @@ def client_test_prev(file_name, url, n):
     #result = multi_do_prev(file_name, url, 1)
     #results.append(result)
     result = do_prev(file_name, url)
+    print('fin %s'%n)
     results.append(result)
     time.sleep(0.5)
 
