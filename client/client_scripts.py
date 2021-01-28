@@ -109,12 +109,14 @@ def do_task(url, context, img, data_size):
   if (len(place['edge']) != 0) and (len(place['cloud']) != 0): # do client, edge and cloud
     #print('c-e-c')
     result['calc'] = 'c-e-c'
-    result['e-c'] = res['times']['edge'+str(place['edge'][-1])]
+    ec_time = res['times']['edge'+str(place['edge'][-1])]
     for task_num in place['cloud']:
-      result['e-c'] -= res['times'][str(task_num)]
-    result['e-c'] = data_size*(ratio[0] if 2 in place['cloud'] else ratio[0]*ratio[1])/(result['e-c']/2)
-    result['c-e'] = data_size*(1 if 1 in place['edge'] else ratio[0])/((run_all_time - (res['times']['1']+res['times']['2']+res['times']['3']) - 2*result['e-c'])/2)
-    result['c-c'] = result['c-e']+result['e-c']
+      ec_time -= res['times'][str(task_num)]
+    ec_time /= 2
+    ce_time = (other_run_time - res[times]['edge'+str(place['edge'][0])]) / 2
+    result['e-c'] = data_size*(ratio[0] if 2 in place['cloud'] else ratio[0]*ratio[1]) / ec_time
+    result['c-e'] = data_size*(1 if 1 in place['edge'] else ratio[0]) / ce_time
+    result['c-c'] = 1/((ce_time/(data_size*(1 if 1 in place['edge'] else ratio[0]))) + (ec_time/(data_size*(ratio[0] if 2 in place['cloud'] else ratio[0]*ratio[1]))))
   elif (len(place['edge']) != 0) and (len(place['cloud']) == 0): # do client and edge 
     #print('c-e')
     result['calc'] = 'c-e'
@@ -230,7 +232,7 @@ def client_test_exis(file_name, url, n):
     #results.append(result)
     result = do_exis(file_name, url)
     results.append(result)
-    print('fin %s'%n)
+    print('fin %s'%i)
     time.sleep(0.5)
 
   book = openpyxl.Workbook()
@@ -291,7 +293,7 @@ def client_test_prev(file_name, url, n):
     #result = multi_do_prev(file_name, url, 1)
     #results.append(result)
     result = do_prev(file_name, url)
-    print('fin %s'%n)
+    print('fin %s'%i)
     results.append(result)
     time.sleep(0.5)
 
