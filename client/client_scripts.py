@@ -90,27 +90,26 @@ def do_task(url, context, img, data_size):
   # 転送時間の計算
   ratio = [0.45397, 0.39966]
   for calc in place:
-    for task in place[calc]:
-      result['task'+str(task)+'_calc'] = calc
-      result['task'+str(task)] = res['times'][str(task)]
-  if (len(place['edge']) != 0) and (len(place['cloud']) != 0):
+    for task_num in place[calc]:
+      result['task'+str(task_num)+'_calc'] = calc
+      result['task'+str(task_num)] = res['times'][str(task_num)]
+  if (len(place['edge']) != 0) and (len(place['cloud']) != 0): # do client, edge and cloud
     #print('c-e-c')
     result['calc'] = 'c-e-c'
-    result['e-c'] = res['times']['edge'+str(place['edge'][0])]
-    for calc in ['edge', 'cloud']:
-      for task in place[calc]:
-        result['e-c'] -= res['times'][str(task)]
+    result['e-c'] = res['times']['edge'+str(place['edge'][-1])]
+    for task_num in place['cloud']:
+      result['e-c'] -= res['times'][str(task_num)]
     result['e-c'] = data_size*(ratio[0] if 2 in place['cloud'] else ratio[0]*ratio[1])/(result['e-c']/2)
-    result['c-e'] = data_size*(1 if 1 in place['edge'] else ratio[0])/((other_run_time - (res['times']['1']+res['times']['2']+res['times']['3']) - 2*result['e-c'])/2)
+    result['c-e'] = data_size*(1 if 1 in place['edge'] else ratio[0])/((run_all_time - (res['times']['1']+res['times']['2']+res['times']['3']) - 2*result['e-c'])/2)
     result['c-c'] = result['c-e']+result['e-c']
-  elif (len(place['edge']) != 0) and (len(place['cloud']) == 0):
+  elif (len(place['edge']) != 0) and (len(place['cloud']) == 0): do client and edge 
     #print('c-e')
     result['calc'] = 'c-e'
-    result['c-e'] = data_size*(1 if 1 in place['edge'] else (ratio[0] if 2 in place['edge'] else ratio[1]))/((other_run_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
-  elif (len(place['cloud']) != 0) and (len(place['edge']) == 0):
+    result['c-e'] = data_size*(1 if 1 in place['edge'] else (ratio[0] if 2 in place['edge'] else ratio[1]))/((run_all_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
+  elif (len(place['cloud']) != 0) and (len(place['edge']) == 0): do client and cloud
     #print('c-c')
     result['calc'] = 'c-c'
-    result['c-c'] = data_size*(1 if 1 in place['cloud'] else (ratio[0] if 2 in place['cloud'] else ratio[1]))/((other_run_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
+    result['c-c'] = data_size*(1 if 1 in place['cloud'] else (ratio[0] if 2 in place['cloud'] else ratio[1]))/((run_all_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
 
   ar_url = 'http://%s/controller/add_result'%calc_addr['edge']
   requests.post(ar_url, data=result)
