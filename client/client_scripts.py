@@ -172,7 +172,18 @@ def multi_do_prev(file_name, url, n):
   results = loop.run_until_complete(do_async(loop))
   return results
 
-def multi_process_access(file_name, url, mn, n):
+def multi_process_exis(file_name, url, mn, n):
+  processes = []
+  for i in range(n):
+    processes.append(Process(target=multi_do_exis, args=(file_name, url, mn)))
+    processes[i].start()
+    time.sleep(1)
+
+  for i in range(n):
+    processes[i].join()
+    print('fin async %d'%i)
+ 
+def multi_process_prev(file_name, url, mn, n):
   processes = []
   for i in range(n):
     processes.append(Process(target=multi_do_prev, args=(file_name, url, mn)))
@@ -181,6 +192,7 @@ def multi_process_access(file_name, url, mn, n):
 
   for i in range(n):
     processes[i].join()
+    print('fin async %d'%i)
 
 def many_multi_access(file_name, url, mn, n):
   results = []
