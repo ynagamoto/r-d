@@ -64,7 +64,6 @@ class DoTask(View):
         'data': res,
         'times': json.dumps(times, ensure_ascii=False, indent=2).encode('utf-8'),
       }
-      start = time.perf_counter()
       res_j = requests.post(url, data=context)
       res = json.loads(res_j.text)
       res['times'][mycalcname+request.POST['task_id']] = time.perf_counter() - start
