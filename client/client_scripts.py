@@ -150,7 +150,7 @@ def do_exis(file_name, url):
   calc_addr = json.loads(res_j.text)
   context = getCECInfo(calc_addr)
   context['data_size'] = data_size
-  collect_time = time.perf_counter()
+  collect_time = time.perf_counter() - start 
   url = 'http://%s/controller/repro'%url
   result = do_task(url, context, img, data_size)  
   result['collect_time'] = collect_time
