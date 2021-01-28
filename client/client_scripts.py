@@ -29,8 +29,14 @@ def open_file(file_name):
 # 実行先をedgeに聞いて実行 -> 結果送信
 def do_task(url, context, img, data_size):
   start = time.perf_counter()
-  res_j = requests.post(url, data=context)
-  res = json.loads(res_j.text)
+  flag = False
+  while not flag:
+    try:
+      res_j = requests.post(url, data=context)
+      res = json.loads(res_j.text)
+      flag = True
+    except Exception as e:
+      print(e)
   think_time = time.perf_counter() - start
 
   run_all_start = time.perf_counter()
@@ -87,6 +93,7 @@ def do_task(url, context, img, data_size):
     'res_task3': res['times']['3'],
   }
 
+  # '''
   # 転送時間の計算
   ratio = [0.45397, 0.39966]
   for calc in place:
@@ -113,6 +120,8 @@ def do_task(url, context, img, data_size):
 
   ar_url = 'http://%s/controller/add_result'%calc_addr['edge']
   requests.post(ar_url, data=result)
+  # ''' 
+
   result['place'] = place
   result['think_time'] = think_time
   result['run_time'] = run_all_time
