@@ -67,13 +67,14 @@ class DoTask(View):
       res_j = requests.post(url, data=context)
       res = json.loads(res_j.text)
       res['times'][mycalcname+request.POST['task_id']] = time.perf_counter() - start
-      print(res)
+      #print(res)
       res_j = json.dumps(res, ensure_ascii=False, indent=2).encode('utf-8')
       return HttpResponse(res_j)
     else: # next_task が '0' なら最後のタスク
       res = json.loads(res)
       res['client_id'] = task['client_id']
       res['times'] = times
+      res['times'][mycalcname+request.POST['task_id']] = time.perf_counter() - start
       res_j = json.dumps(res, ensure_ascii=False, indent=2).encode('utf-8')
       return HttpResponse(res_j)
 
