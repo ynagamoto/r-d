@@ -33,14 +33,10 @@ def do_task(url, context, img, data_size):
   while not flag:
     try:
       res_j = requests.post(url, data=context)
+      res = json.loads(res_j.text)
       flag = True
     except Exception as e:
       print(e)
-  try:
-    res = json.loads(res_j.text)
-  except Exception as e:
-    print(e)
-    print('\n'+res_j)
   think_time = time.perf_counter() - start
 
   run_all_start = time.perf_counter()
