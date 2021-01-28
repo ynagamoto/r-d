@@ -4,6 +4,7 @@ import subprocess
 from multiprocessing import Process,Value,Array
 #import threading
 import psutil
+from controller.models import CalcInfo
 
 def getCpuUsage(result):
   result.value = float(psutil.cpu_percent(interval=0.1))
@@ -16,7 +17,7 @@ def getCpuU(ip_addr, result):
 
 def getNwBw(ip_addr, result):
   # command = 'iperf3 -c {} -JZ -t1'.format(ip_addr)
-  command = 'iperf -c {} -t 0.2'.format(ip_addr)
+  command = 'iperf -c {} -t 0.5'.format(ip_addr)
   res = subprocess.run(command, shell=True, stdout=subprocess.PIPE, check=True).stdout
   # res_j = json.loads(res.decode())
   # bps = res_j['end']['sum_sent']['bits_per_second'] 
@@ -24,8 +25,9 @@ def getNwBw(ip_addr, result):
   result.value = float(bps)
 
 def getPing(ip_addr, result):
-  n = 1
-  command = 'ping -c{} -i0.2 {}'.format(n, ip_addr)
+  n = 3
+  # command = 'ping -c{} -i0.2 {}'.format(n, ip_addr)
+  command = 'ping -c{} {}'.format(n, ip_addr)
   res = subprocess.run(command, shell=True, stdout=subprocess.PIPE, check=True).stdout
   ave = res.decode().splitlines()[-1].split('=')[-1].split('/')[1]
   result.value = float(ave)
@@ -66,6 +68,31 @@ def getECInfo(ip_addr):
       'cpu': cloud_info[0],
       'bw': cloud_info[1],
       'ping': cloud_info[2],
+    },
+  }
+  return result
+
+def getECInfo2(ip_addr): 
+  edge_cpu = Value('f', 0.0)
+  cloud_cpu = Value('f', 0.0)
+  edge = Process(target=getCpuUsage, args=(edge_cpu,))
+  cloud = Process(target=getCpuU, args=(ip_addr['cloud'], cloud_cpu))
+  edge.start()
+  cloud.start()
+  edge.join()
+  cloud.join()
+  edge_info = CalcInfo.objects.get(name='edge')
+  cloud_info = CalcInfo.objects.get(name='cloud')
+  result = {
+    'edge': {
+      'cpu': float(edge_cpu.value),
+      'bw': float(edge_info.bandwidth),
+      'ping': float(edge_info.delay),
+    },
+    'cloud': {
+      'cpu': float(cloud_cpu.value),
+      'bw': float(cloud_info.bandwidth),
+      'ping': float(cloud_info.delay),
     },
   }
   return result
