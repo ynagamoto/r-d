@@ -28,8 +28,12 @@ def open_file(file_name):
 
 # 実行先をedgeに聞いて実行 -> 結果送信
 def do_task(url, context, img, data_size):
+  start = time.perf_counter()
   res_j = requests.post(url, data=context)
   res = json.loads(res_j.text)
+  think_time = time.perf_counter() - start
+
+  run_all_start = time.perf_counter()
   task = 0
   times = {}
   for task_id in res['place']['client']:
@@ -46,7 +50,7 @@ def do_task(url, context, img, data_size):
   next_url = ''
   for calc in ['edge', 'cloud']:
     if task+1 in res['place'][calc]:
-      print('%s: %s'%(calc, res['calc_addr'][calc]))
+      #print('%s: %s'%(calc, res['calc_addr'][calc]))
       next_url = res['calc_addr'][calc]
 
   context = {
@@ -58,17 +62,19 @@ def do_task(url, context, img, data_size):
 
   place = res['place']
   calc_addr = res['calc_addr']
+  pre_time = res['est_time']
   start = time.perf_counter()
   res_j = requests.post('http://{}/calculator/do_task'.format(next_url), data=context)
-  run_time = time.perf_counter() - start
+  other_run_time = time.perf_counter() - start
   res = json.loads(res_j.text) 
+  run_all_time = time.perf_counter() - run_all_start
 
   result = {
     'client_id': res['client_id'],
-    'alg': 'test',
-    'ip_addr': '0.0.0.0',
-    'pre': 0.00,
-    'result': run_time,
+    'alg': 'exis',
+    'ip_addr': '222.229.69.221',
+    'pre': pre_time,
+    'result': run_all_time,
     'input_name': file_name,
     'input_size': float(data_size),
     'ans': str(res['label']),
@@ -95,29 +101,36 @@ def do_task(url, context, img, data_size):
       for task in place[calc]:
         result['e-c'] -= res['times'][str(task)]
     result['e-c'] = data_size*(ratio[0] if 2 in place['cloud'] else ratio[0]*ratio[1])/(result['e-c']/2)
-    result['c-e'] = data_size*(1 if 1 in place['edge'] else ratio[0])/((run_time - (res['times']['1']+res['times']['2']+res['times']['3']) - 2*result['e-c'])/2)
+    result['c-e'] = data_size*(1 if 1 in place['edge'] else ratio[0])/((other_run_time - (res['times']['1']+res['times']['2']+res['times']['3']) - 2*result['e-c'])/2)
     result['c-c'] = result['c-e']+result['e-c']
   elif (len(place['edge']) != 0) and (len(place['cloud']) == 0):
     #print('c-e')
     result['calc'] = 'c-e'
-    result['c-e'] = data_size*(1 if 1 in place['edge'] else (ratio[0] if 2 in place['edge'] else ratio[1]))/((run_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
+    result['c-e'] = data_size*(1 if 1 in place['edge'] else (ratio[0] if 2 in place['edge'] else ratio[1]))/((other_run_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
   elif (len(place['cloud']) != 0) and (len(place['edge']) == 0):
     #print('c-c')
     result['calc'] = 'c-c'
-    result['c-c'] = data_size*(1 if 1 in place['cloud'] else (ratio[0] if 2 in place['cloud'] else ratio[1]))/((run_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
+    result['c-c'] = data_size*(1 if 1 in place['cloud'] else (ratio[0] if 2 in place['cloud'] else ratio[1]))/((other_run_time - (res['times']['1']+res['times']['2']+res['times']['3']))/2)
 
   ar_url = 'http://%s/controller/add_result'%calc_addr['edge']
   requests.post(ar_url, data=result)
+  result['place'] = place
+  result['think_time'] = think_time
+  result['run_time'] = run_all_time
   return result
 
 def do_exis(file_name, url):
   img, data_size = open_file(file_name)
+  start = time.perf_counter()
   res_j = requests.get('http://%s/controller/repro'%url)
   calc_addr = json.loads(res_j.text)
   context = getCECInfo(calc_addr)
   context['data_size'] = data_size
+  collect_time = time.perf_counter()
   url = 'http://%s/controller/repro'%url
   result = do_task(url, context, img, data_size)  
+  result['collect_time'] = collect_time
+  return result
 
 def do_prev(file_name, url):
   img, data_size = open_file(file_name)
@@ -126,13 +139,15 @@ def do_prev(file_name, url):
   }
   url = 'http://%s/controller/prev'%url
   result = do_task(url, context, img, data_size)  
+  result['collect_time'] = 0.0
+  return result
 
 def multi_do_exis(file_name, url, n):
   async def do_async(loop):
     async def do_req(i):
-      print('do %d request'%i)
+      # print('do %d request'%i)
       res = await loop.run_in_executor(None, do_exis, file_name, url)
-      print('fin %d request'%i)
+      # print('fin %d request'%i)
       return res
 
     tasks = [ do_req(i) for i in range(n) ]
@@ -145,9 +160,9 @@ def multi_do_exis(file_name, url, n):
 def multi_do_prev(file_name, url, n):
   async def do_async(loop):
     async def do_req(i):
-      print('do %d request'%i)
+      # print('do %d request'%i)
       res = await loop.run_in_executor(None, do_prev, file_name, url)
-      print('fin %d request'%i)
+      # print('fin %d request'%i)
       return res
 
     tasks = [ do_req(i) for i in range(n) ]
@@ -166,53 +181,134 @@ def multi_process_access(file_name, url, mn, n):
 
   for i in range(n):
     processes[i].join()
-    
 
-def client_test(file_name, url, n):
+def many_multi_access(file_name, url, mn, n):
   results = []
   for i in range(n):
-    result = multi_do_prev(file_name, url, 1)
+    result = multi_do_prev(file_name, url, mn) 
     results.append(result)
-    time.sleep(1)
+    #time.sleep(1)
+  print(result)
+
+
+def client_test_exis(file_name, url, n):
+  results = []
+  for i in range(n):
+    #result = multi_do_exis(file_name, url, 1)
+    #results.append(result)
+    result = do_exis(file_name, url)
+    results.append(result)
+    time.sleep(0.5)
 
   book = openpyxl.Workbook()
+  sheet = book.active
+  sheet.title = 'alg=exis, n=%s'%n
   row_num = 1
-  row = sheet['a1':'o1']
-  row[0] = 'client_id'
-  row[1] = 'alg'
-  row[2] = 'ip_addr'
-  row[3] = 'pre'
-  row[4] = 'result'
-  row[5] = 'input_name'
-  row[6] = 'input_size'
-  row[7] = 'ans'
-  row[8] = 'confidence'
-  row[9] = 'pre_task1'
-  row[10] = 'pre_task2'
-  row[11] = 'pre_task3'
-  row[12] = 'res_task1'
-  row[13] = 'res_task2'
-  row[14] = 'res_task3'
+  row = sheet['a1':'s1']
+  row[0][0].value = 'client_id'
+  row[0][1].value = 'alg'
+  row[0][2].value = 'ip_addr'
+  row[0][3].value = 'pre'
+  row[0][4].value = 'result'
+  row[0][5].value = 'collect_time'
+  row[0][6].value = 'think_time'
+  row[0][7].value = 'run_time'
+  row[0][8].value = 'input_name'
+  row[0][9].value = 'input_size'
+  row[0][10].value = 'ans'
+  row[0][11].value = 'confidence'
+  row[0][12].value = 'pre_task1'
+  row[0][13].value = 'pre_task2'
+  row[0][14].value = 'pre_task3'
+  row[0][15].value = 'res_task1'
+  row[0][16].value = 'res_task2'
+  row[0][17].value = 'res_task3'
+  row[0][18].value = 'place'
 
   for result in results:
     row_num += 1
-    row = sheet[('a'+str(row_num)):('o'+str(row_num))] # 15個
-    row[0] = result['client_id']
-    row[1] = result['alg']
-    row[2] = result['ip_addr']
-    row[3] = result['pre']
-    row[4] = result['result']
-    row[5] = result['input_name']
-    row[6] = result['input_size']
-    row[7] = result['ans']
-    row[8] = result['confidence']
-    row[9] = result['pre_task1']
-    row[10] = result['pre_task2']
-    row[11] = result['pre_task3']
-    row[12] = result['res_task1']
-    row[13] = result['res_task2']
-    row[14] = result['res_task3']
+    row = sheet[('a'+str(row_num)):('s'+str(row_num))] # 19個
+    row[0][0].value = result['client_id']
+    row[0][1].value = result['alg']
+    row[0][2].value = result['ip_addr']
+    row[0][3].value = result['pre']
+    row[0][4].value = result['result']
+    row[0][5].value = result['collect_time']
+    row[0][6].value = result['think_time']
+    row[0][7].value = result['run_time']
+    row[0][8].value = result['input_name']
+    row[0][9].value = result['input_size']
+    row[0][10].value = result['ans']
+    row[0][11].value = result['confidence']
+    row[0][12].value = result['pre_task1']
+    row[0][13].value = result['pre_task2']
+    row[0][14].value = result['pre_task3']
+    row[0][15].value = result['res_task1']
+    row[0][16].value = result['res_task2']
+    row[0][17].value = result['res_task3']
+    row[0][18].value = str(result['place'])
 
   date = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
-  book.save('test_'+date+'.xlsx')
+  book.save('result_exis_'+date+'.xlsx')
+
+
+def client_test_prev(file_name, url, n):
+  results = []
+  for i in range(n):
+    #result = multi_do_prev(file_name, url, 1)
+    #results.append(result)
+    result = do_prev(file_name, url)
+    results.append(result)
+    time.sleep(0.5)
+
+  book = openpyxl.Workbook()
+  sheet = book.active
+  sheet.title = 'alg=prev, n=%s'%n
+  row_num = 1
+  row = sheet['a1':'s1']
+  row[0][0].value = 'client_id'
+  row[0][1].value = 'alg'
+  row[0][2].value = 'ip_addr'
+  row[0][3].value = 'pre'
+  row[0][4].value = 'result'
+  row[0][5].value = 'collect_time'
+  row[0][6].value = 'think_time'
+  row[0][7].value = 'run_time'
+  row[0][8].value = 'input_name'
+  row[0][9].value = 'input_size'
+  row[0][10].value = 'ans'
+  row[0][11].value = 'confidence'
+  row[0][12].value = 'pre_task1'
+  row[0][13].value = 'pre_task2'
+  row[0][14].value = 'pre_task3'
+  row[0][15].value = 'res_task1'
+  row[0][16].value = 'res_task2'
+  row[0][17].value = 'res_task3'
+  row[0][18].value = 'place'
+
+  for result in results:
+    row_num += 1
+    row = sheet[('a'+str(row_num)):('s'+str(row_num))] # 19個
+    row[0][0].value = result['client_id']
+    row[0][1].value = result['alg']
+    row[0][2].value = result['ip_addr']
+    row[0][3].value = result['pre']
+    row[0][4].value = result['result']
+    row[0][5].value = result['collect_time']
+    row[0][6].value = result['think_time']
+    row[0][7].value = result['run_time']
+    row[0][8].value = result['input_name']
+    row[0][9].value = result['input_size']
+    row[0][10].value = result['ans']
+    row[0][11].value = result['confidence']
+    row[0][12].value = result['pre_task1']
+    row[0][13].value = result['pre_task2']
+    row[0][14].value = result['pre_task3']
+    row[0][15].value = result['res_task1']
+    row[0][16].value = result['res_task2']
+    row[0][17].value = result['res_task3']
+    row[0][18].value = str(result['place'])
+
+  date = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+  book.save('result_prev_'+date+'.xlsx')
 
