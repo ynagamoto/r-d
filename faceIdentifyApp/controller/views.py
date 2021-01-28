@@ -8,9 +8,10 @@ import requests
 import json
 #import threading
 from multiprocessing import Process,Value,Array
+import sys
 
 from faceIdentify.scripts.converter import f2b
-from controller.scripts.get_info import getECInfo
+from controller.scripts.get_info import getECInfo,getECInfo2
 
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -103,7 +104,8 @@ class ReproduceExisting(View):
     calc_addr = {'edge': edge_info.ip_addr, 'cloud': cloud_info.ip_addr}
     
     # 集める
-    ec_info = getECInfo({'edge': edge_info.ip_addr, 'cloud': cloud_info.ip_addr})
+    # ec_info = getECInfo({'edge': edge_info.ip_addr, 'cloud': cloud_info.ip_addr})
+    ec_info = getECInfo2({'edge': edge_info.ip_addr, 'cloud': cloud_info.ip_addr})
 
     info = {
       'client': {
@@ -132,6 +134,7 @@ class ReproduceExisting(View):
         'cpu': float(ec_info['cloud']['cpu']), 
       },
     }
+    print(info)
 
     # session id を取得
     request.session.create()
@@ -145,21 +148,23 @@ class ReproduceExisting(View):
     }
 
     ''' 配置先を決めるアルゴリズム '''
+    ratio = [0.45397, 0.39966]
     # 計算時間の推定
     tasks = {
       'num': 3,
-      'client': [ 0.2, 0.01, 1000 ],
-      'edge': [0.04, 0.005, 0.25 ],
-      'cloud': [0.01, 0.005, 0.25 ],
+      'client': [ 0.08490503, 0.00444955, 1000 ],
+      'edge': [0.02271162, 0.00190227, 1.93171145 ],
+      'cloud': [0.02198952, 0.00155184, 1.68139666 ],
     }
     run_times = {'client': [0]*tasks['num'], 'edge': [0]*tasks['num'], 'cloud': [0]*tasks['num']}
     for calc in ['client', 'edge', 'cloud']:
       for i in range(tasks['num']):
         if calc == 'client' and i == tasks['num']-1: continue
-        run_times[calc][i] = (tasks[calc][i]*data_size) / (100.0-info[calc]['cpu']) 
+        temp = 1 if i == 0 else (ratio[0] if i == 1 else ratio[0]*ratio[1])
+        cpu = 100.0-info[calc]['cpu']
+        run_times[calc][i] = (tasks[calc][i]*data_size*temp) / (cpu/100 if cpu != 0.0 else 0.00001/100) 
 
     # 転送時間の推定 
-    ratio = [0.45397, 0.39966]
     trans_times = {'client': {'edge': [0]*tasks['num'], 'cloud': [0]*tasks['num']}, 'edge': {'cloud': [0]*tasks['num']}}
     for calc in ['edge', 'cloud']:
       for i in range(tasks['num']): 
@@ -223,7 +228,7 @@ class ReproduceExisting(View):
         task_info['next_task'] = str(i+1) if i < tasks['num'] else str(0) 
         if task_info['next_task'] != '0':
           for hoge in ['edge', 'cloud']:
-            if i+1 in place[hoge]: task_info['next_url'] = urls[hoge]
+            if i+1 in place[hoge]: task_info['next_url'] = (urls[hoge] if calc != hoge else urls[hoge+'_local'])
         else:
           task_info['next_url'] = 'client'
 
@@ -346,7 +351,7 @@ class UsePrevInfo(View):
         task_info['next_task'] = str(i+1) if i < tasks['num'] else str(0) 
         if task_info['next_task'] != '0':
           for hoge in ['edge', 'cloud']:
-            if i+1 in place[hoge]: task_info['next_url'] = urls[hoge]
+            if i+1 in place[hoge]: task_info['next_url'] = (urls[hoge] if calc != hoge else urls[hoge+'_local'])
         else:
           task_info['next_url'] = 'client'
 
@@ -396,7 +401,8 @@ class TestPlace(View):
       res = requests.post(url, data=task_info)
     
     place = json.loads(request.POST['place'])
-    process = []
+    print(place)
+    processes = []
     for calc in ['edge', 'cloud']:   
       for i in place[calc]:
         task_info = {
@@ -409,7 +415,7 @@ class TestPlace(View):
         task_info['next_task'] = str(i+1) if i < tasks['num'] else str(0) 
         if task_info['next_task'] != '0':
           for hoge in ['edge', 'cloud']:
-            if i+1 in place[hoge]: task_info['next_url'] = urls[hoge]
+            if i+1 in place[hoge]: task_info['next_url'] = (urls[hoge] if hoge != 'cloud' else urls['cloud_local'])
         else:
           task_info['next_url'] = 'client'
 
@@ -426,7 +432,8 @@ class TestPlace(View):
       'task_id': '1',
       'times': '{}',
     }
-    res = requests.post('http://localhost:8000/calculator/do_task', data=context)
+    #return HttpResponse(context['client_id'])
+    res = requests.post('http://%s/calculator/do_task'%cloud_info.ip_addr, data=context)
 
     return HttpResponse(res)
 
