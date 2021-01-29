@@ -106,7 +106,8 @@ def addTask(request):
   if request.method == 'POST':
     task = TaskForm(request.POST, instance=TaskInfo())
     task.save()
-    return redirect(to='showTask')
+    return HttpResponse('ok')
+    #return redirect(to='showTask')
 
   context = {
     'title': 'add task',
@@ -135,7 +136,8 @@ def deleteTask(request, cid, tid):
   task = TaskInfo.objects.get(client_id=cid, task_id=tid)
   if request.method == 'POST':
     if request.POST['submit'] == 'cancel':
-      return redirect(to='/calculator/show_task')
+      return HttpResponse('ok')
+      #return redirect(to='/calculator/show_task')
     task.delete()
     return redirect(to='/calculator/show_task')
 
