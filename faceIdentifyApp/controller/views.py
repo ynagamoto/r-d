@@ -522,7 +522,8 @@ def addResult(request):
       prev_info.client_cloud = request.POST['c-c']
     prev_info.save()
 
-    return redirect(to='showResult')
+    return HttpResponse("ok")
+    #return redirect(to='showResult')
 
   context = {
     'title': 'add result',
