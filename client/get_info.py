@@ -34,8 +34,8 @@ def getNwBw(ip_addr, result):
 
 def getPing(ip_addr, result):
   n = 1
-  # command = 'ping -c{} -i0.2 {}'.format(n, ip_addr)
-  command = 'ping -c{} {}'.format(n, ip_addr)
+  command = 'ping -c{} -i0.3 {}'.format(n, ip_addr)
+  # command = 'ping -c{} {}'.format(n, ip_addr)
   flag = False
   while not flag:
     try:
