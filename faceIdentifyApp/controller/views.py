@@ -524,7 +524,7 @@ def addResult(request):
     prev_info.save()
 
     return HttpResponse("ok")
-    #return redirect(to='showResult')
+    # return redirect(to='showResult')
 
   context = {
     'title': 'add result',
