@@ -174,7 +174,7 @@ class ReproduceExisting(View):
           trans_times['edge'][calc][i] = (data_size*temp/info['edge']['to '+calc]['bw']) + info['edge']['to '+calc]['ping']/1000 # edge
 
     # 最も短いものを求める
-    est_time = 100000.0
+    est_time = 10000000000.0
     place = {'client': [], 'edge': [], 'cloud': []}
     time_client = 0.0
     task_client = []
@@ -297,7 +297,7 @@ class UsePrevInfo(View):
 
     ''' 配置先を決めるアルゴリズム ''' 
     # 最も短いものを求める
-    est_time = 100000.0
+    est_time = 10000000000.0
     place = {'client': [], 'edge': [], 'cloud': []}
     time_client = 0.0
     task_client = []
