@@ -153,6 +153,8 @@ def do_exis(file_name, url):
     calc_addr = json.loads(res_j.text)
     if calc_addr['edge'] != '' and calc_addr['cloud']:
       flag = True
+    else:
+      print('requests error')
   context = getCECInfo(calc_addr)
   context['data_size'] = data_size
   collect_time = time.perf_counter() - start 
