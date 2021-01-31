@@ -147,8 +147,12 @@ def do_task(url, context, img, data_size):
 def do_exis(file_name, url):
   img, data_size = open_file(file_name)
   start = time.perf_counter()
-  res_j = requests.get('http://%s/controller/repro'%url)
-  calc_addr = json.loads(res_j.text)
+  flag = False
+  while not flag:
+    res_j = requests.get('http://%s/controller/repro'%url)
+    calc_addr = json.loads(res_j.text)
+    if calc_addr['edge'] != '' and calc_addr['cloud']:
+      flag = True
   context = getCECInfo(calc_addr)
   context['data_size'] = data_size
   collect_time = time.perf_counter() - start 
