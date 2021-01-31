@@ -78,6 +78,8 @@ def do_task(url, context, img, data_size):
       flag = True
     except Exception as e:
       print(e)
+      print('error occurred do_task to next calc')
+      print(str(res)+'\n')
   other_run_time = time.perf_counter() - start
   run_all_time = time.perf_counter() - run_all_start
 
@@ -99,7 +101,7 @@ def do_task(url, context, img, data_size):
     'res_task3': res['times']['3'],
   }
 
-  #'''
+  '''
   # 転送時間の計算
   ratio = [0.45397, 0.39966]
   for calc in place:
@@ -137,7 +139,7 @@ def do_task(url, context, img, data_size):
       flag = True
     except Exception as e:
       print(e)
-  #''' 
+  ''' 
 
   result['place'] = place
   result['think_time'] = think_time
@@ -147,8 +149,14 @@ def do_task(url, context, img, data_size):
 def do_exis(file_name, url):
   img, data_size = open_file(file_name)
   start = time.perf_counter()
-  res_j = requests.get('http://%s/controller/repro'%url)
-  calc_addr = json.loads(res_j.text)
+  flag = False
+  while not flag:
+    res_j = requests.get('http://%s/controller/repro'%url)
+    calc_addr = json.loads(res_j.text)
+    if calc_addr['edge'] != '' and calc_addr['cloud'] != '':
+      flag = True
+    else:
+      print('requests error')
   context = getCECInfo(calc_addr)
   context['data_size'] = data_size
   collect_time = time.perf_counter() - start 
@@ -202,7 +210,7 @@ def multi_process_exis(file_name, url, mn, n):
   for i in range(n):
     processes.append(Process(target=multi_do_exis, args=(file_name, url, mn)))
     processes[i].start()
-    time.sleep(3)
+    time.sleep(0.5)
 
   for i in range(n):
     processes[i].join()
@@ -213,7 +221,7 @@ def multi_process_prev(file_name, url, mn, n):
   for i in range(n):
     processes.append(Process(target=multi_do_prev, args=(file_name, url, mn)))
     processes[i].start()
-    time.sleep(3)
+    time.sleep(0.5)
 
   for i in range(n):
     processes[i].join()
@@ -236,7 +244,7 @@ def client_test_exis(file_name, url, n):
     result = do_exis(file_name, url)
     results.append(result)
     print('fin %s'%i)
-    time.sleep(0.5)
+    time.sleep(1)
 
   book = openpyxl.Workbook()
   sheet = book.active
@@ -298,7 +306,7 @@ def client_test_prev(file_name, url, n):
     result = do_prev(file_name, url)
     print('fin %s'%i)
     results.append(result)
-    time.sleep(0.5)
+    time.sleep(1)
 
   book = openpyxl.Workbook()
   sheet = book.active
