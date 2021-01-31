@@ -140,7 +140,7 @@ def deleteTask(request, cid, tid):
       #return redirect(to='/calculator/show_task')
     task.delete()
     return HttpResponse('ok')
-    return redirect(to='/calculator/show_task')
+    #return redirect(to='/calculator/show_task')
 
   context = {
     'title': 'Delete Task',
