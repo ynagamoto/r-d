@@ -291,9 +291,9 @@ class UsePrevInfo(View):
     for calc in ['edge', 'cloud']:
       for i in range(tasks['num']): 
         temp = 1 if i == 0 else (ratio[0] if i == 1 else ratio[0]*ratio[1])
-        trans_times['client'][calc][i] = (data_size*temp/getattr(info, 'client_'+calc)) # client
+        trans_times['client'][calc][i] = (data_size*temp/getattr(info, 'client_'+calc)) # client to edge or client
         if calc != 'edge':
-          trans_times['edge'][calc][i] = (data_size*temp/getattr(info, 'edge_'+calc)) # edge
+          trans_times['edge'][calc][i] = (data_size*temp/getattr(info, 'edge_'+calc)) # edge to cloud
 
     ''' 配置先を決めるアルゴリズム ''' 
     # 最も短いものを求める
@@ -302,9 +302,10 @@ class UsePrevInfo(View):
     time_client = 0.0
     task_client = []
     for i in range(tasks['num']): # client
+      temp = 1 if i == 0 else (ratio[0] if i == 1 else ratio[0]*ratio[1])
       if i != 0:
         task_client.append(i)
-        time_client += getattr(info, 'client_task'+str(i))
+        time_client += getattr(info, 'client_task'+str(i)) * data_size * temp
       #print("client: %d" % i)
       #print('time_client: %f' % (time_client))
       
@@ -315,7 +316,7 @@ class UsePrevInfo(View):
         time_edge += trans_times['client']['edge'][i] if j != 0 else 0.0
         if j != 0: 
           task_edge.append(j)
-          time_edge += getattr(info, 'edge_task'+str(j))
+          time_edge += getattr(info, 'edge_task'+str(j)) * data_size * temp
         #print("  edge: %d" % j)
         #print('  time_edge: %f' % (time_edge))
 
@@ -326,7 +327,7 @@ class UsePrevInfo(View):
           time_cloud += 0.0 if k == 0 else (trans_times['client']['cloud'][i] if j == 0 else trans_times['edge']['cloud'][j])
           if k != 0: 
             task_cloud.append(k)
-            time_cloud += getattr(info, 'cloud_task'+str(k))
+            time_cloud += getattr(info, 'cloud_task'+str(k)) * data_size * temp
           #print("    cloud: %d" % k)
           #print('    time_cloud: %f' % (time_cloud))
 
