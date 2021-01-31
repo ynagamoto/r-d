@@ -104,8 +104,9 @@ def do_task(url, context, img, data_size):
   ratio = [0.45397, 0.39966]
   for calc in place:
     for task_num in place[calc]:
+      temp = (1 if task_num == 1 else (ratio[0] if task_num == 2 else ratio[1]))
       result['task'+str(task_num)+'_calc'] = calc
-      result['task'+str(task_num)] = res['times'][str(task_num)]
+      result['task'+str(task_num)] = res['times'][str(task_num)] / (data_size*temp)
   if (len(place['edge']) != 0) and (len(place['cloud']) != 0): # do client, edge and cloud
     #print('c-e-c')
     result['calc'] = 'c-e-c'
