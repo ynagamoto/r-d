@@ -78,6 +78,8 @@ def do_task(url, context, img, data_size):
       flag = True
     except Exception as e:
       print(e)
+      print('error occurred do_task to next calc')
+      print(str(res)+'\n')
   other_run_time = time.perf_counter() - start
   run_all_time = time.perf_counter() - run_all_start
 
@@ -151,7 +153,7 @@ def do_exis(file_name, url):
   while not flag:
     res_j = requests.get('http://%s/controller/repro'%url)
     calc_addr = json.loads(res_j.text)
-    if calc_addr['edge'] != '' and calc_addr['cloud']:
+    if calc_addr['edge'] != '' and calc_addr['cloud'] != '':
       flag = True
     else:
       print('requests error')
