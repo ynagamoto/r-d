@@ -162,7 +162,7 @@ class ReproduceExisting(View):
         if calc == 'client' and i == tasks['num']-1: continue
         temp = 1 if i == 0 else (ratio[0] if i == 1 else ratio[0]*ratio[1])
         cpu = 100.0-info[calc]['cpu']
-        run_times[calc][i] = (tasks[calc][i]*data_size*temp) / (cpu/100 if cpu != 0.0 else 0.00001/100) 
+        run_times[calc][i] = (tasks[calc][i]*data_size*temp) / (cpu/100 if cpu != 0.0 else 0.001/100) 
 
     # 転送時間の推定 
     trans_times = {'client': {'edge': [0]*tasks['num'], 'cloud': [0]*tasks['num']}, 'edge': {'cloud': [0]*tasks['num']}}
@@ -294,6 +294,7 @@ class UsePrevInfo(View):
         trans_times['client'][calc][i] = (data_size*temp/getattr(info, 'client_'+calc)) # client to edge or client
         if calc != 'edge':
           trans_times['edge'][calc][i] = (data_size*temp/getattr(info, 'edge_'+calc)) # edge to cloud
+    #print(trans_times)
 
     ''' 配置先を決めるアルゴリズム ''' 
     # 最も短いものを求める
@@ -301,6 +302,9 @@ class UsePrevInfo(View):
     place = {'client': [], 'edge': [], 'cloud': []}
     time_client = 0.0
     task_client = []
+    #print('client: task1: %f, task2: %f.'%(info.client_task1, info.client_task2))
+    #print('edge: task1: %f, task2: %f, task3: %f.'%(info.edge_task1, info.edge_task2, info.edge_task3))
+    #print('cloud: task1: %f, task2: %f, task3: %f.'%(info.cloud_task1, info.cloud_task2, info.cloud_task3))
     for i in range(tasks['num']): # client
       temp = 1 if i == 0 else (ratio[0] if i == 1 else ratio[0]*ratio[1])
       if i != 0:
@@ -332,14 +336,16 @@ class UsePrevInfo(View):
           #print('    time_cloud: %f' % (time_cloud))
 
         #print("\'client\': {}, \'edge\': {}, \'cloud\': {}".format(time_client, time_edge, time_cloud))
-        #print("\'client\': {}, \'edge\': {}, \'cloud\': {}\n".format(task_client, task_edge, task_cloud))
+        #print("\'client\': {}, \'edge\': {}, \'cloud\': {}".format(task_client, task_edge, task_cloud))
         temp_t = time_client + time_edge + time_cloud
+        #print(str(temp_t)+'\n')
         #print('判定')
         if est_time > temp_t:
           est_time = temp_t
           place['client'] = task_client[:]
           place['edge'] = task_edge[:]
           place['cloud'] = task_cloud[:]
+    print(place)
 
     # タスクの配置
     def send_task(url, task_info):
@@ -481,7 +487,8 @@ def editPrevInfo(request):
   if request.method == 'POST':
     prev_info = PrevFrom(request.POST, instance=prev_info)
     prev_info.save()
-    return redirect(to='showPrevInfo')
+    return HttpResponse('ok')
+    #return redirect(to='showPrevInfo')
 
   context = {
     'title': 'edit prev info',
