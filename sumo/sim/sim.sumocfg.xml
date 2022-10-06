@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="grid4x4.net.xml"/>
+        <route-files value="test_bt.rou.xml"/>
+    </input>
+
+    <time>
+        <begin value="0"/>
+    </time>
+
+    <communication>
+        <!-- <device.btreceiver.all-recognitions value="true"/> -->
+        <device.btreceiver.range value="25"/>
+        <device.btreceiver.offtime value="1"/>
+    </communication>
+
+    <report>
+        <verbose value="true"/>
+        <no-step-log value="true"/>
+        <emission-output value="emission.xml"/>
+        <bt-output value="bt.xml"/>
+    </report>
+
+</configuration>
