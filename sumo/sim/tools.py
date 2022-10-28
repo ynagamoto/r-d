@@ -1,24 +1,9 @@
 import json
 from server import Server,Task
+from vehicle import Vehicle
 from typing import List
 import random
 import xml.etree.ElementTree as ET
-
-def load_server():
-  file_name = "server.json"
-  with open(file_name) as f:
-    mec_list = json.load(f)
-  
-  servers = []
-  tmp_task = Task("v0", 10, 10)
-  for mec in mec_list["servers"]:
-    server = Server(mec["sid"], mec["stype"], mec["position"], mec["spec"])
-    servers.append(server)
-  return servers
-
-def print_servers(servers: List[Server]):
-  for server in servers:
-    print(f"sid: {server.sid}, stype: {server.stype}, spec: {server.spec}")
 
 def get_random_edge(gridnum, edgenum):
   edgetype = random.randint(0, 100) % 2
@@ -46,59 +31,82 @@ def generate_routefile():
       print(f"<flow id=\"car{i}\" type=\"car\" departPos=\"base\" number=\"1\" begin=\"0\" end=\"300\" from=\"{beg}\" to=\"{end}\"/>", file=routes)
     print("</routes>", file=routes) # おわり
 
+def load_servers():
+  file_name = "server.json"
+  with open(file_name) as f:
+    mec_list = json.load(f)
+  
+  servers = []
+  # tmp_task = Task("v0", 10, 10)
+  for mec in mec_list["servers"]:
+    server = Server(mec["sid"], mec["stype"], mec["position"], mec["spec"])
+    servers.append(server)
+  return servers
+
+def print_servers(servers: List[Server]):
+  for server in servers:
+    print(f"sid: {server.sid}, stype: {server.stype}, spec: {server.spec}")
+
 def load_emission():
   file_name = "emission.xml"
   tree = ET.parse(file_name)
   root = tree.getroot()
 
-  vehicles = {}
-  # init json
-  vnum = 100
-  for i in range(vnum):
-    car_id = f"car{float(i)}"
-    vehicles[car_id] = {
-      "x": [],
-      "y": [],
-      "pos": []
-    }
-  
   # sort each vehicle in time
+  vehicles = {}
+  sim_time = 0
   for timestep in root:
     now = int(float(timestep.attrib["time"]))
+    sim_time = now
     for vehicle in timestep:
-      # tmp = vehicle.attrib["id"].rsplit("car")
-      # car_id = int(float(tmp[1]))
       car_id = vehicle.attrib["id"]
-      pos = [float(vehicle.attrib["x"]), float(vehicle.attrib["y"])]
-      vehicles[car_id]["x"].append(pos[0])
-      vehicles[car_id]["y"].append(pos[1])
-      vehicles[car_id]["pos"].append(pos)
-      vehicles[car_id][now] = pos
-  return vehicles
+      if car_id not in vehicles:
+        vehicles[car_id] = {}
+      position = [float(vehicle.attrib["x"]), float(vehicle.attrib["y"])]
+      vehicles[car_id][now] = position
+  return sim_time, vehicles
 
 def load_bt():
   file_name = "bt.xml"
   tree = ET.parse(file_name)
   root = tree.getroot()
-
-  vnum = 100
-  vehicles = {}
-  for i in range(vnum):
-    car_id = f"car{float(i)}"
-    vehicles[car_id] = {
-      "time": {}
-    }
-  
+ 
   # sort each vehicle in time at receiver 
+  vehicles = {}
   for receiver in root:
     for seen in receiver:
       car_id = seen.attrib["id"]
-      comm_time = {
-        "beg" :seen.attrib["tBeg"], 
-        "end": seen.attrib["tEnd"]
-      }
-      vehicles[car_id]["time"][receiver.attrib["id"]] = comm_time
+      if car_id not in vehicles:
+        vehicles[car_id] = {}
+      comm_time = [float(seen.attrib["tBeg"]), float(seen.attrib["tEnd"])]
+      vehicles[car_id][receiver.attrib["id"]] = comm_time
   return vehicles
 
+def load_vehicles():
+  sim_time, emission = load_emission()
+  bt = load_bt()
+  # Apply to Vehicle Class
+  vehicles = []
+  for vid, postions in emission.items():
+    comm = dict(filter(lambda bt: bt[0] == vid, bt.items()))
+    if not any(comm): # comm is empty (this vid is receiver's id.)
+      continue
+    vehicle = Vehicle(vid, postions, comm[vid], sim_time)
+    vehicles.append(vehicle)
+  return vehicles
+
+def print_vehicles(vehicles: List[Vehicle]):
+  for vehicle in vehicles:
+    print(vehicle.vid)
+  print()
+  for vehicle in vehicles:
+    if (vehicle.vid == "car1.0"):
+      print(vehicle.vid)
+      print(vehicle.positions)
+      print(vehicle.comm)
+      break
+
 if __name__ == "__main__":
-  print_servers(load_server())
+  # print_servers(load_servers())
+  # print_vehicles(load_vehicles())
+  pass
