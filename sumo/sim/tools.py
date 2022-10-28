@@ -39,7 +39,7 @@ def load_servers():
   servers = []
   # tmp_task = Task("v0", 10, 10)
   for mec in mec_list["servers"]:
-    server = Server(mec["sid"], mec["stype"], mec["position"], mec["spec"])
+    server = Server(mec["sid"], mec["stype"], mec["position"], mec["spec"]) # TODO
     servers.append(server)
   return servers
 
