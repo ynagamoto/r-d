@@ -15,7 +15,7 @@ import traci
 from server import Server, Task
 from vehicle import Vehicle
 from tools import generate_routefile, load_servers, load_vehicles 
-
+from algo import getRandomServer
 
 def run(sumocfg):
   sumoBinary = "sumo"
@@ -66,7 +66,7 @@ def random_allocation(sumocfg, servers, vehicles):
 
         # 何ステップ後に次のRSUと通信開始するか調べる
         # 選んだサーバが mig_time 後以降 ~ 通信先が変わるまで空いているか調べる
-        # 空いているならリソース確保，無理ならもう一度（3回選んでもだめならクラウドへ）
+        sindex = getRandomServer(now, servers)
         # 確保できたら車両の状態を変更
   traci.close()
   sys.stdout.flush()

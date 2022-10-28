@@ -1,7 +1,30 @@
+import random
+from typing import List, Dict
 from server import Server, Task
 
 
-# 一番距離が近いサーバー
+# TODO
+# 再配置計算をする必要があるか
+# 次のRSUといつからいつまで通信するか (beg, end)
+# 再配置＆車両の状態変化
 
-def nearest():
-  pass
+
+# RSUの計算資源を t = beg ~ t = end まで確保できるかどうかチェック
+def checkServerResource(beg: int, end:int, server: Server) -> bool:
+  tmp_dict = server.idle_list[beg:end+1]
+  res = List(filter(lambda item: item == 0, tmp_dict))
+  if len(res) == 0:
+    return True
+  else:
+    return False
+
+# ランダム選択
+def getRandomServer(now: int, servers: List[Server]):
+  i = 0
+  res = -1
+  while i < 3:
+    res = random.randrange(len(servers))
+    if servers[res].idle_list[now] < servers[res].spec:
+      break
+    i += 1
+  return res
