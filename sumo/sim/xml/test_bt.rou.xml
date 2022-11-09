@@ -9,17 +9,17 @@
   </vehicle>
   <vehicle id="rec1" type="car" depart="0" color="1, 0, 0" departPos="stop">
     <route edges="A2"/>
-    <stop edge="A2" lane="C1_0" parking="true"/>
+    <stop edge="A2" lane="A2_0" parking="true"/>
     <param key="has.btreceiver.device" value="true"/> 
   </vehicle>
   <vehicle id="rec2" type="car" depart="0" color="1, 0, 0" departPos="stop">
     <route edges="B0"/>
-    <stop edge="B0" lane="C1_0" parking="true"/>
+    <stop edge="B0" lane="B0_0" parking="true"/>
     <param key="has.btreceiver.device" value="true"/> 
   </vehicle>
   <vehicle id="rec3" type="car" depart="0" color="1, 0, 0" departPos="stop">
     <route edges="D0"/>
-    <stop edge="D0" lane="C1_0" parking="true"/>
+    <stop edge="D0" lane="D0_0" parking="true"/>
     <param key="has.btreceiver.device" value="true"/> 
   </vehicle>
   <!-- receiver -->
