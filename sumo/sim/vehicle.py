@@ -61,7 +61,7 @@ class Vehicle:
     next_sid = ""
     beg, end = 0, 0
     flag = False
-    for sid, comm_time in self.comm_dict:
+    for sid, comm_time in self.comm_dict.items():
       if flag:
         next_sid = sid
         beg = comm_time[0]
