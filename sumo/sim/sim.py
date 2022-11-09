@@ -111,7 +111,7 @@ def test(sumocfg, servers, vehicles):
 
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
-  generate_routefile()
+  # generate_routefile()
   run(sumocfg)
   sim_time, emission = load_emission()
   servers = load_servers(sim_time)
