@@ -14,7 +14,7 @@ import traci
 
 from server import Server, Task
 from vehicle import Vehicle
-from tools import generate_routefile, load_servers, load_vehicles 
+from tools import generate_routefile, load_emission, load_servers, load_vehicles 
 from algo import getRandomServer
 
 def run(sumocfg):
@@ -77,6 +77,7 @@ if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
   generate_routefile()
   run(sumocfg)
-  servers = load_servers()
-  vehicles = load_vehicles()
+  sim_time, emission = load_emission()
+  servers = load_servers(sim_time)
+  vehicles = load_vehicles(sim_time, emission)
   # sim(sumocfg)

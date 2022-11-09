@@ -1,7 +1,7 @@
 import json
 from server import Server,Task
 from vehicle import Vehicle
-from typing import List
+from typing import List,Dict
 import random
 import xml.etree.ElementTree as ET
 
@@ -31,7 +31,7 @@ def generate_routefile():
       print(f"<flow id=\"car{i}\" type=\"car\" departPos=\"base\" number=\"1\" begin=\"0\" end=\"300\" from=\"{beg}\" to=\"{end}\"/>", file=routes)
     print("</routes>", file=routes) # おわり
 
-def load_servers():
+def load_servers(sim_time: int):
   file_name = "server.json"
   with open(file_name) as f:
     mec_list = json.load(f)
@@ -39,7 +39,7 @@ def load_servers():
   servers = []
   # tmp_task = Task("v0", 10, 10)
   for mec in mec_list["servers"]:
-    server = Server(mec["sid"], mec["stype"], mec["position"], mec["spec"]) # TODO
+    server = Server(mec["sid"], mec["stype"], mec["position"], mec["spec"], sim_time)
     servers.append(server)
   return servers
 
@@ -82,8 +82,7 @@ def load_bt():
       vehicles[car_id][receiver.attrib["id"]] = comm_time
   return vehicles
 
-def load_vehicles():
-  sim_time, emission = load_emission()
+def load_vehicles(sim_time: int, emission: Dict[int]):
   bt = load_bt()
   # Apply to Vehicle Class
   vehicles = []
