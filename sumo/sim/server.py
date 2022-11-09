@@ -45,14 +45,16 @@ class Server:
       print(f"vid: {task.vid}, resource: {task.resource}, delay: {task.delay}")
     print()
   
+  # TODO
+  # resCheck と resReserv を一つのメソッドにする
   def resCheck(self, res:int, beg: int, end: int) -> bool: # 指定した時間帯のリソースが空いているか調べる
     for i in range(beg, end+1):
       if self.idle_list[i]-res < 0:
         return False
     return True 
   
-  def resReserv(self, vid:str, beg: int, end: int): # 指定した時間帯のリソースを確保
-    task = Task(vid, 1, 0)
+  def resReserv(self, vid:str, res:int, beg: int, end: int): # 指定した時間帯のリソースを確保
+    task = Task(vid, res, 0)
     for i in range(beg, end+1):
       self.addTask(task, i)
  

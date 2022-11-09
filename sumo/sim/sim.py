@@ -45,6 +45,7 @@ def random_allocation(sumocfg, servers, vehicles):
   sumoBinary = "sumo"
   traci.start([sumoBinary, "-c", sumocfg])
   mig_time = 3
+  res_num = 1
 
   while traci.simulation.getMinExpectedNumber() > 0:
     # シミュレーション内容
@@ -55,19 +56,35 @@ def random_allocation(sumocfg, servers, vehicles):
 
     # マイグレーション状況の更新
     for vid in vid_list:
+      # TODO
+      # vehicles[vid] で車両を取得できるかどうか
       if vehicles[vid].getMigFlag():
         vehicles[vid].subMigTimer()
 
     # 通信先が切り替わったタイミングでランダムな計算資源に割り振る
     for vid in vid_list:
-      if vehicles[vid].isChangeComm(now):     # 通信先が切り替わった
-        # 各車両がどこと通信しているか
-        vehicles[vid].getCommServer(now)
+      v = vehicles[vid]
+      # 次のRSUと何秒通信開始するか調べる
+      _, beg, end = v.getNextComm(now)
+      rem = (beg-now) - mig_time # 猶予
+      # 各車両がどこと通信しているか
+      now_s = vehicles[vid].getCommServer(now)
 
-        # 何ステップ後に次のRSUと通信開始するか調べる
-        # 選んだサーバが mig_time 後以降 ~ 通信先が変わるまで空いているか調べる
-        sindex = getRandomServer(now, servers)
+      if rem <= 0: # 猶予0で再配置
+        while True:
+          # ランダムなサーバのIDを取得
+          new_s = getRandomServer(now, servers)
+
+          # 選んだサーバが mig_time 後以降 ~ 通信先が変わるまで空いているか調べる
+          if new_s.resCheck(res_num, beg, end) :
+            # 空いていたら確保してループを抜ける
+            new_s.resReserv(vid, res_num, beg, end)
+            break
+
         # 確保できたら車両の状態を変更
+        if now_s.sid != new_s.sid:
+          v.setMigTimer(mig_time)
+
   traci.close()
   sys.stdout.flush()
 

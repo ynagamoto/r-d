@@ -19,12 +19,6 @@ def checkServerResource(beg: int, end:int, server: Server) -> bool:
     return False
 
 # ランダム選択
-def getRandomServer(now: int, servers: List[Server]):
-  i = 0
-  res = -1
-  while i < 3:
-    res = random.randrange(len(servers))
-    if servers[res].idle_list[now] < servers[res].spec:
-      break
-    i += 1
-  return res
+def getRandomServer(now: int, servers: List[Server]) -> Server:
+  sid = random.randrange(len(servers))
+  return servers[sid]

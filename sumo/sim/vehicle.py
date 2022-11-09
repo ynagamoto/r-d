@@ -9,6 +9,7 @@ class Vehicle:
     self.vid:               str = vid
     self.positions:         Dict[int, List[float]] = positions
     self.setCommServer(comm, sim_time)                          # comm: List[str]
+    self.comm_dict:         Dict[str, List[float]] = comm
     self.comm_server:       str = ""                            # server id
     self.comm_server_type:  str = ""
     self.exec_server:       str = ""                            # server id
@@ -18,13 +19,16 @@ class Vehicle:
   
   def setCommServer(self, comm: Dict[str, List[float]], sim_time: int):
     self.comm = ["base"] * sim_time            # 0 ~ sim_time まで RSUなら "通信先id"，モバイル回線なら "base"
-    for res_id, comm_time in comm.items():     # comm_time: [0: beg, 1: end]
+    for sid, comm_time in comm.items():     # comm_time: [0: beg, 1: end]
       for i in range(int(comm_time[0]+1), int(comm_time[1]+1)):
-        comm[i] = res_id
+        comm[i] = sid
   
   def getCommServer(self, now: int) -> str:
     return self.comm[now]
   
+  def setMigTimer(self, mig_time: int):
+    self.mig_timer = mig_time
+
   def getMigFlag(self) -> bool:
     if self.mig_timer == 0:
       return False
@@ -51,6 +55,22 @@ class Vehicle:
         next_time = i
         break
     return next_time
+  
+  # 次のRSUとの通信時間を取得
+  def getNextComm(self, now: int) -> [str, int, int]:
+    next_sid = ""
+    beg, end = 0, 0
+    flag = False
+    for sid, comm_time in self.comm_dict:
+      if flag:
+        next_sid = sid
+        beg = comm_time[0]
+        end = comm_time[1]
+        break
+      else:
+        if comm_time[0] <= now and now <= comm_time[1]:
+          flag = True
+    return next_sid, beg, end
 
   def getDelay(self) -> float:
     res = 0
