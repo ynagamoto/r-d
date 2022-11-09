@@ -17,7 +17,7 @@ class Server:
     self.postion:   Dict[str, int] = postion                      # Server postion: {x: float, y: float}
     self.spec:      int = spec                                    # Server's computing resource
     self.idle_list: List[int] = [spec] * sim_time                 # Idling resource: {time: int, idel: int}
-    self.tasks:     Dict[int, List[Task]] = []                    # tasks: {time: int, [ {vid: str, resource: int, delay: float} ]}
+    self.tasks:     Dict[int, List[Task]] = {}                    # tasks: {time: int, [ {vid: str, resource: int, delay: float} ]}
   
   def addTask(self, task: Task, now):
     self.tasks[now].append(task)
