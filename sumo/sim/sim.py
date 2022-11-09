@@ -103,9 +103,9 @@ def test(sumocfg, servers, vehicles):
 
     # マイグレーション状況の更新
     for vid in vid_list:
-      print(vehicles[vid])
-      v = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))[0]
-      print(v)
+      v = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))
+      if len(v) == 1: # receiver は vehicles に入ってない
+        print(v[0].vid)
     print()
  
 
