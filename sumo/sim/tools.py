@@ -82,7 +82,7 @@ def load_bt():
       vehicles[car_id][receiver.attrib["id"]] = comm_time
   return vehicles
 
-def load_vehicles(sim_time: int, emission: Dict[int]):
+def load_vehicles(sim_time: int, emission: Dict[str, int]):
   bt = load_bt()
   # Apply to Vehicle Class
   vehicles = []
