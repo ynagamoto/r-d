@@ -70,7 +70,7 @@ class Vehicle:
       else:
         if comm_time[0] <= now and now <= comm_time[1]:
           flag = True
-    return next_sid, beg, end
+    return next_sid, int(beg), int(end)
 
   def getDelay(self) -> float:
     res = 0
