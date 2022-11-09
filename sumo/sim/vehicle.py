@@ -21,7 +21,7 @@ class Vehicle:
     self.comm = ["base"] * sim_time            # 0 ~ sim_time まで RSUなら "通信先id"，モバイル回線なら "base"
     for sid, comm_time in comm.items():     # comm_time: [0: beg, 1: end]
       for i in range(int(comm_time[0]+1), int(comm_time[1]+1)):
-        comm[i] = sid
+        self.comm[i] = sid
   
   def getCommServer(self, now: int) -> str:
     return self.comm[now]
