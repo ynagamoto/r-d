@@ -1,11 +1,29 @@
 <routes>
   <vType id="car" vClass="passenger" speedDev="0.2" sigma="0.2" decel="4.5" accel="2.6" maxSpeed="60" length="5"/>
 
-  <vehicle id="car0" type="car" depart="0" color="1, 0, 0" departPos="stop">
+  <!-- receiver -->
+  <vehicle id="rec0" type="car" depart="0" color="1, 0, 0" departPos="stop">
     <route edges="C1"/>
     <stop edge="C1" lane="C1_0" parking="true"/>
     <param key="has.btreceiver.device" value="true"/> 
   </vehicle>
+  <vehicle id="rec1" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="A2"/>
+    <stop edge="A2" lane="C1_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+  <vehicle id="rec2" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="B0"/>
+    <stop edge="B0" lane="C1_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+  <vehicle id="rec3" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="D0"/>
+    <stop edge="D0" lane="C1_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+  <!-- receiver -->
+
   <flow id="car1" type="car" departPos="base" number="1" begin="0" end="300" from="A0" to="D2">
     <param key="has.btsender.device" value="true"/> 
   </flow>
