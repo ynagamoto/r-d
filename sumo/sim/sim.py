@@ -89,6 +89,25 @@ def random_allocation(sumocfg, servers, vehicles):
   sys.stdout.flush()
 
 
+def test(sumocfg, servers, vehicles):
+  sumoBinary = "sumo"
+  traci.start([sumoBinary, "-c", sumocfg])
+
+  while traci.simulation.getMinExpectedNumber() > 0:
+    # シミュレーション内容
+    traci.simulationStep()
+    
+    now = int(traci.simulation.getTime())
+    vid_list = traci.vehicle.getIDList()
+    print(now)
+
+    # マイグレーション状況の更新
+    for vid in vid_list:
+      print(vehicles[vid])
+      v = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))[0]
+      print(v)
+    print()
+ 
 
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
@@ -98,3 +117,4 @@ if __name__ == "__main__":
   servers = load_servers(sim_time)
   vehicles = load_vehicles(sim_time, emission)
   # sim(sumocfg)
+  test(sumocfg, servers, vehicles)
