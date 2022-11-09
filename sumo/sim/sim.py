@@ -56,19 +56,25 @@ def random_allocation(sumocfg, servers, vehicles):
 
     # マイグレーション状況の更新
     for vid in vid_list:
-      # TODO
-      # vehicles[vid] で車両を取得できるかどうか
-      if vehicles[vid].getMigFlag():
-        vehicles[vid].subMigTimer()
+      v_list = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))
+      if len(v_list) == 0: # receiver は vehicles に入ってない
+        continue
+      v = v_list[0]
+      if v.getMigFlag():
+        v.subMigTimer()
 
     # 通信先が切り替わったタイミングでランダムな計算資源に割り振る
     for vid in vid_list:
-      v = vehicles[vid]
+      v_list = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))
+      if len(v_list) == 0: # receiver は vehicles に入ってない
+        continue
+      v = v_list[0]
+  
       # 次のRSUと何秒通信開始するか調べる
       _, beg, end = v.getNextComm(now)
       rem = (beg-now) - mig_time # 猶予
       # 各車両がどこと通信しているか
-      now_s = vehicles[vid].getCommServer(now)
+      # now_s = v.getCommServer(now)
 
       if rem <= 0: # 猶予0で再配置
         while True:
@@ -82,8 +88,9 @@ def random_allocation(sumocfg, servers, vehicles):
             break
 
         # 確保できたら車両の状態を変更
-        if now_s.sid != new_s.sid:
-          v.setMigTimer(mig_time)
+        # if now_s.sid != new_s.sid:
+        #   v.setMigTimer(mig_time)
+        v.setMigTimer(mig_time)
 
   traci.close()
   sys.stdout.flush()
