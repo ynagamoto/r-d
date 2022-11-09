@@ -18,8 +18,13 @@ class Server:
     self.spec:      int = spec                                    # Server's computing resource
     self.idle_list: List[int] = [spec] * sim_time                 # Idling resource: {time: int, idel: int}
     self.tasks:     Dict[int, List[Task]] = {}                    # tasks: {time: int, [ {vid: str, resource: int, delay: float} ]}
+    self.initTasks(sim_time)
   
-  def addTask(self, task: Task, now):
+  def initTasks(self, sim_time:int):
+    for i in range(sim_time):
+      self.tasks[i] = []
+  
+  def addTask(self, task: Task, now: int):
     self.tasks[now].append(task)
     self.idle_list[now] -= task.resource
   
