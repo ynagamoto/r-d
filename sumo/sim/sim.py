@@ -71,7 +71,7 @@ def random_allocation(sumocfg, servers, vehicles):
       v = v_list[0]
   
       # 次のRSUと何秒通信開始するか調べる
-      _, beg, end = v.getNextComm(now)
+      hoge, beg, end = v.getNextComm(now)
       rem = (beg-now) - mig_time # 猶予
       # 各車両がどこと通信しているか
       # now_s = v.getCommServer(now)
@@ -123,5 +123,5 @@ if __name__ == "__main__":
   sim_time, emission = load_emission()
   servers = load_servers(sim_time)
   vehicles = load_vehicles(sim_time, emission)
-  # sim(sumocfg)
-  test(sumocfg, servers, vehicles)
+  random_allocation(sumocfg, servers, vehicles)
+  # test(sumocfg, servers, vehicles)
