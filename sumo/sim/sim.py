@@ -53,6 +53,7 @@ def random_allocation(sumocfg, servers, vehicles):
     
     now = int(traci.simulation.getTime())
     vid_list = traci.vehicle.getIDList()
+    print(now)
 
     # マイグレーション状況の更新
     for vid in vid_list:
@@ -69,6 +70,7 @@ def random_allocation(sumocfg, servers, vehicles):
       if len(v_list) == 0: # receiver は vehicles に入ってない
         continue
       v = v_list[0]
+      print(v.vid)
   
       # 次のRSUと何秒通信開始するか調べる
       _, beg, end = v.getNextComm(now)
@@ -91,6 +93,7 @@ def random_allocation(sumocfg, servers, vehicles):
         # if now_s.sid != new_s.sid:
         #   v.setMigTimer(mig_time)
         v.setMigTimer(mig_time)
+    print()
 
   traci.close()
   sys.stdout.flush()
