@@ -64,14 +64,16 @@ def random_allocation(sumocfg, servers, vehicles):
       if v.getMigFlag():
         v.subMigTimer()
 
-    # 通信先が切り替わったタイミングでランダムな計算資源に割り振る
     for vid in vid_list:
       v_list = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))
       if len(v_list) == 0: # receiver は vehicles に入ってない
         continue
       v = v_list[0]
       print(v.vid)
-  
+
+      if v.getMigFlag():
+        continue 
+
       # 次のRSUと何秒通信開始するか調べる
       _, beg, end = v.getNextComm(now)
       rem = (beg-now) - mig_time # 猶予
