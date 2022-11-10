@@ -23,7 +23,9 @@ class Server:
   def initTasks(self, sim_time:int):
     for i in range(sim_time):
       self.tasks[i] = []
-  
+
+  # TODO
+  # 挙動があやしい
   def addTask(self, task: Task, now: int):
     self.tasks[now].append(task)
     self.idle_list[now] -= task.resource
@@ -49,6 +51,12 @@ class Server:
     for task in self.tasks:
       print(f"vid: {task.vid}, resource: {task.resource}, delay: {task.delay}")
     print()
+  
+  def getResAve(self, beg: int, end:int) -> bool:
+    res_sum = 0
+    for i in range (beg, end+1):
+      res_sum += self.idle_list[i]
+    return res_sum/(end-beg+1)
   
   # TODO
   # resCheck と resReserv を一つのメソッドにする
