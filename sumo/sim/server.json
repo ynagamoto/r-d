@@ -3,7 +3,7 @@
     {
       "sid": "mec1",
       "stype": "edge",
-      "spec": 100,
+      "spec": 1000,
       "position": {
         "x": 150, 
         "y": 0
@@ -13,7 +13,7 @@
     {
       "sid": "mec2",
       "stype": "edge",
-      "spec": 100,
+      "spec": 1000,
       "position": {
         "x": 50,
         "y": 150
@@ -23,7 +23,7 @@
     {
       "sid": "mec3",
       "stype": "edge",
-      "spec": 100,
+      "spec": 1000,
       "position": {
         "x": 150,
         "y": 150
@@ -33,7 +33,7 @@
     {
       "sid": "mec4",
       "stype": "edge",
-      "spec": 100,
+      "spec": 1000,
       "position": {
         "x": 250,
         "y": 150
@@ -43,7 +43,7 @@
     {
       "sid": "mec5",
       "stype": "edge",
-      "spec": 100,
+      "spec": 1000,
       "position": {
         "x": 150,
         "y": 250
