@@ -2,24 +2,29 @@
   <vType id="car" vClass="passenger" speedDev="0.2" sigma="0.2" decel="4.5" accel="2.6" maxSpeed="60" length="5"/>
 
   <!-- receiver -->
-  <vehicle id="rec0" type="car" depart="0" color="1, 0, 0" departPos="stop">
+  <vehicle id="rec1" type="car" depart="0" color="1, 0, 0" departPos="stop">
     <route edges="C1"/>
     <stop edge="C1" lane="C1_0" parking="true"/>
     <param key="has.btreceiver.device" value="true"/> 
   </vehicle>
-  <vehicle id="rec1" type="car" depart="0" color="1, 0, 0" departPos="stop">
+  <vehicle id="rec2" type="car" depart="0" color="1, 0, 0" departPos="stop">
     <route edges="A2"/>
     <stop edge="A2" lane="A2_0" parking="true"/>
     <param key="has.btreceiver.device" value="true"/> 
   </vehicle>
-  <vehicle id="rec2" type="car" depart="0" color="1, 0, 0" departPos="stop">
+  <vehicle id="rec3" type="car" depart="0" color="1, 0, 0" departPos="stop">
     <route edges="B0"/>
     <stop edge="B0" lane="B0_0" parking="true"/>
     <param key="has.btreceiver.device" value="true"/> 
   </vehicle>
-  <vehicle id="rec3" type="car" depart="0" color="1, 0, 0" departPos="stop">
+  <vehicle id="rec4" type="car" depart="0" color="1, 0, 0" departPos="stop">
     <route edges="D0"/>
     <stop edge="D0" lane="D0_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+  <vehicle id="rec5" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="E20"/>
+    <stop edge="E2" lane="E2_0" parking="true"/>
     <param key="has.btreceiver.device" value="true"/> 
   </vehicle>
   <!-- /receiver -->
