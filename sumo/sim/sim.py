@@ -82,9 +82,10 @@ def random_allocation(sumocfg, servers, vehicles):
         while True:
           # ランダムなサーバのIDを取得
           new_s = getRandomServer(now, servers)
+          print(new_s.sid)
 
           # 選んだサーバが mig_time 後以降 ~ 通信先が変わるまで空いているか調べる
-          if new_s.resCheck(res_num, beg, end) :
+          if new_s.resCheck(res_num, beg, end):
             # 空いていたら確保してループを抜ける
             new_s.resReserv(vid, res_num, beg, end)
             break
