@@ -14,8 +14,9 @@ class Vehicle:
     self.comm_server_type:  str = ""
     self.exec_server:       str = ""                            # server id
     self.exec_server_type:  str = ""
-    # self.change_flag:       bool = False
     self.mig_timer:         int  = 0
+    self.next_prep:         bool = False
+    self.next_s:            str = "" 
   
   def setCommServer(self, comm: Dict[str, List[float]], sim_time: int):
     self.comm = ["base"] * sim_time            # 0 ~ sim_time まで RSUなら "通信先id"，モバイル回線なら "base"
@@ -30,13 +31,22 @@ class Vehicle:
     self.mig_timer = mig_time
 
   def getMigFlag(self) -> bool:
-    if self.mig_timer == 0:
-      return False
-    else:
+    if self.next_prep:
       return True
+    else:
+      if self.mig_timer == 0:
+        return False
+      else:
+        return True
   
   def subMigTimer(self):
-    self.mig_timer -= 1
+    if self.getMigFlag():
+      self.mig_timer -= 1
+      if self.mig_timer == 0:
+        self.next_prep = True
+  
+  def setNextCommServer(self, next_s: str):
+    self.next_s = next_s
   
   def isChangeComm(self, now) -> bool:
     if now == 0:

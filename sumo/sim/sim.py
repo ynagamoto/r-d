@@ -41,10 +41,9 @@ def sim(sumocfg):
   traci.close()
   sys.stdout.flush()
 
-def random_allocation(sumocfg, servers, vehicles):
+def random_allocation(sumocfg, servers, vehicles, mig_time):
   sumoBinary = "sumo"
   traci.start([sumoBinary, "-c", sumocfg])
-  mig_time = 3
   res_num = 1
 
   while traci.simulation.getMinExpectedNumber() > 0:
@@ -61,9 +60,14 @@ def random_allocation(sumocfg, servers, vehicles):
       if len(v_list) == 0: # receiver は vehicles に入ってない
         continue
       v = v_list[0]
-      if v.getMigFlag():
-        v.subMigTimer()
+      v.subMigTimer()
 
+      # 通信サーバの更新
+      now_s = v.getCommServer(now)
+      if now_s == v.next_s:
+        v.next_prep = False
+
+    # ランダム再配置
     for vid in vid_list:
       v_list = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))
       if len(v_list) == 0: # receiver は vehicles に入ってない
@@ -71,11 +75,12 @@ def random_allocation(sumocfg, servers, vehicles):
       v = v_list[0]
       print(v.vid)
 
+      # マイグレーション中，マイグレーションが完了している場合はスキップ
       if v.getMigFlag():
         continue 
 
       # 次のRSUと何秒通信開始するか調べる
-      _, beg, end = v.getNextComm(now)
+      next_s, beg, end = v.getNextComm(now)
       rem = (beg-now) - mig_time # 猶予
       # 各車両がどこと通信しているか
       # now_s = v.getCommServer(now)
@@ -96,6 +101,7 @@ def random_allocation(sumocfg, servers, vehicles):
         # if now_s.sid != new_s.sid:
         #   v.setMigTimer(mig_time)
         v.setMigTimer(mig_time)
+        v.setNextCommServer(next_s)
     print()
 
   traci.close()
@@ -124,10 +130,11 @@ def test(sumocfg, servers, vehicles):
 
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
+  mig_time = 3
   # generate_routefile()
   run(sumocfg)
   sim_time, emission = load_emission()
   servers = load_servers(sim_time)
   vehicles = load_vehicles(sim_time, emission)
-  random_allocation(sumocfg, servers, vehicles)
+  random_allocation(sumocfg, servers, vehicles, mig_time)
   # test(sumocfg, servers, vehicles)
