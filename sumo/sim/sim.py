@@ -128,6 +128,48 @@ def test(sumocfg, servers, vehicles):
     print()
  
 
+# TODO
+"""
+def precend(sumocfg, servers, vehicles, mig_time):
+  sumoBinary = "sumo"
+  traci.start([sumoBinary, "-c", sumocfg])
+  res_num = 1 # 車両一台の処理に必要なリソース
+
+  while traci.simulation.getMinExpectedNumber() > 0:
+    # シミュレーション内容
+    traci.simulationStep()
+    
+    now = int(traci.simulation.getTime())
+    vid_list = traci.vehicle.getIDList()
+    print(now)
+
+    # マイグレーション状況の更新
+    for vid in vid_list:
+      v_list = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))
+      if len(v_list) == 0: # receiver は vehicles に入ってない
+        continue
+      v = v_list[0]
+      v.subMigTimer()
+
+      # 通信サーバの更新
+      now_s = v.getCommServer(now)
+      if now_s == v.next_s:
+        v.next_prep = False
+      
+      for vid in vid_list:
+        # 必要かどうか
+        v_list = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))
+        if len(v_list) == 0: # receiver は vehicles に入ってない
+          continue
+        v = v_list[0]
+        print(v.vid)
+
+        # マイグレーション中，マイグレーションが完了している場合はスキップ
+        if v.getMigFlag():
+          continue 
+
+"""
+
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
   mig_time = 3
