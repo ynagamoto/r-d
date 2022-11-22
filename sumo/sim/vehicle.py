@@ -6,17 +6,17 @@ from typing import Dict, List
 class Vehicle:
   # def __init__(self, vid: str, positions: Dict[int, List[float, float]], comm: Dict[str, List[float, float]]):
   def __init__(self, vid: str, positions: Dict[int, List[float]], comm: Dict[str, List[float]], sim_time: int):
-    self.vid:               str = vid
-    self.positions:         Dict[int, List[float]] = positions
-    self.setCommServer(comm, sim_time)                          # comm: List[str]
-    self.comm_dict:         Dict[str, List[float]] = comm
-    self.comm_server:       str = ""                            # server id
-    self.comm_server_type:  str = ""
-    self.exec_server:       str = ""                            # server id
-    self.exec_server_type:  str = ""
-    self.mig_timer:         int  = 0
-    self.next_prep:         bool = False
-    self.next_s:            str = "" 
+    self.vid                : str = vid
+    self.positions          : Dict[int, List[float]] = positions
+    self.setCommServer(comm, sim_time)                          # self.comm: List[str]
+    self.comm_dict          : Dict[str, List[float]] = comm
+    self.comm_server        : str = ""                            # server id
+    self.comm_server_type   : str = ""
+    self.exec_server        : str = ""                            # server id
+    self.exec_server_type   : str = ""
+    self.mig_timer          : int  = 0
+    # self.next_prep:         bool = False
+    # self.next_s:            str = "" 
   
   def setCommServer(self, comm: Dict[str, List[float]], sim_time: int):
     self.comm = ["base"] * sim_time            # 0 ~ sim_time まで RSUなら "通信先id"，モバイル回線なら "base"
@@ -26,7 +26,15 @@ class Vehicle:
   
   def getCommServer(self, now: int) -> str:
     return self.comm[now]
+
+  # TODO
+  # 車両が now 以降にどのRSUと何秒から何秒まで通信するかのリスト取得 ( {sid, [beg, end]} のリスト)
+  # getNextComm を改良する
+  def getCommServers(self, now):
+    pass
   
+  # TODO
+  # migTimer は作り直し
   def setMigTimer(self, mig_time: int):
     self.mig_timer = mig_time
 
@@ -45,8 +53,10 @@ class Vehicle:
       if self.mig_timer == 0:
         self.next_prep = True
   
+  """
   def setNextCommServer(self, next_s: str):
     self.next_s = next_s
+  """
   
   def isChangeComm(self, now) -> bool:
     if now == 0:
@@ -95,3 +105,11 @@ class Vehicle:
         res = res + 30
     return float(res)
 
+"""
+各車両が通信状況を管理するためのクラス
+"""
+class Comm:
+  def __init__(self, comm):
+    self.sid    : str                 # 通信するサーバid
+    self.time   : List[float] = comm  # 通信時間 [beg, end]
+    self.flag   : bool = False        # 再配置計算を行ったかどうか

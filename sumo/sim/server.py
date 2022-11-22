@@ -6,19 +6,20 @@ from copy import copy
 
 class Task:
   def __init__(self, vid: str, resource: int, delay: float):
-    self.vid:       str = vid                                     # Vehicle ID
-    self.resource:  int = resource                                # Required resource
-    self.delay:     float = delay                                 # Delay from vehicle to server 
+    self.vid        : str = vid                                     # Vehicle ID
+    self.resource   : int = resource                                # Required resource
+    self.delay      : float = delay                                 # Delay from vehicle to server 
 
 class Server:
   def __init__(self, sid: str, stype: str, postion: Dict[str, int], spec: int, sim_time):
-    self.sid:       str = sid                                     # Server ID
-    self.stype:     str = stype                                   # Server type (edge, middle or cloud)
-    self.postion:   Dict[str, int] = postion                      # Server postion: {x: float, y: float}
-    self.spec:      int = spec                                    # Server's computing resource
-    self.idle_list: List[int] = [spec] * sim_time                 # Idling resource: {time: int, idel: int}
-    self.tasks:     Dict[int, List[Task]] = {}                    # tasks: {time: int, [ {vid: str, resource: int, delay: float} ]}
+    self.sid        : str = sid                                     # Server ID
+    self.stype      : str = stype                                   # Server type (edge, middle or cloud)
+    self.postion    : Dict[str, int] = postion                      # Server postion: {x: float, y: float}
+    self.spec       : int = spec                                    # Server's computing resource
+    self.idle_list  : List[int] = [spec] * sim_time                 # Idling resource: {time: int, idel: int}
+    self.tasks      : Dict[int, List[Task]] = {}                    # tasks: {time: int, [ {vid: str, resource: int, delay: float} ]}
     self.initTasks(sim_time)
+    self.now_task   : List[Task] = {}
   
   def initTasks(self, sim_time:int):
     for i in range(sim_time):
@@ -70,6 +71,16 @@ class Server:
     task = Task(vid, res, 0)
     for i in range(beg, end+1):
       self.addTask(task, i)
+
+  # TODO
+  # now_taskとマイグレーション状況を更新する
+  def updateResource(self, now: int):
+    pass
+
+  # TODO
+  # vid のタスクが now_task に含まれているかどうかチェック
+  def checkTask(self, vid) -> bool:
+    pass
  
   # Calculate delay from vehicle to server
   def calcDelay(self, sid: str, vid: str):

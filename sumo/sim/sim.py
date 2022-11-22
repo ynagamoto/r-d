@@ -148,7 +148,7 @@ def precend(sumocfg, servers, vehicles, mig_time):
       v_list = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))
       if len(v_list) == 0: # receiver は vehicles に入ってない
         continue
-      v = v_list[0]
+      v = v_list[0] # 一つだけあるはず
       v.subMigTimer()
 
       # 通信サーバの更新
