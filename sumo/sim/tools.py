@@ -66,6 +66,8 @@ def load_emission():
       vehicles[car_id][now] = position
   return sim_time, vehicles
 
+# TODO
+# Comm のリストに変更
 def load_bt():
   file_name = "bt.xml"
   tree = ET.parse(file_name)

@@ -22,20 +22,21 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
 # 提案手法
 """
 1. 環境の更新 -> envUpdate()
-  1-1. サーバのタスクとマイグレーション状況を更新 -> server.updateResource() TODO
-  1-2. サービスを受けられるかチェック -> server.checkTask() TODO
-  1-3. 車両のマイグレーション状況の更新 -> subMigTimer() <- 通信先のリストを使う管理に変える TODO
-2. 再配置計算が必要かチェックし再配置が必要な通信時間のリストを返す -> checkMigNeed()
-  2-1. 車両が now 以降にどのRSUと何秒から何秒まで通信するかのリスト取得 ( {sid, [beg, end]} のリスト)
-  2-2. それぞれの通信時間をfor文で回す
-    2-2-1. その通信時間のタスクがマイグレーション中かチェック
-    2-2-2. そのRSUと通信するまでの猶予 ＝＝ マイグレーションにかかる時間のとき再配置計算を行う
-3. リソース予約状況の収集 ->
-4. 車両と各計算資源の通信遅延を収集 ->
-5. 再配置計算 -> loadAllocation()
-  5-1.  計算資源の負荷にマイグレーション負荷を足して計算する
-6. リソース確保&リソース予約の更新 -> TODO
-7. 結果の収集 -> TODO
+  1-1. サーバのタスクとマイグレーション状況を更新 -> server.updateResource()
+  1-2. サービスを受けられるかチェック -> server.checkTask() 
+  1-3. 車両の通信状況の更新 <- 通信先のリストを使う管理に変える
+2. 混雑度を算出 TODO
+3. 再配置計算が必要かチェックし再配置が必要な通信時間のリストを返す -> checkMigNeed()
+  3-1. 車両が now 以降にどのRSUと何秒から何秒まで通信するかのリスト取得 ( {sid, [beg, end]} のリスト) v.getCommServers()
+  3-2. それぞれの通信時間をfor文で回す
+    3-2-1. その通信時間のタスクがマイグレーション中かチェック
+    3-2-2. そのRSUと通信するまでの猶予 ＝＝ マイグレーションにかかる時間のとき再配置計算を行う
+4. リソース予約状況の収集 -> TODO
+5. 車両と各計算資源の通信遅延を収集 -> s.getTimeOfLoads() TODO
+6. 再配置計算 -> loadAllocation()
+  6-1.  計算資源の負荷にマイグレーション負荷を足して計算する
+7. リソース確保&リソース予約状況の更新 -> s.addTask()
+8. 結果の収集 -> TODO
 """
 # def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str]):
 #   pass
@@ -62,8 +63,6 @@ def envUpdate(now: int, servers: List[Server], vid_list: List[str], vehicles: Di
       # サービスが受けられない場合はエラー
       print(f"----- Error: {v.vid} could not receive the service. -----")
 
-    # マイグレーション状況の更新
-    v.subMigTimer() 
 
 # 再配置計算が必要かチェック 
 # 再配置が必要な comm のリストを返す
