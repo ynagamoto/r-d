@@ -31,7 +31,7 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
   3-2. それぞれの通信時間をfor文で回す
     3-2-1. その通信時間のタスクがマイグレーション中かチェック
     3-2-2. そのRSUと通信するまでの猶予 ＝＝ マイグレーションにかかる時間のとき再配置計算を行う
-4. リソース予約状況の収集 -> TODO
+4. リソース予約状況の収集 -> s.getTimeOfLoads()
 5. 車両と各計算資源の通信遅延を収集 -> s.getTimeOfLoads() TODO
 6. 再配置計算 -> loadAllocation()
   6-1.  計算資源の負荷にマイグレーション負荷を足して計算する

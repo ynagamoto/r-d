@@ -26,7 +26,7 @@ class Server:
     for i in range(sim_time):
       self.tasks[i] = []
 
-  # TODO
+  # !!!!!!!!!!   WILL   !!!!!!!!!!
   # 挙動があやしい
   def addTask(self, task: Task, time: int):
     self.tasks[time].append(task)
@@ -61,12 +61,18 @@ class Server:
       res_sum += self.idle_list[i]
     return res_sum/(end-beg+1)
   
-  # TODO
+  # !!!!!!!!!!   WILL   !!!!!!!!!!
   # beg ~ end の負荷
-  def getTimeOfLoads(self, beg: int, end:int) -> float:
-    pass
+  def getTimeOfLoads(self, beg: int, end:int) -> [float, List[Task]]:
+    res_list = []
+    sum_load = 0
+    for i in range(beg, end+1):
+      res_list.append(self.tasks[i])
+      for task in self.tasks[i]:
+        sum_load += task.resource
+    return sum_load/(end-beg+1), res_list
   
-  # TODO
+  # !!!!!!!!!!   WILL   !!!!!!!!!!
   # resCheck と resReserv を一つのメソッドにする
   def resCheck(self, res:int, beg: int, end: int) -> bool: # 指定した時間帯のリソースが空いているか調べる
     for i in range(beg, end+1):
