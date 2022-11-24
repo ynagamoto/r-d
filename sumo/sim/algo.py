@@ -25,7 +25,7 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
   1-1. サーバのタスクとマイグレーション状況を更新 -> server.updateResource()
   1-2. サービスを受けられるかチェック -> server.checkTask() 
   1-3. 車両の通信状況の更新 <- 通信先のリストを使う管理に変える
-2. 混雑度を算出 TODO
+2. 混雑度を算出
 3. 再配置計算が必要かチェックし再配置が必要な通信時間のリストを返す -> checkMigNeed()
   3-1. 車両が now 以降にどのRSUと何秒から何秒まで通信するかのリスト取得 ( {sid, [beg, end]} のリスト) v.getCommServers()
   3-2. それぞれの通信時間をfor文で回す

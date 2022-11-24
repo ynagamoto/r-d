@@ -66,7 +66,7 @@ def load_emission():
       vehicles[car_id][now] = position
   return sim_time, vehicles
 
-# TODO
+# !!!!!!!!!!   !WILL   !!!!!!!!!!
 # Comm のリストに変更
 def load_bt():
   file_name = "bt.xml"
@@ -84,7 +84,7 @@ def load_bt():
       vehicles[car_id][receiver.attrib["id"]] = comm_time
   return vehicles
 
-# TODO
+# !!!!!!!!!!   !WILL   !!!!!!!!!!
 # vehicles は Dict の方が扱いやすかも
 def load_vehicles(sim_time: int, emission: Dict[str, int]):
   bt = load_bt()
@@ -97,6 +97,27 @@ def load_vehicles(sim_time: int, emission: Dict[str, int]):
     vehicle = Vehicle(vid, postions, comm[vid], sim_time)
     vehicles.append(vehicle)
   return vehicles
+
+
+# 各サーバが 時間t でどの車両と通信しているか
+def setServerComm(sim_time:int, servers: List[Server], vehicles: Dict[str, Vehicle]):
+  # 0 ~ sim_time までの各時間で、通信した車両のリスト
+  servers_comm = {}
+  for i in range(sim_time):
+    servers_comm[i] = []
+
+  # 車両->comm で for文回す
+  for vid, vehicle in vehicles.items():
+    for comm in vehicle.comm_list:
+      for i in range(int(comm[0]), int(comm[1]+2)): # 切り上げ
+        servers_comm[i].append(vid)
+
+# 混雑度を返す
+# now における comm_list の長さ順にソートしたDictを返す { sid: str, comm_list: List[str] }
+def getTrafficJams(now: int, servers_comm: Dict[str, List[str]], servers: List[Server]) -> Dict[str, List[str]]:
+  # servers_comm[now] をソート
+  sorted_now_comm = sorted(servers_comm[now])
+  return sorted_now_comm
 
 def print_vehicles(vehicles: List[Vehicle]):
   for vehicle in vehicles:
