@@ -120,6 +120,12 @@ class Server:
     """
     delay = 0
     return delay
+  
+
+  # スペック，負荷状況，タスク，遅延を返す
+  def getNowLoad(self, now: int):
+    return self.spec, self.idle_list[now], self.tasks[now]
+
 
 def test():
   server = Server("s0", "edge", {"x": 0.0, "y": "0.0"}, 100, 100)

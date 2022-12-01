@@ -37,9 +37,21 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
   6-1.  計算資源の負荷にマイグレーション負荷を足して計算する
 7. リソース確保&リソース予約状況の更新 -> s.addTask()
 8. 結果の収集 -> TODO
+  8-1. フレームレートの計算 TODO
 """
-# def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str]):
-#   pass
+def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], mig_time: int):
+  # 再配置計算を行う車両 vid_list
+  for vid in vid_list:
+    # receiver は無視
+    v_list = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))
+    if len(v_list) == 0: # receiver は vehicles に入ってない
+      continue
+    v = v_list[0]
+
+    # 再配置計算が必要かチェック
+    migtime_list = checkMigNeed(now, mig_time, v)
+    for mig in migtime_list:
+      pass
 
 # 環境の更新
 def envUpdate(now: int, servers: List[Server], vid_list: List[str], vehicles: Dict[str, Vehicle]):
@@ -55,7 +67,7 @@ def envUpdate(now: int, servers: List[Server], vid_list: List[str], vehicles: Di
       continue
     v = v_list[0]
 
-    # サービスが受けられるかチェック
+    # サービスが受けられるかチェック手 乾燥
     comm_sid = v.getCommServer(now) # 現在通信しているサーバーのid
     s_list = list(filter(lambda server: server.sid == comm_sid, servers)) # idからサーバを取得
     comm_server = s_list[0]
