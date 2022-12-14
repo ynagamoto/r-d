@@ -106,6 +106,7 @@ class Server:
       return False
  
   # Calculate delay from vehicle to server
+  # とりあえず別のRSUは20ms，クラウドは40ms
   def calcDelay(self, sid: str, vid: str):
     """
     車両がRSUの通信範囲内

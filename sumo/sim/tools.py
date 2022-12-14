@@ -100,7 +100,7 @@ def load_vehicles(sim_time: int, emission: Dict[str, int]):
 
 
 # 各サーバが 時間t でどの車両と通信しているか
-def setServerComm(sim_time:int, servers: List[Server], vehicles: Dict[str, Vehicle]):
+def setServersComm(sim_time:int, servers: List[Server], vehicles: Dict[str, Vehicle]) -> Dict[int, List[str]]:
   # 0 ~ sim_time までの各時間で、通信した車両のリスト
   servers_comm = {}
   for i in range(sim_time):
@@ -111,12 +111,13 @@ def setServerComm(sim_time:int, servers: List[Server], vehicles: Dict[str, Vehic
     for comm in vehicle.comm_list:
       for i in range(int(comm[0]), int(comm[1]+2)): # 切り上げ
         servers_comm[i].append(vid)
+  return servers_comm
 
 # 混雑度を返す
 # now における comm_list の長さ順にソートしたDictを返す { sid: str, comm_list: List[str] }
-def getTrafficJams(now: int, servers_comm: Dict[str, List[str]], servers: List[Server]) -> Dict[str, List[str]]:
+def getTrafficJams(now: int, servers_comm: Dict[int, List[str]], servers: List[Server]) -> Dict[str, List[str]]:
   # servers_comm[now] をソート
-  sorted_now_comm = sorted(servers_comm[now])
+  sorted_now_comm = sorted(servers_comm[now]) # 昇順
   return sorted_now_comm
 
 def print_vehicles(vehicles: List[Vehicle]):
@@ -129,6 +130,14 @@ def print_vehicles(vehicles: List[Vehicle]):
       print(vehicle.positions)
       print(vehicle.comm)
       break
+
+def getServersLoads(servers, now, mig, res): # [beg, end])
+  beg, end = mig[0], mig[1]
+  loads = {}
+  for server in servers:
+    if server.resCheck(now, res, beg, end): # 配置可能な計算資源のみ追加
+      loads[server.sid] = server.getTimeOfLoads(beg, end)
+  return loads
 
 if __name__ == "__main__":
   # print_servers(load_servers())
