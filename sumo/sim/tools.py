@@ -1,6 +1,6 @@
 import json
 from server import Server,Task
-from vehicle import Vehicle, Comm
+from vehicle import Vehicle
 from typing import List,Dict
 import random
 import xml.etree.ElementTree as ET
@@ -109,7 +109,8 @@ def setServersComm(sim_time:int, servers: List[Server], vehicles: Dict[str, Vehi
   # 車両->comm で for文回す
   for vehicle in vehicles:
     for comm in vehicle.comm_list:
-      for i in range(int(comm[0]), int(comm[1]+2)): # 切り上げ
+      beg, end = comm.comm_list[0], comm.comm_list[1]
+      for i in range(beg, end+2): # 切り上げ
         servers_comm[i].append(vehicle.vid)
   return servers_comm
 
