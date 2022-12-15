@@ -14,7 +14,7 @@ import traci
 
 from server import Server, Task
 from vehicle import Vehicle
-from tools import generate_routefile, load_emission, load_servers, load_vehicles 
+from tools import generate_routefile, load_emission, load_servers, load_vehicles, setServersComm
 from algo import getRandomServer, loadAllocation, envUpdate
 
 def run(sumocfg):
@@ -147,11 +147,13 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
 
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
-  mig_time = 3
+  mig_time = 10
+  res = 1
   # generate_routefile()
   run(sumocfg)
   sim_time, emission = load_emission()
   servers = load_servers(sim_time)
   vehicles = load_vehicles(sim_time, emission)
-  random_allocation(sumocfg, servers, vehicles, mig_time)
+  presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res)
+  # random_allocation(sumocfg, servers, vehicles, mig_time)
   # test(sumocfg, servers, vehicles)
