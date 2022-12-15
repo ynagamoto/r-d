@@ -22,7 +22,7 @@ class Vehicle:
     # self.next_s:            str = "" 
   
   def setCommServer(self, comm: Dict[str, List[float]], sim_time: int):
-    self.comm = ["base"] * sim_time            # 0 ~ sim_time まで RSUなら "通信先id"，モバイル回線なら "base"
+    self.comm = ["base"] * sim_time+1       # 0 ~ sim_time まで RSUなら "通信先id"，モバイル回線なら "base"
     for sid, comm_time in comm.items():     # comm_time: [0: beg, 1: end]
       for i in range(int(comm_time[0]+1), int(comm_time[1]+1)):
         self.comm[i] = sid
