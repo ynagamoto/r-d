@@ -1,6 +1,6 @@
 import json
 from server import Server,Task
-from vehicle import Vehicle
+from vehicle import Vehicle, Comm
 from typing import List,Dict
 import random
 import xml.etree.ElementTree as ET
