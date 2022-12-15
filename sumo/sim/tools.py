@@ -110,6 +110,7 @@ def setServersComm(sim_time:int, servers: List[Server], vehicles: Dict[str, Vehi
   for vehicle in vehicles:
     for comm in vehicle.comm_list:
       beg, end = int(comm.time[0]), int(comm.time[1])
+      print(f"beg: {beg}, end: {end}")
       for i in range(beg, end+2): # 切り上げ
         servers_comm[i].append(vehicle.vid)
   return servers_comm
