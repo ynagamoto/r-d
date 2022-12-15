@@ -152,6 +152,7 @@ if __name__ == "__main__":
   # generate_routefile()
   run(sumocfg)
   sim_time, emission = load_emission()
+  sim_time += 1
   servers = load_servers(sim_time)
   vehicles = load_vehicles(sim_time, emission)
   print(f"sim time: {sim_time}")
