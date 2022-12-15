@@ -96,6 +96,8 @@ def envUpdate(now: int, servers: List[Server], vid_list: List[str], vehicles: Di
     # サービスが受けられるかチェック
     comm_sid = v.getCommServer(now) # 現在通信しているサーバーのid
     s_list = list(filter(lambda server: server.sid == comm_sid, servers)) # idからサーバを取得
+    if len(s_list) == 0:
+      continue
     comm_server = s_list[0]
     if not comm_server.checkTask(v.vid):
       # サービスが受けられない場合はエラー
