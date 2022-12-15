@@ -60,6 +60,7 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
     # migtime_list には再配置が必要な通信時間（[ beg, end ] のリスト）
     migtime_list = checkMigNeed(now, mig_time, v, jams)
     for mig in migtime_list: # mig: [beg, end]
+      beg, end = int(mig.time[0]), int(mig.time[1])
       # 再配置先の計算
       # beg ~ end で再配置可能な計算資源のリソース予約状況と通信遅延を取得
       loads = getServersLoads(servers, now, mig.time, res)
@@ -77,7 +78,7 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
 
       # リソース予約
       # VM起動中は半分の負荷
-      locate_server.resReserv(vid, res, int(mig[0]), int(mig[1]), mig_time)
+      locate_server.resReserv(vid, res, beg, end, mig_time)
 
 
 # 環境の更新
