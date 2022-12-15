@@ -25,7 +25,7 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
 """
 1. 環境の更新 -> envUpdate()
   1-1. サーバのタスクとマイグレーション状況を更新 -> server.updateResource()
-    TODO VMの起動中は半分の負荷
+    ※ VMの起動中は半分の負荷 TODO
   1-2. サービスを受けられるかチェック -> server.checkTask() 
   1-3. 車両の通信状況の更新 <- 通信先のリストを使う管理に変える
 2. 混雑度を算出 -> getTrafficJams()
@@ -35,7 +35,7 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
     3-2-1. その通信時間のタスクがマイグレーション中かチェック
     3-2-2. そのRSUと通信するまでの猶予 ＝＝ マイグレーションにかかる時間のとき再配置計算を行う
 4. リソース予約状況の収集 -> s.getTimeOfLoads()
-5. 車両と各計算資源の通信遅延を収集 -> s.getTimeOfLoads() TODO
+5. 車両と各計算資源の通信遅延を収集 -> s.getTimeOfLoads()
 6. 再配置計算 -> loadAllocation()
   6-1.  計算資源の負荷にマイグレーション負荷を足して計算する
 7. リソース確保&リソース予約状況の更新 -> s.addTask()
