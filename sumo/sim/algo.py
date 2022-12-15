@@ -72,11 +72,12 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
         break
 
       # sid からサーバーを取得
-      locate_server = list(filter(lambda server: server.sid == locate_sid, servers))[0]
+      tmp_list= list(filter(lambda server: server.sid == locate_sid, servers))
+      locate_server = tmp_list[0]
 
       # リソース予約
       # VM起動中は半分の負荷
-      locate_server[0].resReserv(vid, res, mig[0], mig[1], mig_time)
+      locate_server[0].resReserv(vid, res, int(mig[0]), int(mig[1]), mig_time)
 
 
 # 環境の更新
