@@ -63,11 +63,20 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
       # 再配置先の計算
       # beg ~ end で再配置可能な計算資源のリソース予約状況と通信遅延を取得
       loads = getServersLoads(servers, now, mig, res)
-      # max 100msで考える
+      # 遅延を足してソート
+      sorted_loads= sorted(loads.items(), key = lambda load : loads[1])
       # 合計が最小のものを調べる
+      locate_sid = ""
+      for sid, _ in sorted_loads.items():
+        locate_sid = sid
+        break
+
+      # sid からサーバーを取得
+      locate_server = list(filter(lambda server: server.sid == locate_sid, servers))[0]
 
       # リソース予約
       # VM起動中は半分の負荷
+      locate_server[0].resReserv(vid, res, mig[0], mig[1], mig_time)
 
 
 # 環境の更新

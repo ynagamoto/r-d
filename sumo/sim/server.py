@@ -73,16 +73,14 @@ class Server:
         sum_load += task.resource
     return sum_load/(end-beg+1), res_list
   
-  # !!!!!!!!!!   !WILL   !!!!!!!!!!
-  # resCheck と resReserv を一つのメソッドにする
   def resCheck(self, res:int, beg: int, end: int) -> bool: # 指定した時間帯のリソースが空いているか調べる
     for i in range(beg, end+1):
       if self.idle_list[i]-res < 0:
         return False
     return True 
   
-  def resReserv(self, vid:str, res:int, beg: int, end: int, timer: int): # 指定した時間帯のリソースを確保
-    task = Task(vid, res, 0, timer)
+  def resReserv(self, vid:str, res:int, beg: int, end: int, mig_time: int): # 指定した時間帯のリソースを確保
+    task = Task(vid, res, 0, mig_time)
     for i in range(beg, end+1):
       self.addTask(task, i)
 
