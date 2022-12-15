@@ -134,7 +134,7 @@ def print_vehicles(vehicles: List[Vehicle]):
       break
 
 def getServersLoads(servers, now, mig, res): # [beg, end])
-  beg, end = mig[0], mig[1]
+  beg, end = int(mig[0]), int(mig[1])
   loads = {}
   for server in servers:
     if server.resCheck(now, res, beg, end): # 配置可能な計算資源のみ追加

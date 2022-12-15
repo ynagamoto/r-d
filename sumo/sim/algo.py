@@ -62,7 +62,7 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
     for mig in migtime_list: # mig: [beg, end]
       # 再配置先の計算
       # beg ~ end で再配置可能な計算資源のリソース予約状況と通信遅延を取得
-      loads = getServersLoads(servers, now, mig, res)
+      loads = getServersLoads(servers, now, mig.time, res)
       # 遅延を足してソート
       sorted_loads= sorted(loads.items(), key = lambda load : loads[1])
       # 合計が最小のものを調べる
