@@ -90,6 +90,7 @@ class Server:
       for task in self.tasks[i]:
         if task.timer > 0:
           task.timer -= 1
+    print(f"{self.idle_list[now]}")
 
   # vid のタスクが now_task に含まれていて提供可能かどうかチェック
   def checkTask(self, vid: str, now: int) -> bool:
