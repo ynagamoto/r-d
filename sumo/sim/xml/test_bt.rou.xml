@@ -28,7 +28,7 @@
     <param key="has.btreceiver.device" value="true"/> 
   <vehicle id="rec6" type="car" depart="0" color="1, 0, 0" departPos="stop">
     <route edges="-H0"/>
-    <stop edge="-H0" lane="E2_0" parking="true"/>
+    <stop edge="-H0" lane="-H0_0" parking="true"/>
     <param key="has.btreceiver.device" value="true"/>
   </vehicle>
   <!-- /receiver -->
