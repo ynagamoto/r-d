@@ -83,7 +83,7 @@ def generate_routefile(grid_num: int, v_num: int, spec: int):
       while(beg == end):
         end = getRandEdge(grid_num)
       print(f"""
-  <flow id=\"car{vid}\" type=\"car\" departPos=\"base\" number=\"1\" begin=\"0\" end=\"{max_time}\" from=\"{beg}\" to=\"-{end}\"/>
+  <flow id=\"car{vid}\" type=\"car\" departPos=\"base\" number=\"1\" begin=\"0\" end=\"{max_time}\" from=\"{beg}\" to=\"-{end}\">
     <param key="has.btsender.device" value="true"/> 
   </flow>""", file=routes)
       vid += 1
