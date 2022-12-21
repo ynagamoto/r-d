@@ -42,7 +42,7 @@ def generate_routefile(grid_num: int, v_num: int, spec: int):
   s_list = []
   with open("../sim_xml/random.rou.xml", "w") as routes:
     print("""<routes>
-    <vType id="car" vClass="passenger" speedDev="0.2" sigma="0.2" decel="4.5" accel="2.6" maxSpeed="60" length="5"/>""", file=routes) # はじめ
+  <vType id="car" vClass="passenger" speedDev="0.2" sigma="0.2" decel="4.5" accel="2.6" maxSpeed="60" length="5"/>""", file=routes) # はじめ
     # レシーバー
     sid = 0
     for i in range(len(pos_dict)):
@@ -58,11 +58,11 @@ def generate_routefile(grid_num: int, v_num: int, spec: int):
           y = f"{pos[1]}"
         edge = f"ns{x}{y}"
         print(f"""
-        <vehicle id="mec{sid}" type="car" depart="0" color="1, 0, 0" departPos="stop">
-          <route edges="{edge}"/>
-          <stop edge="{edge}" lane="{edge}_0" parking="true"/>
-          <param key="has.btreceiver.device" value="true"/> 
-        </vehicle>""", file=routes)
+  <vehicle id="mec{sid}" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="{edge}"/>
+    <stop edge="{edge}" lane="{edge}_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>""", file=routes)
         tmp = {}
         tmp["sid"] = f"mec{sid}"
         tmp["stype"] = "edge"
@@ -82,9 +82,9 @@ def generate_routefile(grid_num: int, v_num: int, spec: int):
       while(beg == end):
         end = getRandEdge(grid_num)
       print(f"""
-        <flow id=\"car{vid}\" type=\"car\" departPos=\"base\" number=\"1\" begin=\"0\" end=\"{max_time}\" from=\"{beg}\" to=\"-{end}\"/>
-          <param key="has.btsender.device" value="true"/> 
-        </flow>""", file=routes)
+  <flow id=\"car{vid}\" type=\"car\" departPos=\"base\" number=\"1\" begin=\"0\" end=\"{max_time}\" from=\"{beg}\" to=\"-{end}\"/>
+    <param key="has.btsender.device" value="true"/> 
+  </flow>""", file=routes)
       vid += 1
     print("</routes>", file=routes) # おわり
     return s_dict
