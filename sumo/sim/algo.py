@@ -53,7 +53,9 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
       comm = tmp[0]
       v = tmp[1]
       beg, end = int(comm.time[0]), int(comm.time[1])
-      next_sid = v.getNextSid(now)
+      next_sid, flag = v.getNextSid(now)
+      if not flag: # マップから消える
+        continue
       tmp_list = list(filter(lambda s: s.sid == next_sid, servers))
       next_s = tmp_list[0]
       # 再配置先の計算
@@ -129,7 +131,9 @@ def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Vehicle
     v = v_list[0]
     
     # 次に通信する計算資源を取得
-    comm = v.getNextComm(now)
+    comm, flag = v.getNextComm(now)
+    if not flag: # 次の通信先がない（マップから消える）
+      continue
 
     # この通信時間中のタスクの再配置計算を行ったかチェック
     # 計算済みなら次へ

@@ -95,13 +95,19 @@ class Vehicle:
   # 次のRSUのIDを取得
   def getNextSid(self, now: int):
     comm_list = list(filter(lambda comm: comm.time[0] >= now, self.comm_list))
-    next_comm = comm_list[0]
-    return next_comm.sid
+    if len(comm_list) == 0:
+      return None, False
+    else:
+      next_comm = comm_list[0]
+      return next_comm.sid, True
 
   def getNextComm(self, now: int):
     comm_list = list(filter(lambda comm: comm.time[0] >= now, self.comm_list))
-    next_comm = comm_list[0]
-    return next_comm
+    if len(comm_list) == 0:
+      return None, False
+    else:
+      next_comm = comm_list[0]
+      return next_comm, True
 
   # 遅延を取得
   # 改良が必要 TODO
