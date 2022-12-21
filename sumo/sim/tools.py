@@ -104,7 +104,7 @@ def setServersComm(sim_time:int, servers: List[Server], vehicles: Dict[str, Vehi
   # 0 ~ sim_time までの各時間で、通信した車両のリスト
   servers_comm = {}
   for i in range(sim_time+1):
-    servers_comm[i] = []
+    servers_comm[i] = {}
 
   # 車両->comm で for文回す
   for vehicle in vehicles:
