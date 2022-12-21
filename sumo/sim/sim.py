@@ -15,7 +15,7 @@ import traci
 from server import Server, Task
 from vehicle import Vehicle
 from tools import generate_routefile, load_emission, load_servers_json, load_vehicles, setServersComm
-from algo import getRandomServer, loadAllocation, envUpdate
+from algo import getRandomServer, loadAllocation, envUpdate, exportStatus
 
 def run(sumocfg):
   sumoBinary = "sumo"
@@ -128,8 +128,6 @@ def test(sumocfg, servers, vehicles):
     print()
  
 
-# TODO
-# 結果の収集
 def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
   # sumoBinary = "sumo"
   sumoBinary = "sumo-gui"
@@ -145,6 +143,9 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
 
     envUpdate(now, servers, vid_list, vehicles)
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res)
+
+  # 結果の収集
+  exportStatus(servers)
 
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"

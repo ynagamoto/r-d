@@ -4,6 +4,9 @@ from server import Server, Task
 from vehicle import Vehicle, Comm
 from tools import setServersComm, getTrafficJams, getServersLoads
 
+import itertools
+import pandas
+import csv
 
 # RSUの計算資源を t = beg ~ t = end まで確保できるかどうかチェック
 def checkServerResource(beg: int, end:int, server: Server) -> bool:
@@ -150,3 +153,18 @@ def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Vehicle
     
   # 必要な comm をリターン
   return mig_priority, need_list
+
+def exportStatus(servers: List[Server]):
+  res = []
+  for s in servers:
+    tmp = {
+      "sid": s.sid,
+    }
+    for i in range(len(s.idle_list)):
+      tmp[f"{i}"] = s.spec - s.idle_list[i]
+    res.append(tmp)
+  
+  # csvに出力
+  iterator_list = list(itertools.chain.from_iterable(res))
+  df = pandas.io.json.json_normalize(iterator_list)
+  df.to_csv('data.csv', index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
