@@ -89,7 +89,7 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
 
 
 # 環境の更新
-def envUpdate(now: int, servers: List[Server], vid_list: List[str], vehicles: Dict[str, Vehicle]):
+def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehicles: Dict[str, Vehicle]):
   # サーバのタスクとマイグレーション状況を更新 
   for server in servers:
     server.updateResource(now)
@@ -110,7 +110,7 @@ def envUpdate(now: int, servers: List[Server], vid_list: List[str], vehicles: Di
     comm_server = s_list[0]
     if not comm_server.checkTask(now, v.vid):
       # サービスが受けられない場合はエラー
-      print(f"----- Error: {v.vid} could not receive the service. -----")
+      print(f"----- Error: {v.vid} could not receive the service.({traci.vehicle.getLaneID(v.vid)}) -----")
 
 
 # 再配置計算が必要かチェック 

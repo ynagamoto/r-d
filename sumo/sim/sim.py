@@ -142,7 +142,7 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
     vid_list = traci.vehicle.getIDList()
     print(now)
 
-    envUpdate(now, servers, vid_list, vehicles)
+    envUpdate(traci, now, servers, vid_list, vehicles)
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res)
 
   # 結果の収集
