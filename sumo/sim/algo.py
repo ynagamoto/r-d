@@ -51,14 +51,22 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
       comm = tmp[0]
       v = tmp[1]
       beg, end = int(comm.time[0]), int(comm.time[1])
+      next_s = None
       # 再配置先の計算
       # beg ~ end で再配置可能な計算資源のリソース予約状況と通信遅延を取得
       loads = getServersLoads(now, comm.time, res, servers)
       # 遅延を足してソート
-      sorted_loads = sorted(loads.items(), key = lambda load : load[1])
+      inds = {}
+      for sid, load in loads.items():
+        s_list = list(filter(lambda s: s.sid == sid, servers))
+        calc = s_list[0]
+        delay = next_s.getDelay2Calc(calc)
+        inds[sid] = load + delay
+
+      sorted_inds = sorted(inds.items(), key = lambda ind: ind[1])
       # 合計が最小のものを調べる
       locate_sid = ""
-      for sid, _ in sorted_loads:
+      for sid, _ in sorted_inds:
         locate_sid = sid
         break
 

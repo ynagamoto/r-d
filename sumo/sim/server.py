@@ -106,22 +106,43 @@ class Server:
       return False
  
   # Calculate delay from vehicle to server
-  # とりあえず別のRSUは20ms，クラウドは40ms
-  def calcDelay(self, sid: str, vid: str):
+  # g0 -> 0 <= x <= 4, 0 <= y <= 4
+  # g1 -> 5 <= x <= 9, 0 <= y <= 4
+  # g2 -> 0 <= x <= 4, 5 <= y <= 9
+  # g3 -> 5 <= x <= 9, 5 <= y <= 9
+  def getPosGroup(self) -> str:
+    g = ""
+    if self.postion["y"] < 5:
+      if self.postion["x"] < 5:
+        g = "g0"
+      else:
+        g = "g1"
+    else:
+      if self.postion["x"] < 5:
+        g = "g2"
+      else:
+        g = "g3"
+    return g
+    
+  def getDelay2Calc(self, calc: str):
     """
-    車両がRSUの通信範囲内
-      そのRSUで処理 -> 0
-      別のRSU処理   -> 10 + 10 = 20 
-      集約局で処理  -> 10
-      クラウドで処理 -> 10 + 30 = 40
-    車両がRSUの通信範囲外
-      RSUで処理     -> 20 + 10 = 30
-      集約局で処理  -> 20
-      クラウドで処理 -> 20 + 40 = 60
+    そのRSUで処理   -> 0
+    同じグループ    -> 10
+    別のグループ    -> 20
+    クラウドで処理  -> 40
     """
+    if calc.type == "cloud":
+      return 40
+    my_pg = self.getPosGroup()
+    calc_pg = calc.getPosGroup()
     delay = 0
+    if self.sid == calc.sid:
+      delay = 0
+    elif my_pg == calc_pg:
+      delay = 10
+    else:
+      delay = 20
     return delay
-  
 
   # スペック，負荷状況，タスク，遅延を返す
   def getNowLoad(self, now: int):

@@ -44,7 +44,16 @@ def generate_routefile(grid_num: int, v_num: int):
     # レシーバー
     for i in range(len(pos_dict)):
       for _, pos in pos_dict[i].items():
-        edge = f"ns{pos[0]}{pos[1]}"
+        x, y = "", ""
+        if pos[0] < 10:
+          x = f"0{pos[0]}"
+        else:
+          x = f"{pos[0]}"
+        if pos[1] < 10:
+          y = f"0{pos[1]}"
+        else:
+          y = f"{pos[1]}"
+        edge = f"ns{x}{y}"
         print(f"""
         <vehicle id="rec{sid}" type="car" depart="0" color="1, 0, 0" departPos="stop">
           <route edges="{edge}"/>
