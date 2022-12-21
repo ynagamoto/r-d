@@ -139,7 +139,10 @@ def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Vehicle
     # そのRSUと通信するまでの猶予 ＝＝ マイグレーションにかかる時間のとき再配置計算を行う
     if comm.time[0]-now <= mig_time:
       # 再配置計算が必要
-      need_list[comm.sid].append([comm, v])
+      sid = comm.sid
+      if not sid in need_list:
+        need_list[sid] = []
+      need_list[sid].append([comm, v])
     
   # 必要な comm をリターン
   return mig_priority, need_list
