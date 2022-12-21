@@ -8,8 +8,9 @@ class Task:
   def __init__(self, vid: str, resource: int, delay: float, timer: int):
     self.vid        : str = vid                                     # Vehicle ID
     self.resource   : int = resource                                # Required resource
-    self.delay      : float = delay                                 # Delay from vehicle to server 
+    # self.delay      : float = delay                                 # Delay from vehicle to server 
     self.timer      : int = timer
+    self.status     : str = "mig"                                   # mig のときは必要リソースの半分
 
 class Server:
   def __init__(self, sid: str, stype: str, postion: Dict[str, int], spec: int, sim_time: int):
@@ -70,7 +71,10 @@ class Server:
     for i in range(beg, end+1):
       res_list.append(self.tasks[i])
       for task in self.tasks[i]:
-        sum_load += task.resource
+        if task.status == "mig":
+          sum_load += task.resource/2
+        else:
+          sum_load += task.resource
     return sum_load/(end-beg+1), res_list
   
   def resCheck(self, res:int, beg: int, end: int) -> bool: # 指定した時間帯のリソースが空いているか調べる
@@ -90,6 +94,8 @@ class Server:
       for task in self.tasks[i]:
         if task.timer > 0:
           task.timer -= 1
+          if task.timer == 0:
+            task.status = "ready"
     if now < len(self.idle_list):
       print(f"{self.sid}, {self.idle_list[now]}")
 

@@ -131,7 +131,8 @@ def test(sumocfg, servers, vehicles):
 # TODO
 # 結果の収集
 def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
-  sumoBinary = "sumo"
+  # sumoBinary = "sumo"
+  sumoBinary = "sumo-gui"
   traci.start([sumoBinary, "-c", sumocfg])
 
   while traci.simulation.getMinExpectedNumber() > 0:
@@ -145,7 +146,6 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
     envUpdate(now, servers, vid_list, vehicles)
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res)
 
-"""
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
   mig_time = 10
@@ -171,4 +171,4 @@ if __name__ == "__main__":
   servers = load_servers_json(sim_time)
   vehicles = load_vehicles(sim_time, emission)
   print(f"sim time: {sim_time}")
- 
+"""

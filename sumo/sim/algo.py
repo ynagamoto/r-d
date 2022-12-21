@@ -44,14 +44,18 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
 """
 # servers_comm = setServersComm() 
 def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int):
+  # 混雑度取得
   jams = getTrafficJams(now, servers_comm, servers)
+  # 混雑度から再配置の優先順位を取得
   mig_priority, need_list = checkMigNeed(now, mig_time, vid_list, vehicles, jams)
   for sid in mig_priority:      # 優先度が高い順から再配置計算
-    for tmp in need_list[sid]:  # [0] -> Comm, [1] -> Vehicle
+    for tmp in need_list[sid]:  # tmp[0] -> Comm, tmp[1] -> Vehicle
       comm = tmp[0]
       v = tmp[1]
       beg, end = int(comm.time[0]), int(comm.time[1])
-      next_s = None
+      next_sid = v.getNextSid(now)
+      tmp_list = list(filter(lambda s: s.sid == next_sid, servers))
+      next_s = tmp_list[0]
       # 再配置先の計算
       # beg ~ end で再配置可能な計算資源のリソース予約状況と通信遅延を取得
       loads = getServersLoads(now, comm.time, res, servers)
