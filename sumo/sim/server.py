@@ -137,7 +137,7 @@ class Server:
     別のグループ    -> 20
     クラウドで処理  -> 40
     """
-    if calc.type == "cloud":
+    if calc.stype == "cloud":
       return 40
     my_pg = self.getPosGroup()
     calc_pg = calc.getPosGroup()
