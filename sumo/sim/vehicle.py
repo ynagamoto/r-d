@@ -98,6 +98,11 @@ class Vehicle:
     next_comm = comm_list[0]
     return next_comm.sid
 
+  def getNextComm(self, now: int):
+    comm_list = list(filter(lambda comm: comm.time[0] >= now, self.comm_list))
+    next_comm = comm_list[0]
+    return next_comm
+
   # 遅延を取得
   # 改良が必要 TODO
   """
