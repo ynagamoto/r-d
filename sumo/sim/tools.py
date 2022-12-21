@@ -113,7 +113,7 @@ def setServersComm(sim_time:int, servers: List[Server], vehicles: Dict[str, Vehi
       beg, end = int(comm.time[0]), int(comm.time[1])
       print(f"  beg: {beg}, end: {end}")
       for i in range(beg, end+1): # 切り上げ
-        servers_comm[i][sid].append(vehicle.vid)
+        servers_comm[i][comm.sid].append(vehicle.vid)
   return servers_comm
 
 # 混雑度を返す
