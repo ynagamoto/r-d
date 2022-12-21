@@ -32,7 +32,7 @@ def generate_routefile():
     print("</routes>", file=routes) # おわり
 
 def load_servers_json(sim_time: int):
-  file_name = "servers.json"
+  file_name = "sim_xml/servers.json"
   with open(file_name) as f:
     mec_list = json.load(f)
   
@@ -48,7 +48,7 @@ def print_servers(servers: List[Server]):
     print(f"sid: {server.sid}, stype: {server.stype}, spec: {server.spec}")
 
 def load_emission():
-  file_name = "emission.xml"
+  file_name = "sim_xml/emission.xml"
   tree = ET.parse(file_name)
   root = tree.getroot()
 
@@ -69,7 +69,7 @@ def load_emission():
 # !!!!!!!!!!   !WILL   !!!!!!!!!!
 # Comm のリストに変更
 def load_bt():
-  file_name = "bt.xml"
+  file_name = "sim_xml/bt.xml"
   tree = ET.parse(file_name)
   root = tree.getroot()
  

@@ -3,8 +3,8 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
-        <net-file value="xml/grid11x11.net.xml"/>
-        <route-files value="xml/random.rou.xml"/>
+        <net-file value="sim_xml/grid11x11.net.xml"/>
+        <route-files value="sim_xml/random.rou.xml"/>
     </input>
 
     <time>
@@ -20,8 +20,8 @@
     <report>
         <verbose value="true"/>
         <no-step-log value="true"/>
-        <emission-output value="emission.xml"/>
-        <bt-output value="bt.xml"/>
+        <emission-output value="sim_xml/emission.xml"/>
+        <bt-output value="sim_xml/bt.xml"/>
     </report>
 
 </configuration>
