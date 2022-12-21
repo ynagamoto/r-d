@@ -129,8 +129,8 @@ def test(sumocfg, servers, vehicles):
  
 
 def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
-  # sumoBinary = "sumo"
-  sumoBinary = "sumo-gui"
+  sumoBinary = "sumo"
+  # sumoBinary = "sumo-gui"
   traci.start([sumoBinary, "-c", sumocfg])
 
   now = 0
