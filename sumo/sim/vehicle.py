@@ -93,7 +93,7 @@ class Vehicle:
   """
   
   # 次のRSUとの通信時間を取得
-  def getNextComm(self, now: int) -> Comm:
+  def getNextComm(self, now: int):
     comm_list = list(filter(lambda comm: comm.time[0] >= now, self.comm_list))
     next_comm = comm_list[0]
     return next_comm
