@@ -120,9 +120,6 @@ class Vehicle:
 """
 class Comm:
   def __init__(self, sid: str, comm: List[float]):
-    self.sid    : str                 # 通信するサーバid
+    self.sid    : str = sid           # 通信するサーバid
     self.time   : List[float] = comm  # 通信時間 [beg, end]
     self.flag   : bool = False        # 再配置計算を行ったかどうか
-
-  def getSid(self):
-    return self.sid
