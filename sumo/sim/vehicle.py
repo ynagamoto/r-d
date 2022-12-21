@@ -123,3 +123,6 @@ class Comm:
     self.sid    : str                 # 通信するサーバid
     self.time   : List[float] = comm  # 通信時間 [beg, end]
     self.flag   : bool = False        # 再配置計算を行ったかどうか
+
+  def getSid(self):
+    return self.sid
