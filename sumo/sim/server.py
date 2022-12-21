@@ -109,6 +109,7 @@ class Server:
       else:
         return False
     else:
+      print("!!!!!")
       return False
  
   # Calculate delay from vehicle to server
