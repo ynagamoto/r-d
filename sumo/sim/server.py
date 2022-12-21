@@ -100,7 +100,7 @@ class Server:
       print(f"{self.sid}, {self.idle_list[now]}")
 
   # vid のタスクが now_task に含まれていて提供可能かどうかチェック
-  def checkTask(self, vid: str, now: int) -> bool:
+  def checkTask(self, now: int, vid: str) -> bool:
     task_list = self.tasks[now] 
     res = list(filter(lambda task: task.vid == vid, task_list))
     if len(res) > 0:

@@ -103,7 +103,7 @@ def envUpdate(now: int, servers: List[Server], vid_list: List[str], vehicles: Di
     if len(s_list) == 0:
       continue
     comm_server = s_list[0]
-    if not comm_server.checkTask(v.vid):
+    if not comm_server.checkTask(now, v.vid):
       # サービスが受けられない場合はエラー
       print(f"----- Error: {v.vid} could not receive the service. -----")
 
