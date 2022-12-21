@@ -108,16 +108,17 @@ def setServersComm(sim_time:int, servers: List[Server], vehicles: Dict[str, Vehi
 
   # 車両->comm で for文回す
   for vehicle in vehicles:
+    print(vehicle.vid)
     for comm in vehicle.comm_list:
       beg, end = int(comm.time[0]), int(comm.time[1])
-      print(f"beg: {beg}, end: {end}")
+      print(f"  beg: {beg}, end: {end}")
       for i in range(beg, end+1): # 切り上げ
-        servers_comm[i].append(vehicle.vid)
+        servers_comm[i][sid].append(vehicle.vid)
   return servers_comm
 
 # 混雑度を返す
 # now における comm_list の長さ順にソートしたDictを返す { sid: str, comm_list: List[str] }
-def getTrafficJams(now: int, servers_comm: Dict[int, List[str]], servers: List[Server]) -> Dict[str, List[str]]:
+def getTrafficJams(now: int, servers_comm: Dict[int, Dict[str, List[str]]], servers: List[Server]) -> Dict[str, List[str]]:
   # servers_comm[now] をソート
   sorted_now_comm = sorted(servers_comm[now].items(), key = lambda comm : len(comm[1]), reverse=True)
   return sorted_now_comm
