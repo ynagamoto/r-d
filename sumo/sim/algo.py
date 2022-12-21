@@ -86,6 +86,7 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
       # リソース予約
       # VM起動中は半分の負荷
       locate_server.resReserv(v.vid, res, beg, end, mig_time)
+      comm.flag = True
 
 
 # 環境の更新
