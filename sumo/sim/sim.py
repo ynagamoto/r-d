@@ -150,7 +150,7 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
 
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
-  mig_time = 10
+  mig_time = 5
   res = 1
   run(sumocfg)
   sim_time, emission = load_emission()
