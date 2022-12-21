@@ -40,7 +40,7 @@ def generate_routefile(grid_num: int, v_num: int, spec: int):
   pos_dict = getRandPoints(grid_num)
   s_dict = {}
   s_list = []
-  with open("random.rou.xml", "w") as routes:
+  with open("../sim_xml/random.rou.xml", "w") as routes:
     print("""<routes>
     <vType id="car" vClass="passenger" speedDev="0.2" sigma="0.2" decel="4.5" accel="2.6" maxSpeed="60" length="5"/>""", file=routes) # はじめ
     # レシーバー
