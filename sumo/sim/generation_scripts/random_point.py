@@ -3,11 +3,11 @@ import json
 
 def getRandPoints(num: int):
   randnum_dict = {}
-  q = int(num/2) + 1
+  q = num
   pos_dict = {}
   sum_num = 0
   for i in range(num):
-    randnum_dict[i] = random.randrange(2, q) # 個数
+    randnum_dict[i] = random.randrange(3, q) # 個数
     sum_num += randnum_dict[i]
     tmp = {}
     check = []
@@ -100,6 +100,6 @@ if __name__ == "__main__":
   #     print(pos)
   
   spec = 10
-  s_dict = generate_routefile(10, 300, spec) 
+  s_dict = generate_routefile(10, 100, spec) 
   with open('../sim_xml/servers.json', 'w') as f:
     json.dump(s_dict, f, ensure_ascii=False, indent=2)
