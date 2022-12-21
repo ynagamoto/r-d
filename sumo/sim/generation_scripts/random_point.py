@@ -1,4 +1,5 @@
 import random
+import json
 
 def getRandPoints(num: int):
   randnum_dict = {}
@@ -35,13 +36,15 @@ def getRandEdge(grid_num):
   return f"{d}{edge}"
 
 
-def generate_routefile(grid_num: int, v_num: int):
+def generate_routefile(grid_num: int, v_num: int, spec: int):
   pos_dict = getRandPoints(grid_num)
-  sid = 0
+  s_dict = {}
+  s_list = []
   with open("random.rou.xml", "w") as routes:
     print("""<routes>
     <vType id="car" vClass="passenger" speedDev="0.2" sigma="0.2" decel="4.5" accel="2.6" maxSpeed="60" length="5"/>""", file=routes) # はじめ
     # レシーバー
+    sid = 0
     for i in range(len(pos_dict)):
       for _, pos in pos_dict[i].items():
         x, y = "", ""
@@ -55,12 +58,20 @@ def generate_routefile(grid_num: int, v_num: int):
           y = f"{pos[1]}"
         edge = f"ns{x}{y}"
         print(f"""
-        <vehicle id="rec{sid}" type="car" depart="0" color="1, 0, 0" departPos="stop">
+        <vehicle id="mec{sid}" type="car" depart="0" color="1, 0, 0" departPos="stop">
           <route edges="{edge}"/>
           <stop edge="{edge}" lane="{edge}_0" parking="true"/>
           <param key="has.btreceiver.device" value="true"/> 
         </vehicle>""", file=routes)
+        tmp = {}
+        tmp["sid"] = f"mec{sid}"
+        tmp["stype"] = "edge"
+        tmp["spec"] = spec
+        tmp["position"] = {"x": pos[0], "y": pos[1]}
+        s_list.append(tmp)
         sid += 1
+    s_dict["servers"] = s_list
+    print(sid)
 
     # センダー
     vid = 0
@@ -76,6 +87,7 @@ def generate_routefile(grid_num: int, v_num: int):
       </flow>""", file=routes)
       vid += 1
     print("</routes>", file=routes) # おわり
+    return s_dict
 
 if __name__ == "__main__":
   # num = 10
@@ -85,4 +97,8 @@ if __name__ == "__main__":
   #   print(i)
   #   for j, pos in pos_dict[i].items():
   #     print(pos)
-  generate_routefile(10, 100) 
+  
+  spec = 10
+  s_dict = generate_routefile(10, 300, spec) 
+  with open('servers.json', 'w') as f:
+    json.dump(s_dict, f, ensure_ascii=False, indent=2)

@@ -3,8 +3,8 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
-        <net-file value="xml/grid4x4.net.xml"/>
-        <route-files value="xml/test_bt.rou.xml"/>
+        <net-file value="xml/grid11x11.net.xml"/>
+        <route-files value="xml/random.rou.xml"/>
     </input>
 
     <time>
@@ -13,7 +13,7 @@
 
     <communication>
         <!-- <device.btreceiver.all-recognitions value="true"/> -->
-        <device.btreceiver.range value="25"/>
+        <device.btreceiver.range value="30"/>
         <device.btreceiver.offtime value="1"/>
     </communication>
 

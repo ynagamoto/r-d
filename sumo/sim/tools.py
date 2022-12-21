@@ -31,8 +31,8 @@ def generate_routefile():
       print(f"<flow id=\"car{i}\" type=\"car\" departPos=\"base\" number=\"1\" begin=\"0\" end=\"300\" from=\"{beg}\" to=\"{end}\"/>", file=routes)
     print("</routes>", file=routes) # おわり
 
-def load_servers(sim_time: int):
-  file_name = "server.json"
+def load_servers_json(sim_time: int):
+  file_name = "servers.json"
   with open(file_name) as f:
     mec_list = json.load(f)
   
