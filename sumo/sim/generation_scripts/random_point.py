@@ -28,7 +28,7 @@ def getRandPoints(num: int):
 
 def getRandEdge(grid_num):
   # 0 -> East, 1 -> South, 2 -> West, 3 -> North
-  dire = ["E", "S", "W", "N"]
+  dire = ["e", "s", "w", "n"]
   d_num = random.randrange(4)
   d = dire[d_num] 
   edge = random.randrange(grid_num)
@@ -44,7 +44,7 @@ def generate_routefile(grid_num: int, v_num: int):
     # レシーバー
     for i in range(len(pos_dict)):
       for _, pos in pos_dict[i].items():
-        edge = f"NS{pos[0]}{pos[1]}"
+        edge = f"ns{pos[0]}{pos[1]}"
         print(f"""
         <vehicle id="rec{sid}" type="car" depart="0" color="1, 0, 0" departPos="stop">
           <route edges="{edge}"/>
@@ -62,7 +62,7 @@ def generate_routefile(grid_num: int, v_num: int):
       while(beg == end):
         end = getRandEdge(grid_num)
       print(f"""
-      <flow id=\"car{vid}\" type=\"car\" departPos=\"base\" number=\"1\" begin=\"0\" end=\"{max_time}\" from=\"{beg}\" to=\"{end}\"/>
+      <flow id=\"car{vid}\" type=\"car\" departPos=\"base\" number=\"1\" begin=\"0\" end=\"{max_time}\" from=\"{beg}\" to=\"-{end}\"/>
         <param key="has.btsender.device" value="true"/> 
       </flow>""", file=routes)
       vid += 1
