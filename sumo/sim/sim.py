@@ -133,6 +133,7 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
   sumoBinary = "sumo-gui"
   traci.start([sumoBinary, "-c", sumocfg])
 
+  now = 0
   while traci.simulation.getMinExpectedNumber() > 0:
     # シミュレーション内容
     traci.simulationStep()
@@ -145,7 +146,7 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res)
 
   # 結果の収集
-  exportStatus(servers)
+  exportStatus(now, servers)
 
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
