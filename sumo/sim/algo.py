@@ -44,26 +44,16 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
 """
 # servers_comm = setServersComm() 
 def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int):
-  # マップ上の車両 vid_list
-  for vid in vid_list:
-    # receiver は無視
-    v_list = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))
-    if len(v_list) == 0: # receiver は vehicles に入ってない
-      continue
-    v = v_list[0]
-
-    # 混雑度順を取得
-    # jams: { sid: str, comm_list: List[str] }
-    jams = getTrafficJams(now, servers_comm, servers)
-
-    # 混雑度順に再配置計算が必要かチェックしリストに入れる
-    # migtime_list には再配置が必要な通信時間（[ beg, end ] のリスト）
-    migtime_list = checkMigNeed(now, mig_time, v, jams)
-    for mig in migtime_list: # mig: [beg, end]
-      beg, end = int(mig.time[0]), int(mig.time[1])
+  jams = getTrafficJams(now, servers_comm, servers)
+  mig_priority, need_list = checkMigNeed(now, mig_time, vid_list, vehicles, jams)
+  for sid in mig_priority:      # 優先度が高い順から再配置計算
+    for tmp in need_list[sid]:  # [0] -> Comm, [1] -> Vehicle
+      comm = tmp[0]
+      v = tmp[1]
+      beg, end = int(comm.time[0]), int(comm.time[1])
       # 再配置先の計算
       # beg ~ end で再配置可能な計算資源のリソース予約状況と通信遅延を取得
-      loads = getServersLoads(servers, now, mig.time, res)
+      loads = getServersLoads(now, comm.time, res, servers)
       # 遅延を足してソート
       sorted_loads = sorted(loads.items(), key = lambda load : load[1])
       # 合計が最小のものを調べる
@@ -78,7 +68,7 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
 
       # リソース予約
       # VM起動中は半分の負荷
-      locate_server.resReserv(vid, res, beg, end, mig_time)
+      locate_server.resReserv(v.vid, res, beg, end, mig_time)
 
 
 # 環境の更新
@@ -108,12 +98,27 @@ def envUpdate(now: int, servers: List[Server], vid_list: List[str], vehicles: Di
 
 # 再配置計算が必要かチェック 
 # 再配置が必要な comm のリストを返す
-# 時間順の混雑度順
-def checkMigNeed(now: int, mig_time: int, vehicle: Vehicle, jams: Dict[str, List[str]]) -> List[Comm]:
-  # 車両が now 以降にどのRSUと何秒から何秒まで通信するかのリスト取得 ( {sid: str, flag: bool, time: [beg, end]} のリスト)
-  # それぞれの通信時間をfor文で回す
-  need_list = []
-  for comm in vehicle.getCommServers(now):
+# 混雑度順 -> List[str], Dict[str, List[]]
+def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Vehicle, jams: Dict[str, List[str]]):
+  # 混雑度順から need_list を作成
+  # jams は通信先が多い順
+  mig_priority = [] # 優先度高い順のsid
+  need_list = {}    # key -> sid, value -> List[Vehicle]
+  for tmp in jams:
+    mig_priority.append(tmp[0]) # sidを追加
+    need_list[tmp[0]] = []
+
+  # いま必要かどうかチェックする
+  for vid in vid_list:
+    # receiver は無視
+    v_list = list(filter(lambda vehicle: vehicle.vid == vid, vehicles))
+    if len(v_list) == 0: # receiver は vehicles に入ってない
+      continue
+    v = v_list[0]
+    
+    # 次に通信する計算資源を取得
+    comm = v.getNextComm(now)
+
     # この通信時間中のタスクの再配置計算を行ったかチェック
     # 計算済みなら次へ
     if comm.flag:
@@ -122,11 +127,7 @@ def checkMigNeed(now: int, mig_time: int, vehicle: Vehicle, jams: Dict[str, List
     # そのRSUと通信するまでの猶予 ＝＝ マイグレーションにかかる時間のとき再配置計算を行う
     if comm.time[0]-now <= mig_time:
       # 再配置計算が必要
-      need_list.append(comm)
-    else:
-      # comm は時系列順なのでここで再配置が必要なければこれ以降も必要ない
-      break
+      need_list[comm.sid].append([comm, v])
     
   # 必要な comm をリターン
-  return need_list
-
+  return mig_priority, need_list

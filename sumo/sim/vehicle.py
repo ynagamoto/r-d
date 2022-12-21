@@ -90,23 +90,13 @@ class Vehicle:
         next_time = i
         break
     return next_time
+  """
   
   # 次のRSUとの通信時間を取得
-  def getNextComm(self, now: int) -> [str, int, int]:
-    next_sid = ""
-    beg, end = 0, 0
-    flag = False
-    for sid, comm_time in self.comm_dict.items():
-      if flag:
-        next_sid = sid
-        beg = comm_time[0]
-        end = comm_time[1]
-        break
-      else:
-        if comm_time[0] <= now and now <= comm_time[1]:
-          flag = True
-    return next_sid, int(beg), int(end)
-  """
+  def getNextComm(self, now: int) -> Comm:
+    comm_list = list(filter(lambda comm: comm.time[0] >= now, self.comm_list))
+    next_comm = comm_list[0]
+    return next_comm
 
   # 遅延を取得
   # 改良が必要 TODO
