@@ -244,3 +244,5 @@ def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Di
       if not sid in need_list:
         need_list[sid] = []
       need_list[sid].append([next_comm, v])
+    
+    return mig_priority, need_list
