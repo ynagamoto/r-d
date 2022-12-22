@@ -15,7 +15,7 @@ import traci
 from server import Server, Task
 from vehicle import Vehicle
 from tools import generate_routefile, load_emission, load_servers_json, load_vehicles, setServersComm
-from algo import getRandomServer, loadAllocation, envUpdate, exportStatus
+from algo import getRandomServer, loadAllocation, envUpdate, exportStatus, kizon
 
 def run(sumocfg):
   sumoBinary = "sumo"
@@ -146,7 +146,29 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res)
 
   # 結果の収集
-  exportStatus(now, servers)
+  file_name = "result.csv"
+  exportStatus(now, servers, file_name)
+
+def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
+  sumoBinary = "sumo"
+  # sumoBinary = "sumo-gui"
+  traci.start([sumoBinary, "-c", sumocfg])
+
+  now = 0
+  while traci.simulation.getMinExpectedNumber() > 0:
+    # シミュレーション内容
+    traci.simulationStep()
+    
+    now = int(traci.simulation.getTime())
+    vid_list = traci.vehicle.getIDList()
+    print(f"now: {now}, vehicles: {len(vid_list)-len(servers)}")
+
+    envUpdate(traci, now, servers, vid_list, vehicles)
+    kizon(now, servers, vehicles, vid_list, servers_comm, mig_time, res)
+
+  # 結果の収集
+  file_name = "kizon.csv"
+  exportStatus(now, servers, file_name)
 
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
@@ -159,6 +181,7 @@ if __name__ == "__main__":
   vehicles = load_vehicles(sim_time, emission)
   print(f"sim time: {sim_time}")
   presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res)
+  kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res)
   # random_allocation(sumocfg, servers, vehicles, mig_time)
   # test(sumocfg, servers, vehicles)
 

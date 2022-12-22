@@ -156,7 +156,7 @@ def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: List[Ve
   # 必要な comm をリターン
   return mig_priority, need_list
 
-def exportStatus(sim_time: int, servers: List[Server]):
+def exportStatus(sim_time: int, servers: List[Server], file_name: str):
   res = []
   for i in range(sim_time):
     tmp = {
@@ -168,7 +168,7 @@ def exportStatus(sim_time: int, servers: List[Server]):
   
   # csvに出力
   df = pandas.io.json.json_normalize(res)
-  df.to_csv('data.csv', index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
+  df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
 
 # servers_comm = setServersComm() 
 def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int):
