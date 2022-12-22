@@ -49,7 +49,7 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
 def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int):
   # 混雑度取得
   jams = getTrafficJams(now, servers_comm, servers)
-  revers_jams = list(jams.reversed())
+  revers_jams = list(reversed(jams))
   # 混雑度から再配置の優先順位を取得
   # mig_priority, need_list = checkMigNeed(now, mig_time, vid_list, vehicles, jams)
   mig_priority, need_list = checkMigNeed(now, mig_time, vid_list, vehicles, revers_jams)
