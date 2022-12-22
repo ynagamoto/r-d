@@ -13,7 +13,7 @@
 
     <communication>
         <!-- <device.btreceiver.all-recognitions value="true"/> -->
-        <device.btreceiver.range value="30"/>
+        <device.btreceiver.range value="40"/>
         <device.btreceiver.offtime value="1"/>
     </communication>
 
