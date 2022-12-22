@@ -181,7 +181,7 @@ if __name__ == "__main__":
   vehicles = load_vehicles(sim_time, emission)
   print(f"sim time: {sim_time}")
   presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res)
-  kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res)
+  # kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res)
   # random_allocation(sumocfg, servers, vehicles, mig_time)
   # test(sumocfg, servers, vehicles)
 
