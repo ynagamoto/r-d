@@ -9,6 +9,7 @@ class Vehicle:
     self.vid                : str = vid
     self.positions          : Dict[int, List[float]] = positions
     self.setCommServer(comm, sim_time)                          # self.comm: List[str]
+    # self.calc_list          : List[str] = []
     self.comm_list          : List[Comm] = []
     self.setCommList(comm)
     self.now_comm           : Comm = None
@@ -23,6 +24,7 @@ class Vehicle:
   
   def setCommServer(self, comm: Dict[str, List[float]], sim_time: int):
     self.comm = ["base"] * (sim_time+1)     # 0 ~ sim_time まで RSUなら "通信先id"，モバイル回線なら "base"
+    self.calc_list = [""] * (sim_time+1)    # 実行先
     for sid, comm_time in comm.items():     # comm_time: [0: beg, 1: end]
       for i in range(int(comm_time[0]+1), int(comm_time[1]+1)):
         self.comm[i] = sid
@@ -47,6 +49,9 @@ class Vehicle:
     tmp = list(filter(lambda comm: comm.sid == sid, self.comm_list))
     tmp[0].flag = True
 
+  def setCalcServer(self, sid: str, beg: int, end: int):
+    for i in range(beg, end+1):
+      self.calc_list[i] = sid
 
   # migTimer は使用しない
   # server でマイグレーション状況を管理する
@@ -131,6 +136,6 @@ class Vehicle:
 """
 class Comm:
   def __init__(self, sid: str, comm: List[float]):
-    self.sid    : str = sid           # 通信するサーバid
-    self.time   : List[float] = comm  # 通信時間 [beg, end]
-    self.flag   : bool = False        # 再配置計算を行ったかどうか
+    self.sid      : str = sid           # 通信するサーバid
+    self.time     : List[float] = comm  # 通信時間 [beg, end]
+    self.flag     : bool = False        # 再配置計算を行ったかどうか

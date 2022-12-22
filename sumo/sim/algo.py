@@ -28,7 +28,7 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
 """
 1. 環境の更新 -> envUpdate()
   1-1. サーバのタスクとマイグレーション状況を更新 -> server.updateResource()
-    ※ VMの起動中は半分の負荷 TODO
+    ※ VMの起動中は半分の負荷
   1-2. サービスを受けられるかチェック -> server.checkTask() 
   1-3. 車両の通信状況の更新 <- 通信先のリストを使う管理に変える
 2. 混雑度を算出 -> getTrafficJams()
@@ -42,7 +42,7 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
 6. 再配置計算 -> loadAllocation()
   6-1.  計算資源の負荷にマイグレーション負荷を足して計算する
 7. リソース確保&リソース予約状況の更新 -> s.addTask()
-8. 結果の収集 -> TODO
+8. 結果の収集
   8-1. フレームレートの計算 TODO
 """
 # servers_comm = setServersComm() 
@@ -87,6 +87,7 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
       # VM起動中は半分の負荷
       locate_server.resReserv(v.vid, res, beg, end, mig_time)
       comm.flag = True
+      v.setCalcServer(locate_sid, beg, end)
 
 
 # 環境の更新
@@ -104,12 +105,12 @@ def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehic
     v = v_list[0]
 
     # サービスが受けられるかチェック
-    comm_sid = v.getCommServer(now) # 現在通信しているサーバーのid
-    s_list = list(filter(lambda server: server.sid == comm_sid, servers)) # idからサーバを取得
+    calc_sid = v.calc_list[now]                                             # 現在通信しているサーバーのid
+    s_list = list(filter(lambda server: server.sid == calc_sid, servers))   # idからサーバを取得
     if len(s_list) == 0:
       continue
-    comm_server = s_list[0]
-    if not comm_server.checkTask(now, v.vid):
+    calc_server = s_list[0]
+    if not calc_server.checkTask(now, v.vid):
       # サービスが受けられない場合はエラー
       print(f"----- Error: {v.vid} could not receive the service.({traci.vehicle.getLaneID(v.vid)}) -----")
 
