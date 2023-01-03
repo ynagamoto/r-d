@@ -11,6 +11,8 @@ class Task:
     # self.delay      : float = delay                                 # Delay from vehicle to server 
     self.timer      : int = timer
     self.status     : str = "mig"                                   # mig のときは必要リソースの半分
+  def show(self):
+    print(f"vid: {self.vid}, res: {self.resource}, timer: {self.timer}")
 
 class Server:
   def __init__(self, sid: str, stype: str, postion: Dict[str, int], spec: int, sim_time: int):
@@ -85,6 +87,7 @@ class Server:
   
   def resReserv(self, vid:str, res:int, beg: int, end: int, mig_time: int): # 指定した時間帯のリソースを確保
     task = Task(vid, res, 0, mig_time)
+    task.show()
     for i in range(beg, end+1):
       self.addTask(task, i)
 
