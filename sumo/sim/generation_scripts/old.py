@@ -99,7 +99,8 @@ if __name__ == "__main__":
   #   for j, pos in pos_dict[i].items():
   #     print(pos)
   
-  spec = 10
+  # spec = 10
+  spec = 4
   s_dict = generate_routefile(10, 1000, spec) 
   with open('../sim_xml/servers.json', 'w') as f:
     json.dump(s_dict, f, ensure_ascii=False, indent=2)

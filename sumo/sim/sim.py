@@ -14,7 +14,7 @@ import traci
 
 from server import Server, Task
 from vehicle import Vehicle
-from tools import generate_routefile, load_emission, load_servers_json, load_vehicles, setServersComm
+from tools import load_emission, load_servers_json, load_vehicles, setServersComm
 from algo import getRandomServer, loadAllocation, envUpdate, exportStatus, kizon
 
 def run(sumocfg):
@@ -27,6 +27,7 @@ def run(sumocfg):
     traci.simulationStep()
   traci.close()
 
+"""
 def sim(sumocfg):
   sumoBinary = "sumo"
   # sumoBinary = "sumo-gui"
@@ -40,6 +41,7 @@ def sim(sumocfg):
       traci.vehicle.getPosition(vid)
   traci.close()
   sys.stdout.flush()
+"""
 
 def random_allocation(sumocfg, servers, vehicles, mig_time):
   sumoBinary = "sumo"

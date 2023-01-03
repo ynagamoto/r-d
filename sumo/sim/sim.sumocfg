@@ -3,7 +3,9 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
-        <net-file value="sim_xml/grid11x11.net.xml"/>
+        <!-- <net-file value="sim_xml/grid11x11.net.xml"/> -->
+        <net-file value="sim_xml/test4x4.net.xml"/>
+        <!-- <route-files value="sim_xml/random.rou.xml"/> -->
         <route-files value="sim_xml/random.rou.xml"/>
     </input>
 

@@ -1,0 +1,488 @@
+<routes>
+  <vType id="car" vClass="passenger" speedDev="0.2" sigma="0.2" decel="4.5" accel="2.6" maxSpeed="60" length="5"/>
+  
+
+  <vehicle id="mec0" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="B3B2"/>
+    <stop edge="B3B2" lane="B3B2_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec1" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="B1B0"/>
+    <stop edge="B1B0" lane="B1B0_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec2" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="B2B1"/>
+    <stop edge="B2B1" lane="B2B1_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec3" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="C2C1"/>
+    <stop edge="C2C1" lane="C2C1_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec4" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="C1C0"/>
+    <stop edge="C1C0" lane="C1C0_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec5" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="C4C3"/>
+    <stop edge="C4C3" lane="C4C3_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec6" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="D4D3"/>
+    <stop edge="D4D3" lane="D4D3_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec7" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="D1D0"/>
+    <stop edge="D1D0" lane="D1D0_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec8" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="D2D1"/>
+    <stop edge="D2D1" lane="D2D1_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec9" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="E3E2"/>
+    <stop edge="E3E2" lane="E3E2_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec10" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="E1E0"/>
+    <stop edge="E1E0" lane="E1E0_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec11" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="F1F0"/>
+    <stop edge="F1F0" lane="F1F0_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec12" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="F1F0"/>
+    <stop edge="F1F0" lane="F1F0_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <vehicle id="mec13" type="car" depart="0" color="1, 0, 0" departPos="stop">
+    <route edges="F3F2"/>
+    <stop edge="F3F2" lane="F3F2_0" parking="true"/>
+    <param key="has.btreceiver.device" value="true"/> 
+  </vehicle>
+
+  <flow id="car0" type="car" departPos="base" number="1" begin="0" end="100000" from="F6F5" to="C5C6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car1" type="car" departPos="base" number="1" begin="0" end="100000" from="B0B1" to="F5F6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car2" type="car" departPos="base" number="1" begin="0" end="100000" from="A2B2" to="D4E4">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car3" type="car" departPos="base" number="1" begin="0" end="100000" from="F6F5" to="B4A4">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car4" type="car" departPos="base" number="1" begin="0" end="100000" from="F6F5" to="F5F6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car5" type="car" departPos="base" number="1" begin="0" end="100000" from="C6C5" to="B4A4">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car6" type="car" departPos="base" number="1" begin="0" end="100000" from="E2D2" to="C5C6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car7" type="car" departPos="base" number="1" begin="0" end="100000" from="E5D5" to="E1E0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car8" type="car" departPos="base" number="1" begin="0" end="100000" from="F6F5" to="E1E0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car9" type="car" departPos="base" number="1" begin="0" end="100000" from="F0F1" to="E5E6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car10" type="car" departPos="base" number="1" begin="0" end="100000" from="A5B5" to="F1F0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car11" type="car" departPos="base" number="1" begin="0" end="100000" from="E0E1" to="D2E2">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car12" type="car" departPos="base" number="1" begin="0" end="100000" from="E2D2" to="D1E1">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car13" type="car" departPos="base" number="1" begin="0" end="100000" from="F0F1" to="D5E5">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car14" type="car" departPos="base" number="1" begin="0" end="100000" from="B6B5" to="B3A3">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car15" type="car" departPos="base" number="1" begin="0" end="100000" from="A1B1" to="E5E6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car16" type="car" departPos="base" number="1" begin="0" end="100000" from="E2D2" to="E1E0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car17" type="car" departPos="base" number="1" begin="0" end="100000" from="A5B5" to="D4E4">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car18" type="car" departPos="base" number="1" begin="0" end="100000" from="B0B1" to="D5E5">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car19" type="car" departPos="base" number="1" begin="0" end="100000" from="D0D1" to="C5C6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car20" type="car" departPos="base" number="1" begin="0" end="100000" from="D6D5" to="E1E0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car21" type="car" departPos="base" number="1" begin="0" end="100000" from="F6F5" to="C5C6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car22" type="car" departPos="base" number="1" begin="0" end="100000" from="F0F1" to="B5A5">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car23" type="car" departPos="base" number="1" begin="0" end="100000" from="E0E1" to="D1D0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car24" type="car" departPos="base" number="1" begin="0" end="100000" from="E1D1" to="E1E0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car25" type="car" departPos="base" number="1" begin="0" end="100000" from="C0C1" to="C5C6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car26" type="car" departPos="base" number="1" begin="0" end="100000" from="E1D1" to="B1A1">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car27" type="car" departPos="base" number="1" begin="0" end="100000" from="E3D3" to="B5A5">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car28" type="car" departPos="base" number="1" begin="0" end="100000" from="B6B5" to="E5E6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car29" type="car" departPos="base" number="1" begin="0" end="100000" from="D0D1" to="D1D0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car30" type="car" departPos="base" number="1" begin="0" end="100000" from="E0E1" to="C5C6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car31" type="car" departPos="base" number="1" begin="0" end="100000" from="B6B5" to="B1B0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car32" type="car" departPos="base" number="1" begin="0" end="100000" from="A2B2" to="D5E5">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car33" type="car" departPos="base" number="1" begin="0" end="100000" from="A2B2" to="D5E5">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car34" type="car" departPos="base" number="1" begin="0" end="100000" from="A5B5" to="D1D0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car35" type="car" departPos="base" number="1" begin="0" end="100000" from="E5D5" to="B5A5">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car36" type="car" departPos="base" number="1" begin="0" end="100000" from="A3B3" to="C1C0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car37" type="car" departPos="base" number="1" begin="0" end="100000" from="A3B3" to="B4A4">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car38" type="car" departPos="base" number="1" begin="0" end="100000" from="B6B5" to="E5E6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car39" type="car" departPos="base" number="1" begin="0" end="100000" from="A4B4" to="C5C6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car40" type="car" departPos="base" number="1" begin="0" end="100000" from="E2D2" to="B4A4">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car41" type="car" departPos="base" number="1" begin="0" end="100000" from="A1B1" to="F1F0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car42" type="car" departPos="base" number="1" begin="0" end="100000" from="A3B3" to="B1B0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car43" type="car" departPos="base" number="1" begin="0" end="100000" from="A4B4" to="B1B0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car44" type="car" departPos="base" number="1" begin="0" end="100000" from="E5D5" to="E5E6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car45" type="car" departPos="base" number="1" begin="0" end="100000" from="E4D4" to="B3A3">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car46" type="car" departPos="base" number="1" begin="0" end="100000" from="E0E1" to="E5E6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car47" type="car" departPos="base" number="1" begin="0" end="100000" from="B0B1" to="C1C0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car48" type="car" departPos="base" number="1" begin="0" end="100000" from="B0B1" to="B5B6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car49" type="car" departPos="base" number="1" begin="0" end="100000" from="E2D2" to="C1C0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car50" type="car" departPos="base" number="1" begin="0" end="100000" from="E2D2" to="E5E6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car51" type="car" departPos="base" number="1" begin="0" end="100000" from="F0F1" to="E1E0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car52" type="car" departPos="base" number="1" begin="0" end="100000" from="E1D1" to="B1A1">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car53" type="car" departPos="base" number="1" begin="0" end="100000" from="E5D5" to="E5E6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car54" type="car" departPos="base" number="1" begin="0" end="100000" from="E3D3" to="C5C6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car55" type="car" departPos="base" number="1" begin="0" end="100000" from="E0E1" to="B4A4">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car56" type="car" departPos="base" number="1" begin="0" end="100000" from="A3B3" to="B1A1">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car57" type="car" departPos="base" number="1" begin="0" end="100000" from="F6F5" to="B5B6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car58" type="car" departPos="base" number="1" begin="0" end="100000" from="A5B5" to="D3E3">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car59" type="car" departPos="base" number="1" begin="0" end="100000" from="E5D5" to="B5A5">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car60" type="car" departPos="base" number="1" begin="0" end="100000" from="F6F5" to="B2A2">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car61" type="car" departPos="base" number="1" begin="0" end="100000" from="C6C5" to="D1D0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car62" type="car" departPos="base" number="1" begin="0" end="100000" from="C0C1" to="E5E6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car63" type="car" departPos="base" number="1" begin="0" end="100000" from="A1B1" to="B1A1">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car64" type="car" departPos="base" number="1" begin="0" end="100000" from="E5D5" to="D1E1">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car65" type="car" departPos="base" number="1" begin="0" end="100000" from="E3D3" to="D5D6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car66" type="car" departPos="base" number="1" begin="0" end="100000" from="E0E1" to="B5A5">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car67" type="car" departPos="base" number="1" begin="0" end="100000" from="E6E5" to="B1B0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car68" type="car" departPos="base" number="1" begin="0" end="100000" from="D0D1" to="B1B0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car69" type="car" departPos="base" number="1" begin="0" end="100000" from="E4D4" to="D4E4">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car70" type="car" departPos="base" number="1" begin="0" end="100000" from="C0C1" to="C1C0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car71" type="car" departPos="base" number="1" begin="0" end="100000" from="A1B1" to="B1A1">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car72" type="car" departPos="base" number="1" begin="0" end="100000" from="E0E1" to="D5D6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car73" type="car" departPos="base" number="1" begin="0" end="100000" from="A4B4" to="C1C0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car74" type="car" departPos="base" number="1" begin="0" end="100000" from="C0C1" to="D2E2">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car75" type="car" departPos="base" number="1" begin="0" end="100000" from="C6C5" to="E1E0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car76" type="car" departPos="base" number="1" begin="0" end="100000" from="D6D5" to="D4E4">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car77" type="car" departPos="base" number="1" begin="0" end="100000" from="B0B1" to="D5D6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car78" type="car" departPos="base" number="1" begin="0" end="100000" from="E0E1" to="D3E3">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car79" type="car" departPos="base" number="1" begin="0" end="100000" from="E4D4" to="D3E3">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car80" type="car" departPos="base" number="1" begin="0" end="100000" from="F0F1" to="D5D6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car81" type="car" departPos="base" number="1" begin="0" end="100000" from="E5D5" to="C1C0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car82" type="car" departPos="base" number="1" begin="0" end="100000" from="C0C1" to="D1D0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car83" type="car" departPos="base" number="1" begin="0" end="100000" from="E4D4" to="D4E4">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car84" type="car" departPos="base" number="1" begin="0" end="100000" from="F6F5" to="D2E2">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car85" type="car" departPos="base" number="1" begin="0" end="100000" from="A4B4" to="B5B6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car86" type="car" departPos="base" number="1" begin="0" end="100000" from="B0B1" to="E1E0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car87" type="car" departPos="base" number="1" begin="0" end="100000" from="D0D1" to="F5F6">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car88" type="car" departPos="base" number="1" begin="0" end="100000" from="E5D5" to="D4E4">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car89" type="car" departPos="base" number="1" begin="0" end="100000" from="A4B4" to="F1F0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car90" type="car" departPos="base" number="1" begin="0" end="100000" from="E3D3" to="D2E2">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car91" type="car" departPos="base" number="1" begin="0" end="100000" from="F0F1" to="B5A5">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car92" type="car" departPos="base" number="1" begin="0" end="100000" from="A5B5" to="B4A4">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car93" type="car" departPos="base" number="1" begin="0" end="100000" from="E2D2" to="D1E1">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car94" type="car" departPos="base" number="1" begin="0" end="100000" from="E5D5" to="C1C0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car95" type="car" departPos="base" number="1" begin="0" end="100000" from="E5D5" to="B1B0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car96" type="car" departPos="base" number="1" begin="0" end="100000" from="A1B1" to="D1E1">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car97" type="car" departPos="base" number="1" begin="0" end="100000" from="D6D5" to="D1E1">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car98" type="car" departPos="base" number="1" begin="0" end="100000" from="D6D5" to="D5E5">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+
+  <flow id="car99" type="car" departPos="base" number="1" begin="0" end="100000" from="B6B5" to="F1F0">
+    <param key="has.btsender.device" value="true"/> 
+  </flow>
+</routes>

@@ -1,0 +1,130 @@
+{
+  "servers": [
+    {
+      "sid": "mec0",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 0,
+        "y": 3
+      }
+    },
+    {
+      "sid": "mec1",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "sid": "mec2",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 0,
+        "y": 2
+      }
+    },
+    {
+      "sid": "mec3",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 1,
+        "y": 2
+      }
+    },
+    {
+      "sid": "mec4",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 1,
+        "y": 1
+      }
+    },
+    {
+      "sid": "mec5",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 1,
+        "y": 4
+      }
+    },
+    {
+      "sid": "mec6",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 2,
+        "y": 4
+      }
+    },
+    {
+      "sid": "mec7",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 2,
+        "y": 1
+      }
+    },
+    {
+      "sid": "mec8",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "sid": "mec9",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 3,
+        "y": 3
+      }
+    },
+    {
+      "sid": "mec10",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 3,
+        "y": 1
+      }
+    },
+    {
+      "sid": "mec11",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 4,
+        "y": 1
+      }
+    },
+    {
+      "sid": "mec12",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 4,
+        "y": 0
+      }
+    },
+    {
+      "sid": "mec13",
+      "stype": "edge",
+      "spec": 4,
+      "position": {
+        "x": 4,
+        "y": 3
+      }
+    }
+  ]
+}
