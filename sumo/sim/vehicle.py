@@ -12,7 +12,7 @@ class Vehicle:
     # self.calc_list          : List[str] = []
     self.comm_list          : List[Comm] = []
     self.setCommList(comm)
-    self.now_comm           : Comm = None
+    # self.now_comm           : Comm = None
     self.comm_org           : Dict[str, List[float]] = comm     # comm: [sid, [beg, end]]
     # self.comm_server        : str = ""                            # server id
     # self.comm_server_type   : str = ""
@@ -96,7 +96,14 @@ class Vehicle:
         break
     return next_time
   """
-  
+  def checkCommDown(self, now) -> bool:
+    res = list(filter(lambda comm: comm[1] == now-1, self.comm_list))
+    if len(res) > 0:
+      return True
+    else:
+      return False
+
+
   # 次のRSUのIDを取得
   def getNextSid(self, now: int):
     comm_list = list(filter(lambda comm: comm.time[0] >= now, self.comm_list))

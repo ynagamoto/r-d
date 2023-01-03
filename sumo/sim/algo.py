@@ -240,12 +240,11 @@ def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Di
     next_comm, flag = v.getNextComm(now)
     if not flag: # 次の通信先がない（マップから消える）
       continue
-    res = list(filter(lambda comm: comm.time[1]+1 == now, v.comm_list))
-    if len(res) > 0:
+    if v.checkCommDonw(now):
       # 再配置計算が必要
-      sid = next_comm.sid
-      if not sid in need_list:
-        need_list[sid] = []
-      need_list[sid].append([next_comm, v])
+      next_sid = next_comm.sid
+      if not next_sid in need_list:
+        need_list[next_sid] = []
+      need_list[next_sid].append([next_comm, v])
     
     return mig_priority, need_list
