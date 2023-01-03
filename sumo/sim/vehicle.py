@@ -96,13 +96,13 @@ class Vehicle:
         break
     return next_time
   """
+
   def checkCommDown(self, now) -> bool:
-    res = list(filter(lambda comm: comm[1] == now-1, self.comm_list))
+    res = list(filter(lambda comm: int(comm.time[1]+1) == now-1, self.comm_list))
     if len(res) > 0:
       return True
     else:
       return False
-
 
   # 次のRSUのIDを取得
   def getNextSid(self, now: int):
