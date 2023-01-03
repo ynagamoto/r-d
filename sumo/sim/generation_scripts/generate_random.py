@@ -123,6 +123,6 @@ if __name__ == "__main__":
   num = 4
   # spec = 10
   spec = 4
-  s_dict = generate_routefile(num, 100, spec) 
+  s_dict = generate_routefile(num, 500, spec) 
   with open('../sim_xml/servers.json', 'w') as f:
     json.dump(s_dict, f, ensure_ascii=False, indent=2)
