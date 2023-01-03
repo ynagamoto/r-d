@@ -169,7 +169,7 @@ def exportStatus(sim_time: int, servers: List[Server], file_name: str):
     res.append(tmp)
   
   # csvに出力
-  df = pandas.io.json.json_normalize(res)
+  df = pandas.json_normalize(res)
   df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
 
 # servers_comm = setServersComm() 
