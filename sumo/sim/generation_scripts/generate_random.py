@@ -119,10 +119,10 @@ def generate_routefile(grid_num: int, v_num: int, spec: int):
     return s_dict
 
 if __name__ == "__main__":
-  # num = 10
-  num = 4
-  # spec = 10
-  spec = 4
-  s_dict = generate_routefile(num, 500, spec) 
+  num = 10
+  # num = 4
+  spec = 12
+  # spec = 4
+  s_dict = generate_routefile(num, 1000, spec) 
   with open('../sim_xml/servers.json', 'w') as f:
     json.dump(s_dict, f, ensure_ascii=False, indent=2)

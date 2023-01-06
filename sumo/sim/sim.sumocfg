@@ -4,7 +4,7 @@
 
     <input>
         <!-- <net-file value="sim_xml/grid11x11.net.xml"/> -->
-        <net-file value="sim_xml/test4x4.net.xml"/>
+        <net-file value="sim_xml/test10x10.net.xml"/>
         <!-- <route-files value="sim_xml/random.rou.xml"/> -->
         <route-files value="sim_xml/random.rou.xml"/>
     </input>
