@@ -176,7 +176,7 @@ def exportStatus(sim_time: int, servers: List[Server], file_name: str):
 def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int):
   # 混雑度取得
   jams = getTrafficJams(now, servers_comm, servers)
-  # 混雑度から再配置の優先順位を取得
+  # 混雑度から再配置の優先順位を取得 
   mig_priority, need_list = kizonCheckMigNeed(now, mig_time, vid_list, vehicles, jams)
   for sid in mig_priority:      # 優先度が高い順から再配置計算
     for tmp in need_list[sid]:  # tmp[0] -> Comm, tmp[1] -> Vehicle
@@ -192,7 +192,9 @@ def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_lis
       # 現在の負荷を集める
       loads = {}
       for s in servers:
-        loads[s.sid] = s.spec - s.idle_list[now]
+        # これ以上配置できないものは追加しない
+        if s.idle_list[now] > 0:
+          loads[s.sid] = s.spec - s.idle_list[now]
       # 遅延を足してソート
       inds = {}
       for sid, load in loads.items():
@@ -247,4 +249,4 @@ def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Di
         need_list[next_sid] = []
       need_list[next_sid].append([next_comm, v])
     
-    return mig_priority, need_list
+  return mig_priority, need_list

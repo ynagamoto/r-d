@@ -98,7 +98,14 @@ class Vehicle:
   """
 
   def checkCommDown(self, now) -> bool:
-    res = list(filter(lambda comm: int(comm.time[1]+1) == now-1, self.comm_list))
+    # res = list(filter(lambda comm: int(comm.time[1]+1) == now-1, self.comm_list))
+    res = []
+    for comm in self.comm_list:
+      tmp = int(comm.time[1]+1)
+      # print(f"{comm.time[0]}, {tmp}, now: {now}")
+      if tmp == now-1:
+        # print("TTTTTTTTTTTTTTTTTTTTT")
+        res.append(comm)
     if len(res) > 0:
       return True
     else:
