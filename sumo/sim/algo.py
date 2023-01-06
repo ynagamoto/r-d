@@ -149,7 +149,7 @@ def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: List[Ve
       continue
     
     # そのRSUと通信するまでの猶予 ＝＝ マイグレーションにかかる時間のとき再配置計算を行う
-    if comm.time[0]-now <= mig_time+1:
+    if comm.time[0]-now < mig_time+1:
       # 再配置計算が必要
       sid = comm.sid
       if not sid in need_list:
@@ -221,7 +221,6 @@ def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_lis
       comm.flag = True
       v.setCalcServer(locate_sid, beg, end)
 
-# TODO
 def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Dict[str, Vehicle], jams: Dict[str, List[str]]):
   # 混雑度順から need_list を作成
   # jams は通信先が多い順
