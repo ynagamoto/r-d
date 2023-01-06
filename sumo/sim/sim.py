@@ -176,7 +176,7 @@ def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
 
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
-  mig_time = 5
+  mig_time = 10
   res = 2
   run(sumocfg)
   sim_time, emission = load_emission()
