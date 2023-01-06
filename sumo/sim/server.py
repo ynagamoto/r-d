@@ -10,7 +10,10 @@ class Task:
     self.resource   : int = resource                                # Required resource
     # self.delay      : float = delay                                 # Delay from vehicle to server 
     self.timer      : int = timer
-    self.status     : str = "mig"                                   # mig のときは必要リソースの半分
+    if timer < 0:
+      self.status = ""
+    else:
+      self.status     : str = "mig"                                   # mig のときは必要リソースの半分
   def show(self):
     print(f"vid: {self.vid}, res: {self.resource}, timer: {self.timer}")
 
