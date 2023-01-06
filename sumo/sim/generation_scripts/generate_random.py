@@ -5,7 +5,7 @@ def getRandPoints(num: int):
   gene_num = num + 1
   randnum_dict = {}
   q = int(num/2)
-  limit = int(num*2/3)
+  limit = int(num*3/4)
   pos_dict = {}
   sum_num = 0
   for i in range(gene_num):
