@@ -5,10 +5,11 @@ def getRandPoints(num: int):
   gene_num = num + 1
   randnum_dict = {}
   q = int(num/2)
+  limit = int(num*2/3)
   pos_dict = {}
   sum_num = 0
   for i in range(gene_num):
-    randnum_dict[i] = random.randrange(q, num) # 個数
+    randnum_dict[i] = random.randrange(q, limit) # 個数
     sum_num += randnum_dict[i]
     tmp = {}
     check = []
