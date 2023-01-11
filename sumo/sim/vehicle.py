@@ -119,6 +119,13 @@ class Vehicle:
     else:
       next_comm = comm_list[0]
       return next_comm.sid, True
+  
+  def getNowComm(self, now):
+    tmp = list(filter(lambda comm: comm.time[0] <= now and now <= comm.time[1], self.comm_list))
+    if len(tmp) == 0:
+      return None, False 
+    else:
+      return tmp[0], True
 
   def getNextComm(self, now: int):
     comm_list = list(filter(lambda comm: comm.time[0] >= now, self.comm_list))

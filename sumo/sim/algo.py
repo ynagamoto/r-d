@@ -116,8 +116,9 @@ def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehic
       if not (now >= v.comm_list[0].time[0] and now <= v.comm_list[0].time[1]): # 一番最初の通信はしょうがないので無視
         # サービスが受けられない場合はエラー
         print(f"----- Error: {v.vid} could not receive the service.(now: {now}, lane: {traci.vehicle.getLaneID(v.vid)}) -----")
-        tmp = list(filter(lambda task: task.vid == v.vid, calc_server.tasks[now]))
-        tmp[0].show()
+        comm, f = v.getNowComm(now)
+        if f:
+          print(f"  beg: {comm.time[0]}, end: {comm.time[1]}")
 
 
 # 再配置計算が必要かチェック 
