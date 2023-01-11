@@ -96,7 +96,7 @@ class Server:
 
   # マイグレーション状況を更新する
   def updateResource(self, now: int):
-    for i in range(now, self.sim_time+1):
+    for i in range(now, len(self.tasks)):
       for task in self.tasks[i]:
         if task.timer > 0:
           task.timer -= 1
