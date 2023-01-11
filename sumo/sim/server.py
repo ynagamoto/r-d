@@ -96,12 +96,19 @@ class Server:
 
   # マイグレーション状況を更新する
   def updateResource(self, now: int):
+    load = 0
     for i in range(now, len(self.tasks)):
       for task in self.tasks[i]:
         if task.timer > 0:
           task.timer -= 1
           if task.timer == 0:
             task.status = "ready"
+        if task.status == "mig":
+          load += task.resource/2
+        elif task.status == "ready":
+          load += task.resource
+        else:
+          print("!!!!!!!!!!")
     if now < len(self.idle_list):
       print(f"sid: {self.sid}, idle: {self.idle_list[now]}")
 

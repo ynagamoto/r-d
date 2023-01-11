@@ -119,6 +119,8 @@ def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehic
         comm, f = v.getNowComm(now)
         if f:
           print(f"  beg: {comm.time[0]}, end: {comm.time[1]}")
+          for task in calc_server.tasks[now]:
+            print(f"   vid: {task.vid}, timer: {task.timer}, status: {task.status}")
 
 
 # 再配置計算が必要かチェック 
