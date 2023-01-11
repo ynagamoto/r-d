@@ -159,23 +159,22 @@ def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: List[Ve
   # 必要な comm をリターン
   return mig_priority, need_list
 
-def exportStatus(sim_time: int, servers: List[Server], file_name: str):
-  res = []
-  for i in range(sim_time):
-    tmp = {
-      "t": i
-    }
-    for s in servers:
-      tmp[s.sid] = 0
-      for task in s.tasks:
-        if task.status == "mig":
-          tmp[s.sid] += task.resorce/2
-        else:
-          tmp[s.sid] += task.resorce
-    res.append(tmp)
+def exportNowLoad(now: int, servers: List[Server]):
+  tmp = {}
+  for s in servers:
+    tmp[s.sid] = 0
+    for task in s.tasks[now]:
+      if task.status == "mig":
+        tmp[s.sid] += task.resorce/2
+      else:
+        tmp[s.sid] += task.resorce
+  return tmp
   
+
+
+def exportResult(file_name: str, result):
   # csvに出力
-  df = pandas.json_normalize(res)
+  df = pandas.json_normalize(result)
   df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
 
 # servers_comm = setServersComm() 
