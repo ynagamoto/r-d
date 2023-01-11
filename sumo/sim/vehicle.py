@@ -35,7 +35,8 @@ class Vehicle:
   # 車両がどのRSUと何秒から何秒まで通信するかのリストを作成 ( {sid, [beg, end]} のリスト)
   def setCommList(self, comm):
     for sid, comm_time in comm.items():     # comm_time: [0: beg, 1: end]
-      self.comm_list.append(Comm(sid, comm_time))
+      tmp = [int(comm_time[0]), int(comm_time[1])+1]
+      self.comm_list.append(Comm(sid, tmp))
         
   # 車両が now 以降にどのRSUと何秒から何秒まで通信するかのリスト取得 ( {sid, [beg, end]} のリスト)
   # getNextComm を改良する
