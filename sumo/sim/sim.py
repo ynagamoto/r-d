@@ -147,6 +147,7 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
 
     envUpdate(traci, now, servers, vid_list, vehicles)
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res)
+    
     result[now] = exportNowLoad(now, servers)
 
   # 結果の収集
@@ -184,7 +185,7 @@ if __name__ == "__main__":
   res = 2
   run(sumocfg)
   sim_time, emission = load_emission()
-  sim_time += 1
+  sim_time += 2
   servers = load_servers_json(sim_time)
   vehicles = load_vehicles(sim_time, emission)
   print(f"sim time: {sim_time}")
