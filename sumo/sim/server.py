@@ -103,7 +103,7 @@ class Server:
           if task.timer == 0:
             task.status = "ready"
     if now < len(self.idle_list):
-      print(f"--- out of index {self.sid}, {self.idle_list[now]} ---")
+      print(f"sid: {self.sid}, idle: {self.idle_list[now]}")
 
   # vid のタスクが now_task に含まれていて提供可能かどうかチェック
   def checkTask(self, now: int, vid: str) -> bool:
