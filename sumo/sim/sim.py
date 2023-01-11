@@ -22,9 +22,16 @@ def run(sumocfg):
   # sumoBinary = "sumo-gui"
   traci.start([sumoBinary, "-c", sumocfg])
 
+  f = True
+  res_num = 0
   while traci.simulation.getMinExpectedNumber() > 0:
     # シミュレーション内容
     traci.simulationStep()
+    if f:
+      res_num = int(traci.vehicle.getIDCount())
+      f = False
+    # print(f"now: {int(traci.simulation.getTime())}, v_num: {res_num - int(traci.vehicle.getIDCount())}")
+    print(f"now: {int(traci.simulation.getTime())}, v_num: {int(traci.vehicle.getIDCount())}")
   traci.close()
 
 """

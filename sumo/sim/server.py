@@ -70,7 +70,7 @@ class Server:
   
   # !!!!!!!!!!   !WILL   !!!!!!!!!!
   # beg ~ end の負荷
-  def getTimeOfLoads(self, beg: int, end:int) -> [float, List[Task]]:
+  def getTimeOfLoads(self, beg: int, end:int): # [float, List[Task]]:
     res_list = []
     sum_load = 0
     for i in range(beg, end+1):
@@ -96,21 +96,21 @@ class Server:
 
   # マイグレーション状況を更新する
   def updateResource(self, now: int):
-    for i in range(now, self.sim_time):
+    for i in range(now, self.sim_time+1):
       for task in self.tasks[i]:
         if task.timer > 0:
           task.timer -= 1
           if task.timer == 0:
             task.status = "ready"
     if now < len(self.idle_list):
-      print(f"{self.sid}, {self.idle_list[now]}")
+      print(f"--- out of index {self.sid}, {self.idle_list[now]} ---")
 
   # vid のタスクが now_task に含まれていて提供可能かどうかチェック
   def checkTask(self, now: int, vid: str) -> bool:
     task_list = self.tasks[now] 
-    res = list(filter(lambda task: task.vid == vid, task_list))
-    if len(res) > 0:
-      if res[0].timer == 0:
+    task = list(filter(lambda task: task.vid == vid, task_list))
+    if len(task) > 0:
+      if task[0].status == "ready":
         return True
       else:
         return False
