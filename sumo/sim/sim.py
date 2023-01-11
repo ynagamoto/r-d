@@ -149,6 +149,7 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res)
     
     result[now] = exportNowLoad(now, servers)
+    result[now]["vehicles"] = len(vid_list) - len(servers)
 
   # 結果の収集
   file_name = "result.csv"
@@ -173,6 +174,7 @@ def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
     envUpdate(traci, now, servers, vid_list, vehicles)
     kizon(now, servers, vehicles, vid_list, servers_comm, mig_time, res)
     result[now] = exportNowLoad(now, servers)
+    result[now]["vehicles"] = len(vid_list) - len(servers)
 
   # 結果の収集
   file_name = "kizon.csv"
