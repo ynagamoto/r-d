@@ -17,7 +17,7 @@ def getRandPoints(num: int):
       flag = True
       rand_y = 0
       while flag:
-        rand_y = random.randrange(gene_num) # 0 ~ num まで
+        rand_y = random.randrange(1, gene_num+1) # 1 ~ num まで
         if not rand_y in check:
           flag = False
       pos = [i, rand_y] # 座標
@@ -82,11 +82,7 @@ def generate_routefile(grid_num: int, v_num: int, spec: int):
     for i in range(len(pos_dict)):
       for _, pos in pos_dict[i].items():
         alp = chr(ord('A')+1+pos[0])
-        edge = ""
-        if pos[1] == 0:
-          edge = f"{alp}{pos[1]+1}{alp}{pos[1]}"
-        else:
-          edge = f"{alp}{pos[1]}{alp}{pos[1]-1}"
+        edge = f"{alp}{pos[1]+1}{alp}{pos[1]}"
         print(f"""
   <vehicle id="mec{sid}" type="car" depart="0" color="1, 0, 0" departPos="stop">
     <route edges="{edge}"/>
