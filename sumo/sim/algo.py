@@ -117,7 +117,7 @@ def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehic
         # サービスが受けられない場合はエラー
         print(f"----- Error: {v.vid} could not receive the service.(now: {now}, lane: {traci.vehicle.getLaneID(v.vid)}) -----")
         tmp = list(filter(lambda task: task.vid == v.vid, calc_server.tasks[now]))
-        tmp[0].showTask()
+        tmp[0].show()
 
 
 # 再配置計算が必要かチェック 
