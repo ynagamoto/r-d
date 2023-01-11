@@ -166,7 +166,12 @@ def exportStatus(sim_time: int, servers: List[Server], file_name: str):
       "t": i
     }
     for s in servers:
-      tmp[s.sid] = s.idle_list[i]
+      tmp[s.sid] = 0
+      for task in s.tasks:
+        if task.status == "mig":
+          tmp[s.sid] += task.resorce/2
+        else:
+          tmp[s.sid] += task.resorce
     res.append(tmp)
   
   # csvに出力
