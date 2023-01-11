@@ -113,9 +113,10 @@ def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehic
       continue
     calc_server = s_list[0]
     if not calc_server.checkTask(now, v.vid):
-      if not (now >= v.comm_list[0].time[0] and now < v.comm_list[0].time[1]): # 一番最初の通信はしょうがないので無視
+      if not (now >= v.comm_list[0].time[0] and now <= v.comm_list[0].time[1]): # 一番最初の通信はしょうがないので無視
         # サービスが受けられない場合はエラー
         print(f"----- Error: {v.vid} could not receive the service.({traci.vehicle.getLaneID(v.vid)}) -----")
+        print(f"  now: {now}, beg: {v.comm_list[0].time[0]}, end: {v.comm_list[0].time[1]}")
 
 
 # 再配置計算が必要かチェック 
@@ -149,7 +150,7 @@ def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: List[Ve
       continue
     
     # そのRSUと通信するまでの猶予 ＝＝ マイグレーションにかかる時間のとき再配置計算を行う
-    if comm.time[0]-now <= mig_time+2:
+    if comm.time[0]-now == mig_time+1:
       # 再配置計算が必要
       sid = comm.sid
       if not sid in need_list:
