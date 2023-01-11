@@ -87,7 +87,7 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
 
       # リソース予約
       # VM起動中は半分の負荷
-      locate_server.resReserv(v.vid, res, beg, end, mig_time)
+      locate_server.resReserv(v.vid, res, beg, end, mig_time+1)
       comm.flag = True
       v.setCalcServer(locate_sid, beg, end)
 
@@ -115,8 +115,9 @@ def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehic
     if not calc_server.checkTask(now, v.vid):
       if not (now >= v.comm_list[0].time[0] and now <= v.comm_list[0].time[1]): # 一番最初の通信はしょうがないので無視
         # サービスが受けられない場合はエラー
-        print(f"----- Error: {v.vid} could not receive the service.({traci.vehicle.getLaneID(v.vid)}) -----")
-        print(f"  now: {now}, beg: {v.comm_list[0].time[0]}, end: {v.comm_list[0].time[1]}")
+        print(f"----- Error: {v.vid} could not receive the service.(now: {now}, lane: {traci.vehicle.getLaneID(v.vid)}) -----")
+        tmp = list(filter(lambda task: task.vid == v.vid, calc_server.tasks[now]))
+        tmp[0].showTask()
 
 
 # 再配置計算が必要かチェック 

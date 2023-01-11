@@ -90,7 +90,7 @@ class Server:
   
   def resReserv(self, vid:str, res:int, beg: int, end: int, mig_time: int): # 指定した時間帯のリソースを確保
     task = Task(vid, res, 0, mig_time)
-    task.show()
+    # task.show()
     for i in range(beg, end+1):
       self.addTask(task, i)
 
