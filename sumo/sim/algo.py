@@ -165,9 +165,9 @@ def exportNowLoad(now: int, servers: List[Server]):
     tmp[s.sid] = 0
     for task in s.tasks[now]:
       if task.status == "mig":
-        tmp[s.sid] += task.resorce/2
+        tmp[s.sid] += task.resource/2
       else:
-        tmp[s.sid] += task.resorce
+        tmp[s.sid] += task.resource
   return tmp
   
 
