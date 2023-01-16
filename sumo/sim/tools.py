@@ -143,7 +143,7 @@ def getServersLoads(now, mig, res, servers): # [beg, end])
   loads = {}
   for server in servers:
     if server.resCheck(res, beg, end): # 配置可能な計算資源のみ追加
-      load, task_list = server.getTimeOfLoads(beg, end)
+      load = server.getTimeOfLoads(beg, end)
       loads[server.sid] = load
   # 負荷でソートして返す
   # sorted_loads= sorted(loads.items(), key = lambda load : loads[1])

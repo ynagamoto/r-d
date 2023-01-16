@@ -46,7 +46,7 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
   8-1. フレームレートの計算 TODO
 """
 # servers_comm = setServersComm() 
-def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int):
+def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int, gnum: int, ap: float):
   # 混雑度取得
   jams = getTrafficJams(now, servers_comm, servers) # 混雑度大きい順
   revers_jams = list(reversed(jams)) # 混雑度が小さい順
@@ -69,20 +69,24 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
       # 再配置先の計算
       # beg ~ end で再配置可能な計算資源のリソース予約状況と通信遅延を取得
       loads = getServersLoads(now, comm.time, res, servers)
+
       # 遅延を足してソート
       inds = {}
       for sid, load in loads.items():
         s_list = list(filter(lambda s: s.sid == sid, servers))
         calc = s_list[0]
-        delay = next_s.getDelay2Calc(calc)
-        inds[sid] = load + delay
+        delay = next_s.getDelay2Calc(calc, gnum)
+        inds[sid] = (ap/load) + delay # TODO chekc
 
-      sorted_inds = sorted(inds.items(), key = lambda ind: ind[1])
       # 合計が最小のものを調べる
+      sorted_inds = sorted(inds.items(), key = lambda ind: ind[1])
+      locate_sid = sorted_inds[0][0]
+      """
       locate_sid = ""
       for sid, _ in sorted_inds:
         locate_sid = sid
         break
+      """
 
       # sid からサーバーを取得
       tmp_list= list(filter(lambda server: server.sid == locate_sid, servers))
@@ -90,15 +94,19 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
 
       # リソース予約
       # VM起動中は半分の負荷
-      locate_server.resReserv(v.vid, res, beg, end, mig_time+1, now)
+      mig_fin = now+mig_time-1
+      locate_server.resReserv(v.vid, res/2, now, mig_fin, "mig")
+      locate_server.resReserv(v.vid, res, mig_fin+1, end, "ready")
       v.setCalcServer(locate_sid, beg, end)
 
 
 # 環境の更新
 def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehicles: Dict[str, Vehicle]):
   # サーバのタスクとマイグレーション状況を更新 
+  """
   for server in servers:
     server.updateResource(now)
+  """
 
   # 現在地図上の車両は vid_list に vid が入っている
   for vid in vid_list: 
@@ -160,7 +168,7 @@ def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: List[Ve
       else:
         # そのRSUと通信するまでの猶予 ＝＝ マイグレーションにかかる時間のとき再配置計算を行う
         # print(f"now: {now}, vid: {v.vid}, beg: {comm.time[0]}, end: {comm.time[1]}")
-        if int(comm.time[0])-now <= mig_time+1:
+        if int(comm.time[0])-now <= mig_time: # |t-1|tの再配置|t|t+1の再配置|t+1| なので，残りmig_timeでいい
           # 再配置計算が必要
           comm.flag = True
           # print("  do!")
@@ -199,11 +207,21 @@ def exportResult(file_name: str, result):
   df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
 
 # servers_comm = setServersComm() 
-def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int):
+def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int, gnum: int, ap: float):
   # 混雑度取得
   jams = getTrafficJams(now, servers_comm, servers)
   # 混雑度から再配置の優先順位を取得 
   mig_priority, need_list = kizonCheckMigNeed(now, mig_time, vid_list, vehicles, jams)
+  # 再配置計算前の付加状況を取得
+  s_idles = {}
+  f = True
+  s_spec = 0
+  for s in servers:
+    if f:
+      s_spec = s.spec
+      f = False
+    s_idles[s.sid] = s.idle_list[now]
+  # 再配置計算
   for sid in mig_priority:      # 優先度が高い順から再配置計算
     for tmp in need_list[sid]:  # tmp[0] -> Comm, tmp[1] -> Vehicle
       comm = tmp[0]
@@ -212,22 +230,23 @@ def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_lis
       next_sid, flag = v.getNextSid(now)
       if not flag: # マップから消える
         continue
+      # sid からインスタンスを取得
       tmp_list = list(filter(lambda s: s.sid == next_sid, servers))
       next_s = tmp_list[0]
       # 再配置先の計算
       # 現在の負荷を集める
       loads = {}
-      for s in servers:
+      for s, idle in s_idles.items():
         # これ以上配置できないものは追加しない
-        if s.idle_list[now] > 0:
-          loads[s.sid] = s.spec - s.idle_list[now]
+        if idle-res >= 0:
+          loads[sid] = idle/s_spec
       # 遅延を足してソート
       inds = {}
       for sid, load in loads.items():
         s_list = list(filter(lambda s: s.sid == sid, servers))
         calc = s_list[0]
-        delay = next_s.getDelay2Calc(calc)
-        inds[sid] = load + delay
+        delay = next_s.getDelay2Calc(calc, gnum)
+        inds[sid] = (ap/load) + delay
 
       sorted_inds = sorted(inds.items(), key = lambda ind: ind[1])
       # 合計が最小のものを調べる
@@ -236,14 +255,17 @@ def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_lis
         locate_sid = sid
         break
 
-      # sid からサーバーを取得
+      # sid からインスタンスを取得
       tmp_list= list(filter(lambda server: server.sid == locate_sid, servers))
       locate_server = tmp_list[0]
 
       # リソース予約
       # VM起動中は半分の負荷
-      locate_server.resReserv(v.vid, res, beg, end, -1)
+      mig_fin = now+mig_time-1
+      locate_server.resReserv(v.vid, res/2, now, mig_fin, "mig")
+      locate_server.resReserv(v.vid, res, mig_fin+1, end, "ready")
       comm.flag = True
+      s_idles[locate_sid] -= res
       v.setCalcServer(locate_sid, beg, end)
 
 def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Dict[str, Vehicle], jams: Dict[str, List[str]]):
@@ -251,7 +273,7 @@ def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Di
   # jams は通信先が多い順
   mig_priority = [] # 優先度高い順のsid
   need_list = {}    # key -> sid, value -> List[Vehicle]
-  for tmp in jams:
+  for tmp in jams: # sort すると dict じゃないことに注意
     mig_priority.append(tmp[0]) # sidを追加
     need_list[tmp[0]] = []
 
@@ -267,11 +289,10 @@ def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Di
     next_comm, flag = v.getNextComm(now)
     if not flag: # 次の通信先がない（マップから消える）
       continue
-    if v.checkCommDown(now):
-      # 再配置計算が必要
+    # 今通信が切断したかどうか
+    if v.checkCommDownNow(now):
+      # 切断したので再配置計算が必要
       next_sid = next_comm.sid
-      if not next_sid in need_list:
-        need_list[next_sid] = []
       need_list[next_sid].append([next_comm, v])
     
   return mig_priority, need_list

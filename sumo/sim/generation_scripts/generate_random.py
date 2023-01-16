@@ -17,7 +17,7 @@ def getRandPoints(num: int):
       flag = True
       rand_y = 0
       while flag:
-        rand_y = random.randrange(1, gene_num+1) # 1 ~ num まで
+        rand_y = random.randrange(1, gene_num) # 1 ~ num まで
         if not rand_y in check:
           flag = False
       pos = [i, rand_y] # 座標
@@ -65,12 +65,14 @@ def getRandEnd(grid_num):
 
 def generate_routefile(grid_num: int, v_num: int, spec: int):
   pos_dict = getRandPoints(grid_num)
+  # チェック用
   for i in range(num+1):
     # print(chr(ord('A')+i))
     print(i)
-    for j, pos in pos_dict[i].items():
+    for _, pos in pos_dict[i].items():
       print(pos)
   print()
+
   s_dict = {}
   s_list = []
   with open("../sim_xml/random.rou.xml", "w") as routes:
@@ -81,8 +83,13 @@ def generate_routefile(grid_num: int, v_num: int, spec: int):
     sid = 0
     for i in range(len(pos_dict)):
       for _, pos in pos_dict[i].items():
-        alp = chr(ord('A')+1+pos[0])
-        edge = f"{alp}{pos[1]+1}{alp}{pos[1]}"
+        x_pos = pos[0]+1
+        y_pos = pos[1]+1
+        alp = chr(ord('A')+x_pos)
+        if pos[1] == num:
+          edge = f"{alp}{y_pos-1}{alp}{y_pos}"
+        else:
+          edge = f"{alp}{y_pos}{alp}{y_pos+1}"
         print(f"""
   <vehicle id="mec{sid}" type="car" depart="0" color="1, 0, 0" departPos="stop">
     <route edges="{edge}"/>

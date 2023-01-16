@@ -113,6 +113,13 @@ class Vehicle:
       return True
     else:
       return False
+    
+  def checkCommDownNow(self, now) -> bool:
+    res = list(filter(lambda comm: int(comm.time[1]) == now-1, self.comm_list))
+    if len(res):
+      return True
+    else:
+      return False
 
   # 次のRSUのIDを取得
   def getNextSid(self, now: int):
@@ -139,23 +146,6 @@ class Vehicle:
       sort_list = sorted(comm_list, key=lambda comm: comm.time[0])
       next_comm = sort_list[0]
       return next_comm, True
-
-  # 遅延を取得
-  # 改良が必要 TODO
-  """
-  def getDelay(self) -> float:
-    res = 0
-    if self.comm_server == self.exec_server: 
-      res = 0
-    else:
-      if self.comm_server_type == "base":
-        res += 20
-      if self.exec_server_type == "rsu":
-        res += 10
-      else:
-        res = res + 30
-    return float(res)
-  """
 
 """
 各車両が通信状況を管理するためのクラス
