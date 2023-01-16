@@ -269,7 +269,10 @@ def kizon(now: int, servers: List[Server], vehicles: List[Vehicle], vid_list: Li
       # VM起動中は半分の負荷
       mig_fin = now+mig_time-1
       locate_server.resReserv(v.vid, res/2, s_delay, now, mig_fin, "mig")
-      locate_server.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
+      if mig_fin < beg-1:
+        locate_server.resReserv(v.vid, res, s_delay, beg, end, "ready")
+      else:
+        locate_server.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
       comm.flag = True
       s_idles[locate_sid] -= res
       v.setCalcServer(locate_sid, beg, end)
@@ -300,6 +303,10 @@ def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Li
       # 切断したので再配置計算が必要
       next_sid = next_comm.sid
       need_list[next_sid].append([next_comm, v])
+    elif now <= v.comm_list[0].time[0] and not v.comm_list[0].flag: # マップ出現時に再配置してない
+      next_sid = next_comm.sid
+      need_list[next_sid].append([next_comm, v])
+
   return mig_priority, need_list
 
 def exportNowLoad(now: int, servers: List[Server], res: int, ap: float):

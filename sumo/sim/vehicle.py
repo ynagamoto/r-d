@@ -38,7 +38,7 @@ class Vehicle:
     for sid, comm_time in comm.items():     # comm_time: [0: beg, 1: end]
       tmp = [int(comm_time[0])+1, int(comm_time[1])]
       tmp_list.append(Comm(sid, tmp))
-    self.comm_list = sorted(tmp_list, key=lambda comm: comm.time[0])
+    self.comm_list = sorted(tmp_list, key=lambda comm: comm.time[0]) # 通信開始時間が早い順でソート
         
   # 車両が now 以降にどのRSUと何秒から何秒まで通信するかのリスト取得 ( {sid, [beg, end]} のリスト)
   # getNextComm を改良する
