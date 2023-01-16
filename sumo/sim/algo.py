@@ -413,6 +413,7 @@ def exportStatus(file_name: str, servers: List[Server], vehicles: List[Vehicle])
     for comm in v.comm_list:
       beg = int(comm.time[0])
       calc_sid = v.calc_list[beg]
+      print(f"  check {calc_sid}")
       tmp = list(filter(lambda s: s.sid == calc_sid, servers))
       if len(tmp) == 0:
         print("--- empty ---")
@@ -422,8 +423,8 @@ def exportStatus(file_name: str, servers: List[Server], vehicles: List[Vehicle])
         t = beg+1
         while True:
           if calc_s.checkTask(t, v.vid):
-            print(f"--- search {v.vid}---")
             break
+          t += 1
         result[calc_s.sid] = t - beg
       results.append(result)
 

@@ -48,7 +48,6 @@ def sim(sumocfg):
       traci.vehicle.getPosition(vid)
   traci.close()
   sys.stdout.flush()
-"""
 
 def random_allocation(sumocfg, servers, vehicles, mig_time):
   sumoBinary = "sumo"
@@ -115,6 +114,7 @@ def random_allocation(sumocfg, servers, vehicles, mig_time):
 
   traci.close()
   sys.stdout.flush()
+"""
 
 def randomAllocation(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, cloud):
   sumoBinary = "sumo"
@@ -142,9 +142,9 @@ def randomAllocation(sumocfg, servers, servers_comm, vehicles, mig_time, res, gn
     results.append(result)
 
   # 結果の収集
-  file_name = "teian.csv"
+  file_name = "random.csv"
   exportResult(file_name, results)
-  file_name = "teian-service.csv"
+  file_name = "random-service.csv"
   exportStatus(file_name, servers, vehicles)
   traci.close()
 
@@ -225,7 +225,7 @@ def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, 
   # 結果の収集
   file_name = "kizon.csv"
   exportResult(file_name, results)
-  file_name = "teian-service.csv"
+  file_name = "kizon-service.csv"
   exportStatus(file_name, servers, vehicles)
   traci.close()
 
@@ -245,7 +245,7 @@ if __name__ == "__main__":
   print(f"sim time: {sim_time}")
   # presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
   kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
-  # random_allocation(sumocfg, servers, vehicles, mig_time)
+  # randomAllocation(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
 
 """
 if __name__ == "__main__":
