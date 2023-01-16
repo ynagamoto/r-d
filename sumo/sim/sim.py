@@ -155,12 +155,12 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap):
     envUpdate(traci, now, servers, vid_list, vehicles)
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap)
     
-    result[now] = exportNowLoad(now, servers)
+    result[now] = exportNowLoad(now, servers, ap)
     result[now]["vehicles"] = len(vid_list) - len(servers)
 
   # 結果の収集
   file_name = "result.csv"
-  exportResult(file_name, result, ap)
+  exportResult(file_name, result)
   traci.close()
 
 def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap):
@@ -180,12 +180,12 @@ def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, 
 
     envUpdate(traci, now, servers, vid_list, vehicles)
     kizon(now, servers, vehicles, vid_list, servers_comm, mig_time, res)
-    result[now] = exportNowLoad(now, servers)
+    result[now] = exportNowLoad(now, servers, ap)
     result[now]["vehicles"] = len(vid_list) - len(servers)
 
   # 結果の収集
   file_name = "kizon.csv"
-  exportResult(file_name, result, ap)
+  exportResult(file_name, result)
   traci.close()
 
 if __name__ == "__main__":
