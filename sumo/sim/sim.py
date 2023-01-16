@@ -19,7 +19,7 @@ from algo import getRandomServer, loadAllocation, envUpdate, exportNowLoad, expo
 
 def run(sumocfg):
   sumoBinary = "sumo"
-  sumoBinary = "sumo-gui"
+  # sumoBinary = "sumo-gui"
   traci.start([sumoBinary, "-c", sumocfg])
 
   f = True
@@ -137,7 +137,7 @@ def test(sumocfg, servers, vehicles):
     print()
  
 
-def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
+def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap):
   sumoBinary = "sumo"
   # sumoBinary = "sumo-gui"
   traci.start([sumoBinary, "-c", sumocfg])
@@ -153,17 +153,17 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
     print(f"now: {now}, vehicles: {len(vid_list)-len(servers)}")
 
     envUpdate(traci, now, servers, vid_list, vehicles)
-    loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res)
+    loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap)
     
     result[now] = exportNowLoad(now, servers)
     result[now]["vehicles"] = len(vid_list) - len(servers)
 
   # 結果の収集
   file_name = "result.csv"
-  exportResult(file_name, result)
+  exportResult(file_name, result, ap)
   traci.close()
 
-def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
+def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap):
   sumoBinary = "sumo"
   # sumoBinary = "sumo-gui"
   traci.start([sumoBinary, "-c", sumocfg])
@@ -185,21 +185,23 @@ def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res):
 
   # 結果の収集
   file_name = "kizon.csv"
-  exportResult(file_name, result)
+  exportResult(file_name, result, ap)
   traci.close()
 
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
+  gnum = 10
   mig_time = 10
   res = 2
+  ap = 0.01
   run(sumocfg)
   sim_time, emission = load_emission()
   sim_time += 2
   servers = load_servers_json(sim_time)
   vehicles = load_vehicles(sim_time, emission)
   print(f"sim time: {sim_time}")
-  # presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res)
-  # kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res)
+  presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap)
+  # kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap)
   # random_allocation(sumocfg, servers, vehicles, mig_time)
   # test(sumocfg, servers, vehicles)
 

@@ -5,7 +5,7 @@ def getRandPoints(num: int):
   gene_num = num + 1
   randnum_dict = {}
   q = int(num/2)
-  limit = int(num*3/4)
+  limit = int(num*4/5)
   pos_dict = {}
   sum_num = 0
   for i in range(gene_num):
@@ -125,7 +125,7 @@ def generate_routefile(grid_num: int, v_num: int, spec: int):
 if __name__ == "__main__":
   num = 10
   # num = 4
-  spec = 20 # 6台
+  spec = 20 # 10台
   # spec = 4
   s_dict = generate_routefile(num, 1000, spec) 
   with open('../sim_xml/servers.json', 'w') as f:
