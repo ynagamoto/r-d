@@ -155,7 +155,7 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap):
     envUpdate(traci, now, servers, vid_list, vehicles)
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap)
     
-    result[now] = exportNowLoad(now, servers, ap)
+    result[now] = exportNowLoad(now, servers, res, ap)
     result[now]["vehicles"] = len(vid_list) - len(servers)
 
   # 結果の収集
@@ -179,8 +179,8 @@ def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, 
     print(f"now: {now}, vehicles: {len(vid_list)-len(servers)}")
 
     envUpdate(traci, now, servers, vid_list, vehicles)
-    kizon(now, servers, vehicles, vid_list, servers_comm, mig_time, res)
-    result[now] = exportNowLoad(now, servers, ap)
+    kizon(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap)
+    result[now] = exportNowLoad(now, servers, res, ap)
     result[now]["vehicles"] = len(vid_list) - len(servers)
 
   # 結果の収集
@@ -203,7 +203,6 @@ if __name__ == "__main__":
   presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap)
   # kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap)
   # random_allocation(sumocfg, servers, vehicles, mig_time)
-  # test(sumocfg, servers, vehicles)
 
 """
 if __name__ == "__main__":

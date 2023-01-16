@@ -129,7 +129,7 @@ def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehic
         comm, f = v.getNowComm(now)
         print(f"----- Error: {v.vid} could not receive the service.(now: {now}, sid: {calc_server.sid}, beg: {comm.time[0]}, end: {comm.time[1]}, lane: {traci.vehicle.getLaneID(v.vid)}) -----")
         for task in calc_server.tasks[now]:
-          print(f"  vid: {task.vid}, timer: {task.timer}, status: {task.status}, start: {task.mig_start_time}, mig_time: {task.mig_time}")
+          print(f"  vid: {task.vid}, type: {task.ttype}")
       else:
         print("--- 初期配置 ---")
 
@@ -281,17 +281,24 @@ def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Di
       need_list[next_sid].append([next_comm, v])
   return mig_priority, need_list
 
-def exportNowLoad(now: int, servers: List[Server], ap: float):
+def exportNowLoad(now: int, servers: List[Server], res: int, ap: float):
+  max_fps = 200
   results = {}
   for s in servers:
     tmp = {}
     tmp["idle"] = s.idle_list[now]
     runs = {}
-    load = tmp["idle"]/s.spec
+    idle = 0
+    if tmp["idle"] == 0:
+      idle = res
+    else:
+      idle = tmp["idle"]
+    param = idle/s.spec
     for task in s.tasks[now]:
-      if task.ttype == "mig":
-        runs[task.vid] = (ap/load) + task.delay
+      if task.ttype == "ready":
+        runs[task.vid] = (ap/param) + task.delay
     tmp["tasks"] = runs
+    tmp["fps"] = max_fps / (idle/s.spec)
     results[s.sid] = tmp
   return tmp
   

@@ -107,11 +107,13 @@ class Server:
       print(f"sid: {self.sid}, idle: {self.idle_list[now]}")
   """
 
+  # TODO
+  # 変更に合わせる  
   # vid のタスクが now_task に含まれていて提供可能かどうかチェック
   def checkTask(self, now: int, vid: str) -> bool:
     task = list(filter(lambda task: task.vid == vid, self.tasks[now]))
     if len(task) > 0:
-      if task[0].status == "ready":
+      if task[0].ttype== "ready":
         return True
       else:
         return False
