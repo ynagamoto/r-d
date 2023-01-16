@@ -143,7 +143,7 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap):
   traci.start([sumoBinary, "-c", sumocfg])
 
   now = 0
-  result = {}
+  results = []
   while traci.simulation.getMinExpectedNumber() > 0:
     # シミュレーション内容
     traci.simulationStep()
@@ -155,12 +155,13 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap):
     envUpdate(traci, now, servers, vid_list, vehicles)
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap)
     
-    result[now] = exportNowLoad(now, servers, res, ap)
-    result[now]["vehicles"] = len(vid_list) - len(servers)
+    result = exportNowLoad(now, servers, res, ap)
+    result["vehicles"] = len(vid_list) - len(servers)
+    results.append(result)
 
   # 結果の収集
   file_name = "result.csv"
-  exportResult(file_name, result)
+  exportResult(file_name, results)
   traci.close()
 
 def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap):
@@ -169,7 +170,7 @@ def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, 
   traci.start([sumoBinary, "-c", sumocfg])
 
   now = 0
-  result = {}
+  results = []
   while traci.simulation.getMinExpectedNumber() > 0:
     # シミュレーション内容
     traci.simulationStep()
@@ -180,12 +181,13 @@ def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, 
 
     envUpdate(traci, now, servers, vid_list, vehicles)
     kizon(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap)
-    result[now] = exportNowLoad(now, servers, res, ap)
-    result[now]["vehicles"] = len(vid_list) - len(servers)
+    result = exportNowLoad(now, servers, res, ap)
+    result["vehicles"] = len(vid_list) - len(servers)
+    results.append(result)
 
   # 結果の収集
   file_name = "kizon.csv"
-  exportResult(file_name, result)
+  exportResult(file_name, results)
   traci.close()
 
 if __name__ == "__main__":
@@ -198,10 +200,13 @@ if __name__ == "__main__":
   sim_time, emission = load_emission()
   sim_time += 2
   servers = load_servers_json(sim_time)
+  # cloud
+  cloud = Server("cloud", "cloud", [0, 0], 200, sim_time)
+  servers.append(cloud)
   vehicles = load_vehicles(sim_time, emission)
   print(f"sim time: {sim_time}")
-  presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap)
-  # kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap)
+  # presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap)
+  kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap)
   # random_allocation(sumocfg, servers, vehicles, mig_time)
 
 """

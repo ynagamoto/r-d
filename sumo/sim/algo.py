@@ -283,24 +283,23 @@ def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Di
 
 def exportNowLoad(now: int, servers: List[Server], res: int, ap: float):
   max_fps = 200
-  results = {}
+  result = {}
+  result["now"] = now
+  over = 0
   for s in servers:
-    tmp = {}
-    tmp["idle"] = s.idle_list[now]
-    runs = {}
+    result[f"{s.sid}-idle"] = s.idle_list[now]
     idle = 0
-    if tmp["idle"] == 0:
+    if s.idle_list[now] < 0:
       idle = res
+      over = s.load_list[now]-s.spec
     else:
-      idle = tmp["idle"]
-    param = idle/s.spec
+      idle = s.idle_list[now]+res
+    param = idle/(s.spec+over)
     for task in s.tasks[now]:
       if task.ttype == "ready":
-        runs[task.vid] = (ap/param) + task.delay
-    tmp["tasks"] = runs
-    tmp["fps"] = max_fps / (idle/s.spec)
-    results[s.sid] = tmp
-  return tmp
+        result[f"{s.sid}-{task.vid}"] = (ap/param) + task.delay
+    result[f"{s.sid}-fps"] = max_fps / (idle/s.spec)
+  return result
   
 def exportResult(file_name: str, result):
   # csvに出力

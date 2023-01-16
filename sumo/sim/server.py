@@ -21,6 +21,7 @@ class Server:
     self.postion    : Dict[str, int] = postion                      # Server postion: {x: float, y: float}
     self.spec       : int = spec                                    # Server's computing resource
     self.idle_list  : List[int] = [spec] * sim_time                 # Idling resource: {time: int, idel: float}
+    self.load_list  : List[int] = [0] * sim_time
     self.tasks      : Dict[int, List[Task]] = {}                    # tasks: {time: int, [ {vid: str, resource: int, delay: float} ]}
     self.initTasks(sim_time)
     self.sim_time   : int = sim_time
@@ -33,6 +34,7 @@ class Server:
   def addTask(self, task: Task, time: int):
     self.tasks[time].append(task)
     self.idle_list[time] -= task.resource
+    self.load_list[time] += task.resource
   
   # 使わない
   """
@@ -107,9 +109,7 @@ class Server:
       print(f"sid: {self.sid}, idle: {self.idle_list[now]}")
   """
 
-  # TODO
-  # 変更に合わせる  
-  # vid のタスクが now_task に含まれていて提供可能かどうかチェック
+  # vid のタスクが提供可能かどうかチェック
   def checkTask(self, now: int, vid: str) -> bool:
     task = list(filter(lambda task: task.vid == vid, self.tasks[now]))
     if len(task) > 0:
