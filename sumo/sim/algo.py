@@ -230,7 +230,7 @@ def kizon(now: int, servers: List[Server], vehicles: List[Vehicle], vid_list: Li
       # 再配置先の計算
       # 現在の負荷を集める
       loads = {}
-      for s, idle in s_idles.items():
+      for sid, idle in s_idles.items():
         # これ以上配置できないものは追加しない
         if idle-res >= 0:
           loads[sid] = idle/s_spec
@@ -309,26 +309,6 @@ def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Li
 
   return mig_priority, need_list
 
-def exportNowLoad(now: int, servers: List[Server], res: int, ap: float):
-  max_fps = 200
-  result = {}
-  result["now"] = now
-  over = 0
-  for s in servers:
-    result[f"{s.sid}-idle"] = s.idle_list[now]
-    idle = 0
-    if s.idle_list[now] < 0:
-      idle = res
-      over = s.load_list[now]-s.spec
-    else:
-      idle = s.idle_list[now]+res
-    param = idle/(s.spec+over)
-    for task in s.tasks[now]:
-      if task.ttype == "ready":
-        result[f"{s.sid}-{task.vid}"] = (ap/param) + task.delay
-    result[f"{s.sid}-fps"] = max_fps / (idle/s.spec)
-  return result
-
 def allocateRandomServer(now: int, servers: List[Server], vehicles: List[Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int, gnum: int, ap: float, cloud):
   # 混雑度取得
   jams = getTrafficJams(now, servers_comm, servers)
@@ -358,10 +338,10 @@ def allocateRandomServer(now: int, servers: List[Server], vehicles: List[Vehicle
       # 再配置先の計算
       # 現在の負荷を集める
       cand = []
-      for s, idle in s_idles.items():
+      for sid, idle in s_idles.items():
         # これ以上配置できないものは追加しない
         if idle-res >= 0:
-          cand.append(s.sid)
+          cand.append(sid)
       
       # 配置できる計算資源がない
       if len(cand) == 0:
@@ -376,11 +356,12 @@ def allocateRandomServer(now: int, servers: List[Server], vehicles: List[Vehicle
       # 配置できるまでランダム
       rand_sid = random.randrange(len(servers))
       while True:
-        if rand_sid in cand:
+        full_sid = f"mec{rand_sid}"
+        if full_sid in cand:
           break
         else:
           rand_sid = random.randrange(len(servers))
-      locate_sid = rand_sid
+      locate_sid = f"mec{rand_sid}"
 
       # sid からインスタンスを取得
       tmp_list= list(filter(lambda server: server.sid == locate_sid, servers))
@@ -398,6 +379,36 @@ def allocateRandomServer(now: int, servers: List[Server], vehicles: List[Vehicle
       comm.flag = True
       s_idles[locate_sid] -= res
       v.setCalcServer(locate_sid, beg, end)
+
+def exportNowLoad(now: int, servers: List[Server], res: int, ap: float):
+  max_fps = 200
+  runtime_result = {}
+  idle_result = {}
+  fps_result = {}
+  idle_result["now"] = now
+  over = 0
+  for s in servers:
+    # idle
+    idle_result[s.sid] = s.idle_list[now]
+    # runtime
+    idle = 0
+    if s.idle_list[now] < 0:
+      idle = res
+      over = s.load_list[now]-s.spec
+    elif s.idle_list[now]+res >= s.spec:
+      idle = s.spec 
+    else:
+      idle = s.idle_list[now]+res
+    param = idle/(s.spec+over)
+    for task in s.tasks[now]:
+      if task.ttype == "ready":
+        runtime_result[f"{s.sid}-{task.vid}"] = (ap/param) + task.delay
+    # fps
+    if idle+res >= s.spec:
+      fps_result[s.sid] = max_fps 
+    else:
+      fps_result[s.sid] = max_fps * (idle/s.spec)
+  return runtime_result, idle_result, fps_result
 
   
 def exportResult(file_name: str, result):

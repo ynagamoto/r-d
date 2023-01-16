@@ -122,12 +122,12 @@ def randomAllocation(sumocfg, servers, servers_comm, vehicles, mig_time, res, gn
   traci.start([sumoBinary, "-c", sumocfg])
 
   now = 0
-  results = []
-  sim_time = 0
+  runtime_results = []
+  idle_results = []
+  fps_results = []
   while traci.simulation.getMinExpectedNumber() > 0:
     # シミュレーション内容
     traci.simulationStep()
-    sim_time += 0 
     
     now = int(traci.simulation.getTime())
     vid_list = traci.vehicle.getIDList()
@@ -136,17 +136,24 @@ def randomAllocation(sumocfg, servers, servers_comm, vehicles, mig_time, res, gn
     envUpdate(traci, now, servers, vid_list, vehicles)
     allocateRandomServer(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap, cloud)
     
-    result = exportNowLoad(now, servers, res, ap)
-    result["vehicles"] = len(vid_list) - len(servers)
-    result["cloud"] = cloud.idle_list[now]
-    results.append(result)
+    runtime_result, idle_result, fps_result = exportNowLoad(now, servers, res, ap)
+    idle_result["cloud"] = cloud.idle_list[now]
+    idle_result["vehicles"] = len(vid_list) - len(servers)
+    runtime_results.append(runtime_result)
+    idle_results.append(idle_result)
+    fps_results.append(fps_result)
 
   # 結果の収集
-  file_name = "random.csv"
-  exportResult(file_name, results)
+  file_name = "random-runtime.csv"
+  exportResult(file_name, runtime_results)
+  file_name = "random-idle.csv"
+  exportResult(file_name, idle_results)
+  file_name = "random-fps.csv"
+  exportResult(file_name, fps_results)
   file_name = "random-service.csv"
   exportStatus(file_name, servers, vehicles)
   traci.close()
+
 
 """
 def test(sumocfg, servers, vehicles):
@@ -175,12 +182,12 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, c
   traci.start([sumoBinary, "-c", sumocfg])
 
   now = 0
-  results = []
-  sim_time = 0
+  runtime_results = []
+  idle_results = []
+  fps_results = []
   while traci.simulation.getMinExpectedNumber() > 0:
     # シミュレーション内容
     traci.simulationStep()
-    sim_time += 0 
     
     now = int(traci.simulation.getTime())
     vid_list = traci.vehicle.getIDList()
@@ -189,17 +196,24 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, c
     envUpdate(traci, now, servers, vid_list, vehicles)
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap, cloud)
     
-    result = exportNowLoad(now, servers, res, ap)
-    result["vehicles"] = len(vid_list) - len(servers)
-    result["cloud"] = cloud.idle_list[now]
-    results.append(result)
+    runtime_result, idle_result, fps_result = exportNowLoad(now, servers, res, ap)
+    idle_result["cloud"] = cloud.idle_list[now]
+    idle_result["vehicles"] = len(vid_list) - len(servers)
+    runtime_results.append(runtime_result)
+    idle_results.append(idle_result)
+    fps_results.append(fps_result)
 
   # 結果の収集
-  file_name = "teian.csv"
-  exportResult(file_name, results)
+  file_name = "teian-runtime.csv"
+  exportResult(file_name, runtime_results)
+  file_name = "teian-idle.csv"
+  exportResult(file_name, idle_results)
+  file_name = "teian-fps.csv"
+  exportResult(file_name, fps_results)
   file_name = "teian-service.csv"
   exportStatus(file_name, servers, vehicles)
   traci.close()
+
 
 def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, cloud):
   sumoBinary = "sumo"
@@ -207,7 +221,9 @@ def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, 
   traci.start([sumoBinary, "-c", sumocfg])
 
   now = 0
-  results = []
+  runtime_results = []
+  idle_results = []
+  fps_results = []
   while traci.simulation.getMinExpectedNumber() > 0:
     # シミュレーション内容
     traci.simulationStep()
@@ -218,16 +234,24 @@ def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, 
 
     envUpdate(traci, now, servers, vid_list, vehicles)
     kizon(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap, cloud)
-    result = exportNowLoad(now, servers, res, ap)
-    result["vehicles"] = len(vid_list) - len(servers)
-    results.append(result)
+    runtime_result, idle_result, fps_result = exportNowLoad(now, servers, res, ap)
+    idle_result["cloud"] = cloud.idle_list[now]
+    idle_result["vehicles"] = len(vid_list) - len(servers)
+    runtime_results.append(runtime_result)
+    idle_results.append(idle_result)
+    fps_results.append(fps_result)
 
   # 結果の収集
-  file_name = "kizon.csv"
-  exportResult(file_name, results)
+  file_name = "kizon-runtime.csv"
+  exportResult(file_name, runtime_results)
+  file_name = "kizon-idle.csv"
+  exportResult(file_name, idle_results)
+  file_name = "kizon-fps.csv"
+  exportResult(file_name, fps_results)
   file_name = "kizon-service.csv"
   exportStatus(file_name, servers, vehicles)
   traci.close()
+
 
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
@@ -243,7 +267,7 @@ if __name__ == "__main__":
   cloud = Server("cloud", "cloud", [0, 0], 200, sim_time)
   vehicles = load_vehicles(sim_time, emission)
   print(f"sim time: {sim_time}")
-  # presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
+  presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
   # kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
   # randomAllocation(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
 
