@@ -8,8 +8,8 @@ class Task:
   def __init__(self, vid: str, resource: int, delay: float, ttype: str):
     self.vid        : str = vid                                     # Vehicle ID
     self.resource   : int = resource                                # Required resource
+    self.delay      : float = delay                                 # Delay from vehicle to server 
     self.ttype      : str = ttype
-    # self.delay      : float = delay                                 # Delay from vehicle to server 
 
   def show(self):
     print(f"vid: {self.vid}, res: {self.resource}, timer: {self.timer}")
@@ -79,10 +79,10 @@ class Server:
         return False
     return True 
   
-  def resReserv(self, vid:str, res:int, beg: int, end: int, ttype): # 指定した時間帯のリソースを確保
+  def resReserv(self, vid:str, res:int, delay, beg: int, end: int, ttype): # 指定した時間帯のリソースを確保
     # task.show()
     for i in range(beg, end+1):
-      task = Task(vid, res, 0, ttype)
+      task = Task(vid, res, delay, ttype)
       self.addTask(task, i)
 
   # 使わない
@@ -140,7 +140,7 @@ class Server:
         g = "g3"
     return g
     
-  # グリッドの大きさを参照
+  # calc までの遅延
   def getDelay2Calc(self, calc: str, gnum: int):
     """
     そのRSUで処理   -> 0

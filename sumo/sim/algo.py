@@ -91,12 +91,13 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
       # sid からサーバーを取得
       tmp_list= list(filter(lambda server: server.sid == locate_sid, servers))
       locate_server = tmp_list[0]
+      s_delay = next_s.getDelay2Calc(locate_server, gnum)
 
       # リソース予約
       # VM起動中は半分の負荷
       mig_fin = now+mig_time-1
-      locate_server.resReserv(v.vid, res/2, now, mig_fin, "mig")
-      locate_server.resReserv(v.vid, res, mig_fin+1, end, "ready")
+      locate_server.resReserv(v.vid, res/2, s_delay, now, mig_fin, "mig")
+      locate_server.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
       v.setCalcServer(locate_sid, beg, end)
 
 
@@ -190,23 +191,6 @@ def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: List[Ve
   """
   return mig_priority, need_list
 
-def exportNowLoad(now: int, servers: List[Server]):
-  tmp = {}
-  for s in servers:
-    tmp[s.sid] = 0
-    for task in s.tasks[now]:
-      if task.status == "mig":
-        tmp[s.sid] += task.resource/2
-      else:
-        tmp[s.sid] += task.resource
-  return tmp
-  
-def exportResult(file_name: str, result):
-  # csvに出力
-  df = pandas.json_normalize(result)
-  df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
-
-# servers_comm = setServersComm() 
 def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int, gnum: int, ap: float):
   # 混雑度取得
   jams = getTrafficJams(now, servers_comm, servers)
@@ -258,12 +242,13 @@ def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_lis
       # sid からインスタンスを取得
       tmp_list= list(filter(lambda server: server.sid == locate_sid, servers))
       locate_server = tmp_list[0]
+      s_delay = next_s.getDelay2Calc(locate_server, gnum)
 
       # リソース予約
       # VM起動中は半分の負荷
       mig_fin = now+mig_time-1
-      locate_server.resReserv(v.vid, res/2, now, mig_fin, "mig")
-      locate_server.resReserv(v.vid, res, mig_fin+1, end, "ready")
+      locate_server.resReserv(v.vid, res/2, s_delay, now, mig_fin, "mig")
+      locate_server.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
       comm.flag = True
       s_idles[locate_sid] -= res
       v.setCalcServer(locate_sid, beg, end)
@@ -294,5 +279,23 @@ def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Di
       # 切断したので再配置計算が必要
       next_sid = next_comm.sid
       need_list[next_sid].append([next_comm, v])
-    
   return mig_priority, need_list
+
+def exportNowLoad(now: int, servers: List[Server], ap: float):
+  results = {}
+  for s in servers:
+    tmp = {}
+    tmp["idle"] = s.idle_list[now]
+    runs = {}
+    load = tmp["idle"]/s.spec
+    for task in s.tasks[now]:
+      if task.ttype == "mig":
+        runs[task.vid] = (ap/load) + task.delay
+    tmp["tasks"] = runs
+    results[s.sid] = tmp
+  return tmp
+  
+def exportResult(file_name: str, result):
+  # csvに出力
+  df = pandas.json_normalize(result)
+  df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
