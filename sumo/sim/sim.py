@@ -15,7 +15,7 @@ import traci
 from server import Server, Task
 from vehicle import Vehicle
 from tools import load_emission, load_servers_json, load_vehicles, setServersComm
-from algo import getRandomServer, loadAllocation, kizon, envUpdate, exportNowLoad, exportResult, exportStatus
+from algo import getRandomServer, loadAllocation, kizon, envUpdate, exportNowLoad, exportResult, exportStatus, allocateRandomServer
 
 def run(sumocfg):
   sumoBinary = "sumo"
