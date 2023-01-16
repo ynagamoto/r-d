@@ -425,6 +425,8 @@ def exportStatus(file_name: str, servers: List[Server], vehicles: List[Vehicle])
           if calc_s.checkTask(t, v.vid):
             break
           t += 1
+          if t > len(calc_s.comm):
+            break
         result[calc_s.sid] = t - beg
       results.append(result)
 

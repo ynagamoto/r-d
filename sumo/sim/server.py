@@ -118,7 +118,7 @@ class Server:
       else:
         return False
     else:
-      print("!!!!!")
+      print("--- Not Allocate Task ---")
       return False
  
   # Calculate delay from vehicle to server
