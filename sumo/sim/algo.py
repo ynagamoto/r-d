@@ -46,7 +46,7 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
   8-1. フレームレートの計算 TODO
 """
 # servers_comm = setServersComm() 
-def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int, gnum: int, ap: float):
+def loadAllocation(now: int, servers: List[Server], vehicles: List[Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int, gnum: int, ap: float, cloud: Server):
   # 混雑度取得
   jams = getTrafficJams(now, servers_comm, servers) # 混雑度大きい順
   revers_jams = list(reversed(jams)) # 混雑度が小さい順
@@ -69,6 +69,16 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
       # 再配置先の計算
       # beg ~ end で再配置可能な計算資源のリソース予約状況と通信遅延を取得
       loads = getServersLoads(now, comm.time, res, servers)
+
+      # 配置できる計算資源がない
+      if len(loads) == 0:
+        # cloud に配置
+        mig_fin = now+mig_time-1
+        s_delay = next_s.getDelay2Calc(cloud, gnum)
+        cloud.resReserv(v.vid, res/2, s_delay, now, mig_fin, "mig")
+        cloud.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
+        v.setCalcServer(cloud.sid, beg, end)
+        print("----- Resource Error: Not enough capacity. now: {now}, vid: {v.vid}. -----")
 
       # 遅延を足してソート
       inds = {}
@@ -102,7 +112,7 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
 
 
 # 環境の更新
-def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehicles: Dict[str, Vehicle]):
+def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehicles: List[Vehicle]):
   # サーバのタスクとマイグレーション状況を更新 
   """
   for server in servers:
@@ -191,7 +201,7 @@ def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: List[Ve
   """
   return mig_priority, need_list
 
-def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int, gnum: int, ap: float):
+def kizon(now: int, servers: List[Server], vehicles: List[Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int, gnum: int, ap: float, cloud):
   # 混雑度取得
   jams = getTrafficJams(now, servers_comm, servers)
   # 混雑度から再配置の優先順位を取得 
@@ -224,6 +234,17 @@ def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_lis
         # これ以上配置できないものは追加しない
         if idle-res >= 0:
           loads[sid] = idle/s_spec
+      
+      # 配置できる計算資源がない
+      if len(loads) == 0:
+        # cloud に配置
+        mig_fin = now+mig_time-1
+        s_delay = next_s.getDelay2Calc(cloud, gnum)
+        cloud.resReserv(v.vid, res/2, s_delay, now, mig_fin, "mig")
+        cloud.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
+        v.setCalcServer(cloud.sid, beg, end)
+        print("----- Resource Error: Not enough capacity. now: {now}, vid: {v.vid}. -----")
+
       # 遅延を足してソート
       inds = {}
       for sid, load in loads.items():
@@ -253,7 +274,7 @@ def kizon(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_lis
       s_idles[locate_sid] -= res
       v.setCalcServer(locate_sid, beg, end)
 
-def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: Dict[str, Vehicle], jams: Dict[str, List[str]]):
+def kizonCheckMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: List[Vehicle], jams: Dict[str, List[str]]):
   # 混雑度順から need_list を作成
   # jams は通信先が多い順
   mig_priority = [] # 優先度高い順のsid
@@ -304,4 +325,26 @@ def exportNowLoad(now: int, servers: List[Server], res: int, ap: float):
 def exportResult(file_name: str, result):
   # csvに出力
   df = pandas.json_normalize(result)
+  df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
+
+def exportStatus(file_name: str, servers: List[Server], vehicles: List[Vehicle]):
+  results = []
+  for v in vehicles:
+    result = {}
+    result["vid"] = v.vid
+    for comm in v.comm_list:
+      beg = int(comm.time[0])
+      calc_sid = v.calc_list[beg]
+      tmp = list(filter(lambda s: s.sid == calc_sid, servers))
+      calc_s = tmp[0]
+      if not calc_s.checkTask(beg, v.vid):
+        # サービスが受けられない場合は何秒遅れるか記録
+        t = beg+1
+        while True:
+          if calc_s.checkTask(t, v.vid):
+            break
+        result[calc_s.sid] = t - beg
+      results.append(result)
+
+  df = pandas.json_normalize(results)
   df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
