@@ -328,6 +328,77 @@ def exportNowLoad(now: int, servers: List[Server], res: int, ap: float):
         result[f"{s.sid}-{task.vid}"] = (ap/param) + task.delay
     result[f"{s.sid}-fps"] = max_fps / (idle/s.spec)
   return result
+
+def allocateRandomServer(now: int, servers: List[Server], vehicles: List[Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int, gnum: int, ap: float, cloud):
+  # 混雑度取得
+  jams = getTrafficJams(now, servers_comm, servers)
+  # 混雑度から再配置の優先順位を取得 
+  mig_priority, need_list = kizonCheckMigNeed(now, mig_time, vid_list, vehicles, jams)
+  # 再配置計算前の付加状況を取得
+  s_idles = {}
+  f = True
+  s_spec = 0
+  for s in servers:
+    if f:
+      s_spec = s.spec
+      f = False
+    s_idles[s.sid] = s.idle_list[now]
+  # 再配置計算
+  for sid in mig_priority:      # 優先度が高い順から再配置計算
+    for tmp in need_list[sid]:  # tmp[0] -> Comm, tmp[1] -> Vehicle
+      comm = tmp[0]
+      v = tmp[1]
+      beg, end = int(comm.time[0]), int(comm.time[1])
+      next_sid, flag = v.getNextSid(now)
+      if not flag: # マップから消える
+        continue
+      # sid からインスタンスを取得
+      tmp_list = list(filter(lambda s: s.sid == next_sid, servers))
+      next_s = tmp_list[0]
+      # 再配置先の計算
+      # 現在の負荷を集める
+      cand = []
+      for s, idle in s_idles.items():
+        # これ以上配置できないものは追加しない
+        if idle-res >= 0:
+          cand.append(s.sid)
+      
+      # 配置できる計算資源がない
+      if len(cand) == 0:
+        # cloud に配置
+        mig_fin = now+mig_time-1
+        s_delay = next_s.getDelay2Calc(cloud, gnum)
+        cloud.resReserv(v.vid, res/2, s_delay, now, mig_fin, "mig")
+        cloud.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
+        v.setCalcServer(cloud.sid, beg, end)
+        print("----- Resource Error: Not enough capacity. now: {now}, vid: {v.vid}. -----")
+
+      # 配置できるまでランダム
+      rand_sid = random.randrange(len(servers))
+      while True:
+        if rand_sid in cand:
+          break
+        else:
+          rand_sid = random.randrange(len(servers))
+      locate_sid = rand_sid
+
+      # sid からインスタンスを取得
+      tmp_list= list(filter(lambda server: server.sid == locate_sid, servers))
+      locate_server = tmp_list[0]
+      s_delay = next_s.getDelay2Calc(locate_server, gnum)
+
+      # リソース予約
+      # VM起動中は半分の負荷
+      mig_fin = now+mig_time-1
+      locate_server.resReserv(v.vid, res/2, s_delay, now, mig_fin, "mig")
+      if mig_fin < beg-1:
+        locate_server.resReserv(v.vid, res, s_delay, beg, end, "ready")
+      else:
+        locate_server.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
+      comm.flag = True
+      s_idles[locate_sid] -= res
+      v.setCalcServer(locate_sid, beg, end)
+
   
 def exportResult(file_name: str, result):
   # csvに出力
@@ -343,12 +414,15 @@ def exportStatus(file_name: str, servers: List[Server], vehicles: List[Vehicle])
       beg = int(comm.time[0])
       calc_sid = v.calc_list[beg]
       tmp = list(filter(lambda s: s.sid == calc_sid, servers))
+      if len(tmp) == 0:
+        print("--- empty ---")
       calc_s = tmp[0]
       if not calc_s.checkTask(beg, v.vid):
         # サービスが受けられない場合は何秒遅れるか記録
         t = beg+1
         while True:
           if calc_s.checkTask(t, v.vid):
+            print(f"--- search {v.vid}---")
             break
         result[calc_s.sid] = t - beg
       results.append(result)

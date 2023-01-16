@@ -116,7 +116,39 @@ def random_allocation(sumocfg, servers, vehicles, mig_time):
   traci.close()
   sys.stdout.flush()
 
+def randomAllocation(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, cloud):
+  sumoBinary = "sumo"
+  # sumoBinary = "sumo-gui"
+  traci.start([sumoBinary, "-c", sumocfg])
 
+  now = 0
+  results = []
+  sim_time = 0
+  while traci.simulation.getMinExpectedNumber() > 0:
+    # シミュレーション内容
+    traci.simulationStep()
+    sim_time += 0 
+    
+    now = int(traci.simulation.getTime())
+    vid_list = traci.vehicle.getIDList()
+    print(f"now: {now}, vehicles: {len(vid_list)-len(servers)}")
+
+    envUpdate(traci, now, servers, vid_list, vehicles)
+    allocateRandomServer(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap, cloud)
+    
+    result = exportNowLoad(now, servers, res, ap)
+    result["vehicles"] = len(vid_list) - len(servers)
+    result["cloud"] = cloud.idle_list[now]
+    results.append(result)
+
+  # 結果の収集
+  file_name = "teian.csv"
+  exportResult(file_name, results)
+  file_name = "teian-service.csv"
+  exportStatus(file_name, servers, vehicles)
+  traci.close()
+
+"""
 def test(sumocfg, servers, vehicles):
   sumoBinary = "sumo"
   traci.start([sumoBinary, "-c", sumocfg])
@@ -135,7 +167,7 @@ def test(sumocfg, servers, vehicles):
       if len(v) == 1: # receiver は vehicles に入ってない
         print(v[0].vid)
     print()
- 
+"""
 
 def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, cloud):
   sumoBinary = "sumo"
