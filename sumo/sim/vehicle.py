@@ -34,9 +34,11 @@ class Vehicle:
 
   # 車両がどのRSUと何秒から何秒まで通信するかのリストを作成 ( {sid, [beg, end]} のリスト)
   def setCommList(self, comm):
+    tmp_list = []
     for sid, comm_time in comm.items():     # comm_time: [0: beg, 1: end]
-      tmp = [int(comm_time[0]), int(comm_time[1])+1]
-      self.comm_list.append(Comm(sid, tmp))
+      tmp = [int(comm_time[0])+1, int(comm_time[1])]
+      tmp_list.append(Comm(sid, tmp))
+    self.comm_list = sorted(tmp_list, key=lambda comm: comm.time[0])
         
   # 車両が now 以降にどのRSUと何秒から何秒まで通信するかのリスト取得 ( {sid, [beg, end]} のリスト)
   # getNextComm を改良する
@@ -118,7 +120,8 @@ class Vehicle:
     if len(comm_list) == 0:
       return None, False
     else:
-      next_comm = comm_list[0]
+      sort_list = sorted(comm_list, key=lambda comm: comm.time[0])
+      next_comm = sort_list[0]
       return next_comm.sid, True
   
   def getNowComm(self, now):
@@ -133,7 +136,8 @@ class Vehicle:
     if len(comm_list) == 0:
       return None, False
     else:
-      next_comm = comm_list[0]
+      sort_list = sorted(comm_list, key=lambda comm: comm.time[0])
+      next_comm = sort_list[0]
       return next_comm, True
 
   # 遅延を取得

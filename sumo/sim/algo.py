@@ -2,7 +2,7 @@ import random
 from typing import List, Dict
 from server import Server, Task
 from vehicle import Vehicle, Comm
-from tools import setServersComm, getTrafficJams, getServersLoads
+from tools import setServersComm, getTrafficJams, getServersLoads, getNowCommNum
 
 import itertools
 import pandas
@@ -48,15 +48,18 @@ def getRandomServer(now: int, servers: List[Server]) -> Server:
 # servers_comm = setServersComm() 
 def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int):
   # 混雑度取得
-  jams = getTrafficJams(now, servers_comm, servers)
-  revers_jams = list(reversed(jams))
+  jams = getTrafficJams(now, servers_comm, servers) # 混雑度大きい順
+  revers_jams = list(reversed(jams)) # 混雑度が小さい順
   # 混雑度から再配置の優先順位を取得
-  # mig_priority, need_list = checkMigNeed(now, mig_time, vid_list, vehicles, jams)
-  mig_priority, need_list = checkMigNeed(now, mig_time, vid_list, vehicles, revers_jams)
+  mig_priority, need_list = checkMigNeed(now, mig_time, vid_list, vehicles, jams)
+  # mig_priority, need_list = checkMigNeed(now, mig_time, vid_list, vehicles, revers_jams)
+  print(f"\n---now: {now}, comm_num: {getNowCommNum(now, servers_comm)}")
   for sid in mig_priority:      # 優先度が高い順から再配置計算
+    print(f"sid: {sid}")
     for tmp in need_list[sid]:  # tmp[0] -> Comm, tmp[1] -> Vehicle
       comm = tmp[0]
       v = tmp[1]
+      print(f"  vid: {v.vid}, beg: {comm.time[0]}, end: {comm.time[1]}")
       beg, end = int(comm.time[0]), int(comm.time[1])
       next_sid, flag = v.getNextSid(now)
       if not flag: # マップから消える
@@ -87,8 +90,7 @@ def loadAllocation(now: int, servers: List[Server], vehicles: Dict[str, Vehicle]
 
       # リソース予約
       # VM起動中は半分の負荷
-      locate_server.resReserv(v.vid, res, beg, end, mig_time+1)
-      comm.flag = True
+      locate_server.resReserv(v.vid, res, beg, end, mig_time+1, now)
       v.setCalcServer(locate_sid, beg, end)
 
 
@@ -115,12 +117,12 @@ def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehic
     if not calc_server.checkTask(now, v.vid):
       if not (now >= v.comm_list[0].time[0] and now <= v.comm_list[0].time[1]): # 一番最初の通信はしょうがないので無視
         # サービスが受けられない場合はエラー
-        print(f"----- Error: {v.vid} could not receive the service.(now: {now}, lane: {traci.vehicle.getLaneID(v.vid)}) -----")
         comm, f = v.getNowComm(now)
-        if f:
-          print(f"  beg: {comm.time[0]}, end: {comm.time[1]}")
-          for task in calc_server.tasks[now]:
-            print(f"   vid: {task.vid}, timer: {task.timer}, status: {task.status}")
+        print(f"----- Error: {v.vid} could not receive the service.(now: {now}, sid: {calc_server.sid}, beg: {comm.time[0]}, end: {comm.time[1]}, lane: {traci.vehicle.getLaneID(v.vid)}) -----")
+        for task in calc_server.tasks[now]:
+          print(f"  vid: {task.vid}, timer: {task.timer}, status: {task.status}, start: {task.mig_start_time}, mig_time: {task.mig_time}")
+      else:
+        print("--- 初期配置 ---")
 
 
 # 再配置計算が必要かチェック 
@@ -131,10 +133,9 @@ def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: List[Ve
   # jams は通信先が多い順
   mig_priority = [] # 優先度高い順のsid
   need_list = {}    # key -> sid, value -> List[Vehicle]
-  for tmp in jams:
+  for tmp in jams: # sort すると dict じゃないことに注意
     mig_priority.append(tmp[0]) # sidを追加
     need_list[tmp[0]] = []
-
   # いま必要かどうかチェックする
   for vid in vid_list:
     # receiver は無視
@@ -143,25 +144,42 @@ def checkMigNeed(now: int, mig_time: int, vid_list: List[str], vehicles: List[Ve
       continue
     v = v_list[0]
     
-    # 次に通信する計算資源を取得
-    comm, flag = v.getNextComm(now)
-    if not flag: # 次の通信先がない（マップから消える）
-      continue
-
-    # この通信時間中のタスクの再配置計算を行ったかチェック
-    # 計算済みなら次へ
-    if comm.flag:
-      continue
-    
-    # そのRSUと通信するまでの猶予 ＝＝ マイグレーションにかかる時間のとき再配置計算を行う
-    if int(comm.time[0])-now <= mig_time+1:
-      # 再配置計算が必要
-      sid = comm.sid
-      if not sid in need_list:
-        need_list[sid] = []
-      need_list[sid].append([comm, v])
-    
+    f = False
+    tmp_time = now
+    while True:
+      # この通信時間中のタスクの再配置計算を行ったかチェック
+      # 計算済みなら次へ通信を調べる
+      comm, flag = v.getNextComm(tmp_time)
+      if not flag: # 次の通信先がない（マップから消える）
+        break
+      # print(f"\nnow = {now}")
+      # print(f"  vid: {v.vid}, beg: {comm.time[0]}, end: {comm.time[1]}")
+      if comm.flag:
+        tmp_time = comm.time[1]+1
+        # print("  -> skip")
+      else:
+        # そのRSUと通信するまでの猶予 ＝＝ マイグレーションにかかる時間のとき再配置計算を行う
+        # print(f"now: {now}, vid: {v.vid}, beg: {comm.time[0]}, end: {comm.time[1]}")
+        if int(comm.time[0])-now <= mig_time+1:
+          # 再配置計算が必要
+          comm.flag = True
+          # print("  do!")
+          sid = comm.sid
+          need_list[sid].append([comm, v])
+          tmp_time = comm.time[1]+1
+        else:
+          # print("  break")
+          break
   # 必要な comm をリターン
+  """
+  print(f"---check: {now}")
+  for sid, hoge in need_list.items():
+    for tmp in hoge:
+      comm = tmp[0]
+      v = tmp[1]
+      print(f"  vid: {v.vid}, beg: {comm.time[0]}, end: {comm.time[1]}")
+  print()
+  """
   return mig_priority, need_list
 
 def exportNowLoad(now: int, servers: List[Server]):

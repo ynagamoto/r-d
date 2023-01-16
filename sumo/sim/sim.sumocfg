@@ -4,7 +4,7 @@
 
     <input>
         <!-- <net-file value="sim_xml/grid11x11.net.xml"/> -->
-        <net-file value="sim_xml/test10x10.net.xml"/>
+        <net-file value="sim_xml/test10x10-200.net.xml"/>
         <!-- <route-files value="sim_xml/random.rou.xml"/> -->
         <route-files value="sim_xml/random.rou.xml"/>
     </input>
@@ -15,7 +15,7 @@
 
     <communication>
         <!-- <device.btreceiver.all-recognitions value="true"/> -->
-        <device.btreceiver.range value="40"/>
+        <device.btreceiver.range value="80"/>
         <device.btreceiver.offtime value="1"/>
     </communication>
 

@@ -19,7 +19,7 @@ from algo import getRandomServer, loadAllocation, envUpdate, exportNowLoad, expo
 
 def run(sumocfg):
   sumoBinary = "sumo"
-  # sumoBinary = "sumo-gui"
+  sumoBinary = "sumo-gui"
   traci.start([sumoBinary, "-c", sumocfg])
 
   f = True
@@ -198,7 +198,7 @@ if __name__ == "__main__":
   servers = load_servers_json(sim_time)
   vehicles = load_vehicles(sim_time, emission)
   print(f"sim time: {sim_time}")
-  presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res)
+  # presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res)
   # kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res)
   # random_allocation(sumocfg, servers, vehicles, mig_time)
   # test(sumocfg, servers, vehicles)

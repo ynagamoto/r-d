@@ -33,16 +33,16 @@ def getRandBeg(grid_num):
   d_num = random.randrange(4) # 方角
   edge = random.randrange(1, grid_num+2) # 1 ~
   
-  if d_num == 0:
+  if d_num == 0: # West
     return f"A{edge}B{edge}"
-  elif d_num == 1:
+  elif d_num == 1: # South
     d = chr(ord('A')+edge)
     return f"{d}{0}{d}{1}"
-  elif d_num == 2:
-    d = chr(ord('A')+grid_num)
-    bef_d = chr(ord('A')+grid_num-1)
+  elif d_num == 2: # East
+    d = chr(ord('A')+grid_num+2)
+    bef_d = chr(ord('A')+grid_num+2-1)
     return f"{d}{edge}{bef_d}{edge}"
-  elif d_num == 3:
+  elif d_num == 3: # North
     d = chr(ord('A')+edge)
     return f"{d}{grid_num+2}{d}{grid_num+1}"
 
@@ -118,7 +118,7 @@ def generate_routefile(grid_num: int, v_num: int, spec: int):
 if __name__ == "__main__":
   num = 10
   # num = 4
-  spec = 12 # 6台
+  spec = 20 # 6台
   # spec = 4
   s_dict = generate_routefile(num, 1000, spec) 
   with open('../sim_xml/servers.json', 'w') as f:

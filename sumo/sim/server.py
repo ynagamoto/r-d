@@ -5,11 +5,14 @@ from typing import Dict, List
 from copy import copy
 
 class Task:
-  def __init__(self, vid: str, resource: int, delay: float, timer: int):
+  def __init__(self, vid: str, resource: int, delay: float, timer: int, now: int):
     self.vid        : str = vid                                     # Vehicle ID
     self.resource   : int = resource                                # Required resource
     # self.delay      : float = delay                                 # Delay from vehicle to server 
     self.timer      : int = timer
+    self.mig_start_time = now
+    self.mig_time = timer
+
     if timer < 0:
       self.status = ""
     else:
@@ -88,10 +91,10 @@ class Server:
         return False
     return True 
   
-  def resReserv(self, vid:str, res:int, beg: int, end: int, mig_time: int): # 指定した時間帯のリソースを確保
-    task = Task(vid, res, 0, mig_time)
+  def resReserv(self, vid:str, res:int, beg: int, end: int, mig_time: int, now): # 指定した時間帯のリソースを確保
     # task.show()
     for i in range(beg, end+1):
+      task = Task(vid, res, 0, mig_time, now)
       self.addTask(task, i)
 
   # マイグレーション状況を更新する
@@ -99,10 +102,11 @@ class Server:
     load = 0
     for i in range(now, len(self.tasks)):
       for task in self.tasks[i]:
-        if task.timer > 0:
+        if not task.status == "ready":
           task.timer -= 1
           if task.timer == 0:
             task.status = "ready"
+        # print(f"now: {now}, sid: {self.sid}, vid: {task.vid}, timer: {task.timer}, status: {task.status}")
         if task.status == "mig":
           load += task.resource/2
         elif task.status == "ready":
