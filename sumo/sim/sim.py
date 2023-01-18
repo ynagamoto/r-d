@@ -14,8 +14,8 @@ import traci
 
 from server import Server, Task
 from vehicle import Vehicle
-from tools import load_emission, load_servers_json, load_vehicles, setServersComm
-from algo import getRandomServer, loadAllocation, kizon, envUpdate, exportNowLoad, exportResult, exportStatus, allocateRandomServer
+from tools import load_emission, load_servers_json, load_vehicles, setServersComm, showServersResource
+from algo import loadAllocation, kizon, envUpdate, exportNowLoad, exportResult, exportStatus, allocateRandomServer
 
 def run(sumocfg):
   sumoBinary = "sumo"
@@ -31,7 +31,7 @@ def run(sumocfg):
       res_num = int(traci.vehicle.getIDCount())
       f = False
     # print(f"now: {int(traci.simulation.getTime())}, v_num: {res_num - int(traci.vehicle.getIDCount())}")
-    print(f"now: {int(traci.simulation.getTime())}, v_num: {int(traci.vehicle.getIDCount())}")
+    # print(f"now: {int(traci.simulation.getTime())}, v_num: {int(traci.vehicle.getIDCount())}")
   traci.close()
 
 """
@@ -135,6 +135,7 @@ def randomAllocation(sumocfg, servers, servers_comm, vehicles, mig_time, res, gn
 
     envUpdate(traci, now, servers, vid_list, vehicles)
     allocateRandomServer(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap, cloud)
+    # showServersResource(now, servers)
     
     runtime_result, idle_result, fps_result = exportNowLoad(now, servers, res, ap)
     idle_result["cloud"] = cloud.idle_list[now]
@@ -195,6 +196,7 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, c
 
     envUpdate(traci, now, servers, vid_list, vehicles)
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap, cloud)
+    # showServersResource(now, servers)
     
     runtime_result, idle_result, fps_result = exportNowLoad(now, servers, res, ap)
     idle_result["cloud"] = cloud.idle_list[now]

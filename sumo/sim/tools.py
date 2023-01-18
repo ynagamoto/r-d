@@ -155,6 +155,12 @@ def getNowCommNum(now: int, servers_comm: Dict[int, Dict[str, List[str]]]):
     now_comm_num += len(vid_list)
   return now_comm_num
 
+def showServersResource(now: int, servers: List[Server]):
+  for s in servers:
+    print(f"  sid: {s.sid}")
+    for task in s.tasks[now]:
+      print(f"    vid: {task.vid}, type: {task.ttype}")
+
 if __name__ == "__main__":
   # print_servers(load_servers())
   # print_vehicles(load_vehicles())
