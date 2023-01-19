@@ -143,7 +143,7 @@ class Server:
     return g
     
   # calc までの遅延
-  def getDelay2Calc(self, calc: str, gnum: int):
+  def getDelay2Calc(self, calc, gnum: int):
     """
     そのRSUで処理   -> 0
     同じグループ    -> 10

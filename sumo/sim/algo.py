@@ -380,6 +380,44 @@ def exportNowLoad(now: int, servers: List[Server], res: int, ap: float):
       fps_result[s.sid] = max_fps * (idle/s.spec)
   return runtime_result, idle_result, fps_result
 
+def newExportNowLoad(now: int, servers: List[Server], servers_comm, res: int):
+  loads = {}
+  # 使用率
+  loads["now"] = now
+  loads["all"] = 0
+  # 通信中の車両数
+  loads["comm"]= 0
+  # フレームレート
+  loads["fps"] = 0
+  max_fps = 200
+  count = 0
+  for s in servers:
+    loads["comm"] += len(servers_comm[now][s.sid])
+    # load
+    load = (s.spec - s.idle_list[now]) / s.spec # 使用率
+    loads[s.sid] = load
+    loads["all"] += load
+    # fps
+    # タスクを実行してない計算資源は除外
+    f = True
+    for task in s.tasks[now]:
+      if task.ttype == "ready":
+        f = False
+        break
+    if f:
+      continue
+    count += 1
+    idle = s.idle_list[now]
+    fps = 0
+    if idle < 0:  # cpu usage > 100%
+      fps = max_fps * (res/(s.spec-idle))
+    else:         # cpu usage <= 100%
+      fps = max_fps * (idle+res/s.spec)
+    loads["fps"] += fps
+  loads["all"] /= len(servers)
+  if count > 0:
+    loads["fps"] /= count
+  return loads 
   
 def exportResult(file_name: str, result):
   # csvに出力
@@ -387,37 +425,70 @@ def exportResult(file_name: str, result):
   df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
 
 def exportStatus(file_name: str, servers: List[Server], vehicles: List[Vehicle]):
-  results = {}
+  results = []
   for v in vehicles:
     print(f"vid: {v.vid}")
     result = {}
-    # result["vid"] = v.vid
-    count_comm = 0
+    result["vid"] = v.vid
+    result["count"] = 0 # 通信した回数
+    result["delay"] = 0 # 遅れの合計
     for comm in v.comm_list:
       beg = int(comm.time[0])
       end = int(comm.time[1])
-      count_comm += 1
-      calc_sid = v.calc_list[beg]
+      result["count"] += 1
+      calc_sid = v.calc_list[beg] # タスクを実行した計算資源
       tmp = list(filter(lambda s: s.sid == calc_sid, servers))
       calc_s = tmp[0]
-      result[calc_s.sid] = 0
-      # サービスが受けられない場合は何秒遅れるか記録
-      # サービスが受けられる場合は0
-      t = 0
-      if not calc_s.checkTask(beg, v.vid):
-        t += 1
-        while True:
-          if calc_s.checkTask(t+beg, v.vid):
-            break
-          if t > len(calc_s.comm):
-            break
-      result[calc_s.sid] = int(t)
-      print(f"  beg: {beg}, end: {end}, sid: {calc_s.sid}, check: {result[calc_s.sid]}")
-    result["comm_sum"] = count_comm 
-    result["comm_len"] = len(v.comm_list)
-    # results.append(result)
-    results[v.vid] = result
+      while True:
+        # サービスが受けられる場合は0
+        if calc_s.checkTask(beg+result["delay"], v.vid):
+          break
+        else: # サービスが受けられない場合は何秒遅れるか記録
+          result["delay"] += 1
+    result["per"] = result["delay"] / result["count"]
+    results.append(result)
 
-  print(results)
+  df = pandas.json_normalize(results)
+  df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
+
+def exportVehiclesResult(file_name: str, servers: List[Server], vehicles: List[Vehicle], res, ap, gnum):
+  results = []
+  for v in vehicles:
+    sim_time = 1
+    result = {}
+    result["vid"] = v.vid
+    appe_time = v.comm_list[0].time[0]
+    count = 0
+    sum_runtime = 0
+    for comm_sid in v.comm:
+      if appe_time + 20 >= sim_time: # 出現から20sは含めない
+        continue
+      if comm_sid == "base": # 通信してない
+        continue
+      
+      # 通信中の採算資源と実行先の計算資源を取得
+      hoge = list(filter(lambda s: s.sid == calc_sid, servers))
+      comm_s = hoge[0]
+      calc_sid = v.calc_list[sim_time]
+      fuga = list(filter(lambda s: s.sid == calc_sid, servers))
+      calc_s = fuga[0]
+
+      # 実行時間を計算して足す
+      idle = calc_s.idle_list[sim_time]
+      param = 0
+      if idle < 0:
+        param = 1/(calc_s.spec-idle)
+      else: # cpu usage <= 100%
+        param = (idle+res)/(calc_s.spec)
+      delay = calc_s.getDelay2Calc(comm_s, gnum)
+      runtime = (ap/param) + delay/1000
+      sum_runtime += runtime
+
+      count += 1
+      sim_time += 1
+    if count > 0:
+      result["runtime"] = sum_runtime / count
+    results.append(result)
+
   df = pandas.json_normalize(results)
   df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)

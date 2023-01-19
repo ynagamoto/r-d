@@ -15,7 +15,7 @@ import traci
 from server import Server, Task
 from vehicle import Vehicle
 from tools import load_emission, load_servers_json, load_vehicles, setServersComm, showServersResource
-from algo import loadAllocation, kizon, envUpdate, exportNowLoad, exportResult, exportStatus, allocateRandomServer
+from algo import loadAllocation, kizon, envUpdate, exportNowLoad, exportResult, newExportNowLoad, exportStatus, exportVehiclesResult, allocateRandomServer
 
 def run(sumocfg):
   sumoBinary = "sumo"
@@ -31,7 +31,7 @@ def run(sumocfg):
       res_num = int(traci.vehicle.getIDCount())
       f = False
     # print(f"now: {int(traci.simulation.getTime())}, v_num: {res_num - int(traci.vehicle.getIDCount())}")
-    # print(f"now: {int(traci.simulation.getTime())}, v_num: {int(traci.vehicle.getIDCount())}")
+    print(f"now: {int(traci.simulation.getTime())}, v_num: {int(traci.vehicle.getIDCount())}")
   traci.close()
 
 """
@@ -183,9 +183,7 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, c
   traci.start([sumoBinary, "-c", sumocfg])
 
   now = 0
-  runtime_results = []
-  idle_results = []
-  fps_results = []
+  loads= []
   while traci.simulation.getMinExpectedNumber() > 0:
     # シミュレーション内容
     traci.simulationStep()
@@ -198,20 +196,16 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, c
     loadAllocation(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap, cloud)
     # showServersResource(now, servers)
     
-    runtime_result, idle_result, fps_result = exportNowLoad(now, servers, res, ap)
-    idle_result["cloud"] = cloud.idle_list[now]
-    idle_result["vehicles"] = len(vid_list) - len(servers)
-    runtime_results.append(runtime_result)
-    idle_results.append(idle_result)
-    fps_results.append(fps_result)
+    load = newExportNowLoad(now, servers, servers_comm, res)
+    load["cloud"] = cloud.idle_list[now]
+    load["vehicles"] = len(vid_list) - len(servers)
+    loads.append(load)
 
   # 結果の収集
   file_name = "teian-runtime.csv"
-  exportResult(file_name, runtime_results)
-  file_name = "teian-idle.csv"
-  exportResult(file_name, idle_results)
-  file_name = "teian-fps.csv"
-  exportResult(file_name, fps_results)
+  exportVehiclesResult(file_name, servers, vehicles, res, ap, gnum)
+  file_name = "teian-load.csv"
+  exportResult(file_name, loads)
   file_name = "teian-service.csv"
   exportStatus(file_name, servers, vehicles)
   traci.close()
@@ -236,6 +230,43 @@ def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, 
 
     envUpdate(traci, now, servers, vid_list, vehicles)
     kizon(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap, cloud)
+    runtime_result, idle_result, fps_result = exportNowLoad(now, servers, res, ap)
+    idle_result["cloud"] = cloud.idle_list[now]
+    idle_result["vehicles"] = len(vid_list) - len(servers)
+    runtime_results.append(runtime_result)
+    idle_results.append(idle_result)
+    fps_results.append(fps_result)
+
+  # 結果の収集
+  file_name = "kizon-runtime.csv"
+  exportResult(file_name, runtime_results)
+  file_name = "kizon-idle.csv"
+  exportResult(file_name, idle_results)
+  file_name = "kizon-fps.csv"
+  exportResult(file_name, fps_results)
+  file_name = "kizon-service.csv"
+  exportStatus(file_name, servers, vehicles)
+  traci.close()
+
+def kizonFix(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, cloud):
+  sumoBinary = "sumo"
+  # sumoBinary = "sumo-gui"
+  traci.start([sumoBinary, "-c", sumocfg])
+
+  now = 0
+  runtime_results = []
+  idle_results = []
+  fps_results = []
+  while traci.simulation.getMinExpectedNumber() > 0:
+    # シミュレーション内容
+    traci.simulationStep()
+    
+    now = int(traci.simulation.getTime())
+    vid_list = traci.vehicle.getIDList()
+    print(f"now: {now}, vehicles: {len(vid_list)-len(servers)}")
+
+    envUpdate(traci, now, servers, vid_list, vehicles)
+    # kizonLoad(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap, cloud)
     runtime_result, idle_result, fps_result = exportNowLoad(now, servers, res, ap)
     idle_result["cloud"] = cloud.idle_list[now]
     idle_result["vehicles"] = len(vid_list) - len(servers)
