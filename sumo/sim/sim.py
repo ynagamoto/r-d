@@ -31,7 +31,7 @@ def run(sumocfg):
       res_num = int(traci.vehicle.getIDCount())
       f = False
     # print(f"now: {int(traci.simulation.getTime())}, v_num: {res_num - int(traci.vehicle.getIDCount())}")
-    print(f"now: {int(traci.simulation.getTime())}, v_num: {int(traci.vehicle.getIDCount())}")
+    # print(f"now: {int(traci.simulation.getTime())}, v_num: {int(traci.vehicle.getIDCount())}")
   traci.close()
 
 """
@@ -289,7 +289,7 @@ if __name__ == "__main__":
   cloud = Server("cloud", "cloud", [0, 0], 200, sim_time)
   vehicles = load_vehicles(sim_time, emission)
   print(f"sim time: {sim_time}, emission: {len(emission)}, vehicles: {len(vehicles)}")
-  presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
+  # presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
   # kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
   # kizonFix(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
   # randomAllocation(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)

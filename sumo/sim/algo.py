@@ -545,17 +545,18 @@ def exportVehiclesResult(file_name: str, servers: List[Server], vehicles: List[V
     count = 0
     sum_runtime = 0
     for comm_sid in v.comm:
-      if appe_time + 10  >= sim_time: # 出現から10sは含めない
-        continue
+      sim_time += 1
       if comm_sid == "base": # 通信してない
         continue
-      
+
       # 通信中の採算資源と実行先の計算資源を取得
-      hoge = list(filter(lambda s: s.sid == comm_sid, servers))
-      comm_s = hoge[0]
       calc_sid = v.calc_list[sim_time]
       fuga = list(filter(lambda s: s.sid == calc_sid, servers))
+      if len(fuga) == 0:
+        continue
       calc_s = fuga[0]
+      hoge = list(filter(lambda s: s.sid == comm_sid, servers))
+      comm_s = hoge[0]
 
       # 実行時間を計算して足す
       idle = calc_s.idle_list[sim_time]
@@ -567,10 +568,9 @@ def exportVehiclesResult(file_name: str, servers: List[Server], vehicles: List[V
       delay = calc_s.getDelay2Calc(comm_s, gnum)
       runtime = (ap/param) + delay/1000
       sum_runtime += runtime
-
       count += 1
-      sim_time += 1
-    if len(v.comm_list) == 0:
+
+    if not len(v.comm_list) == 0:
       result["runtime"] = sum_runtime / count
     results.append(result)
 
