@@ -84,7 +84,7 @@ def load_bt():
       vehicles[car_id][receiver.attrib["id"]] = comm_time
   return vehicles
 
-# !!!!!!!!!!   !WILL   !!!!!!!!!!
+# TODO
 # vehicles は Dict の方が扱いやすかも
 def load_vehicles(sim_time: int, emission: Dict[str, int]):
   bt = load_bt()
@@ -96,6 +96,7 @@ def load_vehicles(sim_time: int, emission: Dict[str, int]):
       continue
     vehicle = Vehicle(vid, postions, comm[vid], sim_time)
     vehicles.append(vehicle)
+  print(f"v: {len(vehicles)}, bt: {len(bt)}")
   return vehicles
 
 
@@ -111,11 +112,11 @@ def setServersComm(sim_time:int, servers: List[Server], vehicles: Dict[str, Vehi
 
   # 車両->comm で for文回す
   for vehicle in vehicles:
-    print(vehicle.vid)
+    # print(vehicle.vid)
     for comm in vehicle.comm_list:
       beg, end = int(comm.time[0]), int(comm.time[1])
       sid = comm.sid
-      print(f"  beg: {beg}, end: {end}")
+      # print(f"  beg: {beg}, end: {end}")
       for i in range(beg, end+1): # 切り上げ
         servers_comm[i][sid].append(vehicle.vid)
   return servers_comm

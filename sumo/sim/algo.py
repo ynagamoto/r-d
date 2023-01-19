@@ -277,6 +277,81 @@ def kizon(now: int, servers: List[Server], vehicles: List[Vehicle], vid_list: Li
       else:
         locate_server.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
       comm.flag = True
+      v.setCalcServer(locate_sid, beg, end)
+
+def kizonLoad(now: int, servers: List[Server], vehicles: List[Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int, gnum: int, ap: float, cloud):
+  # 混雑度取得
+  jams = getTrafficJams(now, servers_comm, servers)
+  # 混雑度から再配置の優先順位を取得 
+  mig_priority, need_list = kizonCheckMigNeed(now, mig_time, vid_list, vehicles, jams)
+  # 再配置計算前の付加状況を取得
+  s_idles = {}
+  f = True
+  s_spec = 0
+  for s in servers:
+    if f:
+      s_spec = s.spec
+      f = False
+    s_idles[s.sid] = s.idle_list[now]
+  # 再配置計算
+  for sid in mig_priority:      # 優先度が高い順から再配置計算
+    for tmp in need_list[sid]:  # tmp[0] -> Comm, tmp[1] -> Vehicle
+      comm = tmp[0]
+      v = tmp[1]
+      beg, end = int(comm.time[0]), int(comm.time[1])
+      next_sid, flag = v.getNextSid(now)
+      if not flag: # マップから消える
+        continue
+      # sid からインスタンスを取得
+      tmp_list = list(filter(lambda s: s.sid == next_sid, servers))
+      next_s = tmp_list[0]
+      # 再配置先の計算
+      # 現在の負荷を集める
+      loads = {}
+      for sid, idle in s_idles.items():
+        # これ以上配置できないものは追加しない
+        if idle-res >= 0:
+          loads[sid] = idle/s_spec
+      
+      # 配置できる計算資源がない
+      if len(loads) == 0:
+        # cloud に配置
+        mig_fin = now+mig_time-1
+        s_delay = next_s.getDelay2Calc(cloud, gnum)
+        cloud.resReserv(v.vid, res/2, s_delay, now, mig_fin, "mig")
+        cloud.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
+        v.setCalcServer(cloud.sid, beg, end)
+        print("----- Resource Error: Not enough capacity. now: {now}, vid: {v.vid}. -----")
+
+      # 遅延を足してソート
+      inds = {}
+      for sid, load in loads.items():
+        s_list = list(filter(lambda s: s.sid == sid, servers))
+        calc = s_list[0]
+        delay = next_s.getDelay2Calc(calc, gnum)
+        inds[sid] = (ap/load) + float(delay)/1000
+
+      sorted_inds = sorted(inds.items(), key = lambda ind: ind[1])
+      # 合計が最小のものを調べる
+      locate_sid = ""
+      for sid, _ in sorted_inds:
+        locate_sid = sid
+        break
+
+      # sid からインスタンスを取得
+      tmp_list= list(filter(lambda server: server.sid == locate_sid, servers))
+      locate_server = tmp_list[0]
+      s_delay = next_s.getDelay2Calc(locate_server, gnum)
+
+      # リソース予約
+      # VM起動中は半分の負荷
+      mig_fin = now+mig_time-1
+      locate_server.resReserv(v.vid, res/2, s_delay, now, mig_fin, "mig")
+      if mig_fin < beg-1:
+        locate_server.resReserv(v.vid, res, s_delay, beg, end, "ready")
+      else:
+        locate_server.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
+      comm.flag = True
       s_idles[locate_sid] -= res
       v.setCalcServer(locate_sid, beg, end)
 
@@ -426,7 +501,9 @@ def exportResult(file_name: str, result):
 
 def exportStatus(file_name: str, servers: List[Server], vehicles: List[Vehicle]):
   results = []
+  count = 0
   for v in vehicles:
+    count += 1
     print(f"vid: {v.vid}")
     result = {}
     result["vid"] = v.vid
@@ -439,13 +516,20 @@ def exportStatus(file_name: str, servers: List[Server], vehicles: List[Vehicle])
       calc_sid = v.calc_list[beg] # タスクを実行した計算資源
       tmp = list(filter(lambda s: s.sid == calc_sid, servers))
       calc_s = tmp[0]
+      delay = 0
       while True:
         # サービスが受けられる場合は0
-        if calc_s.checkTask(beg+result["delay"], v.vid):
+        if calc_s.checkTask(beg+delay, v.vid):
+          break
+        elif result["count"] == 1:
           break
         else: # サービスが受けられない場合は何秒遅れるか記録
-          result["delay"] += 1
+          if len(calc_s.tasks) <= beg+delay+1:
+            break 
+          delay += 1
+      result["delay"] += delay
     result["per"] = result["delay"] / result["count"]
+    print(f"len :{len(vehicles)}, count: {count}")
     results.append(result)
 
   df = pandas.json_normalize(results)
@@ -461,13 +545,13 @@ def exportVehiclesResult(file_name: str, servers: List[Server], vehicles: List[V
     count = 0
     sum_runtime = 0
     for comm_sid in v.comm:
-      if appe_time + 20 >= sim_time: # 出現から20sは含めない
+      if appe_time + 10  >= sim_time: # 出現から10sは含めない
         continue
       if comm_sid == "base": # 通信してない
         continue
       
       # 通信中の採算資源と実行先の計算資源を取得
-      hoge = list(filter(lambda s: s.sid == calc_sid, servers))
+      hoge = list(filter(lambda s: s.sid == comm_sid, servers))
       comm_s = hoge[0]
       calc_sid = v.calc_list[sim_time]
       fuga = list(filter(lambda s: s.sid == calc_sid, servers))
@@ -486,7 +570,7 @@ def exportVehiclesResult(file_name: str, servers: List[Server], vehicles: List[V
 
       count += 1
       sim_time += 1
-    if count > 0:
+    if len(v.comm_list) == 0:
       result["runtime"] = sum_runtime / count
     results.append(result)
 
