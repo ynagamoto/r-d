@@ -281,13 +281,14 @@ if __name__ == "__main__":
   mig_time = 10
   res = 2
   ap = 0.01
+  vnum = 1000
   run(sumocfg)
   sim_time, emission = load_emission()
-  sim_time += 2
+  sim_time += 1
   servers = load_servers_json(sim_time)
   # cloud
   cloud = Server("cloud", "cloud", [0, 0], 200, sim_time)
-  vehicles = load_vehicles(sim_time, emission)
+  vehicles = load_vehicles(sim_time, emission, vnum)
   print(f"sim time: {sim_time}, emission: {len(emission)}, vehicles: {len(vehicles)}")
   # presend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
   # kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)

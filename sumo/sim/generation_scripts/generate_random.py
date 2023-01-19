@@ -5,7 +5,7 @@ def getRandPoints(num: int):
   gene_num = num + 1
   randnum_dict = {}
   q = int(num/2)
-  limit = int(num*4/5)
+  limit = int(num*3/4)
   pos_dict = {}
   sum_num = 0
   for i in range(gene_num):
@@ -32,7 +32,6 @@ def getRandPoints(num: int):
 def getRandBeg(grid_num):
   d_num = random.randrange(4) # 方角
   edge = random.randrange(1, grid_num+2) # 1 ~
-  
   if d_num == 0: # West
     return f"A{edge}B{edge}"
   elif d_num == 1: # South
@@ -49,15 +48,14 @@ def getRandBeg(grid_num):
 def getRandEnd(grid_num):
   d_num = random.randrange(4) # 方角
   edge = random.randrange(1, grid_num+2) # 1 ~
-  
   if d_num == 0:
     return f"B{edge}A{edge}"
   elif d_num == 1:
     d = chr(ord('A')+edge)
     return f"{d}{1}{d}{0}"
   elif d_num == 2:
-    d = chr(ord('A')+grid_num)
-    bef_d = chr(ord('A')+grid_num-1)
+    d = chr(ord('A')+grid_num+2)
+    bef_d = chr(ord('A')+grid_num+2-1)
     return f"{bef_d}{edge}{d}{edge}"
   elif d_num == 3:
     d = chr(ord('A')+edge)
@@ -127,6 +125,6 @@ if __name__ == "__main__":
   # num = 4
   spec = 20 # 10台
   # spec = 4
-  s_dict = generate_routefile(num, 1000, spec) 
+  s_dict = generate_routefile(num, 1200, spec) 
   with open('../sim_xml/servers.json', 'w') as f:
     json.dump(s_dict, f, ensure_ascii=False, indent=2)

@@ -68,26 +68,29 @@ def load_emission():
 
 # !!!!!!!!!!   !WILL   !!!!!!!!!!
 # Comm のリストに変更
-def load_bt():
+def load_bt(vnum):
   file_name = "sim_xml/bt.xml"
   tree = ET.parse(file_name)
   root = tree.getroot()
- 
   # sort each vehicle in time at receiver 
   vehicles = {}
+  count = 0
   for receiver in root:
     for seen in receiver:
       car_id = seen.attrib["id"]
-      if car_id not in vehicles:
-        vehicles[car_id] = {}
+      if not car_id in vehicles:
+        count += 1
+        if count <= vnum:
+          vehicles[car_id] = {}
+        else:
+         continue 
       comm_time = [float(seen.attrib["tBeg"]), float(seen.attrib["tEnd"])]
       vehicles[car_id][receiver.attrib["id"]] = comm_time
   return vehicles
 
-# TODO
 # vehicles は Dict の方が扱いやすかも
-def load_vehicles(sim_time: int, emission: Dict[str, int]):
-  bt = load_bt()
+def load_vehicles(sim_time: int, emission: Dict[str, int], vnum: int):
+  bt = load_bt(vnum)
   # Apply to Vehicle Class
   vehicles = []
   for vid, postions in emission.items():
@@ -96,7 +99,7 @@ def load_vehicles(sim_time: int, emission: Dict[str, int]):
       continue
     vehicle = Vehicle(vid, postions, comm[vid], sim_time)
     vehicles.append(vehicle)
-  print(f"v: {len(vehicles)}, bt: {len(bt)}")
+  print(f"v: {len(vehicles)}, bt: {len(bt)}, emission: {len(emission)}")
   return vehicles
 
 
@@ -163,6 +166,7 @@ def showServersResource(now: int, servers: List[Server]):
       print(f"    vid: {task.vid}, type: {task.ttype}")
 
 if __name__ == "__main__":
-  # print_servers(load_servers())
-  # print_vehicles(load_vehicles())
+  vnum = 1000
+  sim_time, emission = load_emission()
+  load_vehicles(sim_time+1, emission, vnum)
   pass
