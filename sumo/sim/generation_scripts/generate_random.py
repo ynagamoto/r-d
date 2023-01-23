@@ -62,6 +62,7 @@ def getRandEnd(grid_num):
     return f"{d}{grid_num+1}{d}{grid_num+2}"
 
 def generate_routefile(grid_num: int, v_num: int, spec: int):
+  v_num += 200
   pos_dict = getRandPoints(grid_num)
   # チェック用
   for i in range(num+1):
@@ -125,6 +126,6 @@ if __name__ == "__main__":
   # num = 4
   spec = 20 # 10台
   # spec = 4
-  s_dict = generate_routefile(num, 1200, spec) 
+  s_dict = generate_routefile(num, 1500, spec) 
   with open('../sim_xml/servers.json', 'w') as f:
     json.dump(s_dict, f, ensure_ascii=False, indent=2)

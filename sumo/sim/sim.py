@@ -275,7 +275,7 @@ if __name__ == "__main__":
   mig_time = 10
   res = 2
   ap = 0.01
-  vnum = 1000
+  vnum = 1500
   run(sumocfg)
   sim_time, emission = load_emission()
   sim_time += 2

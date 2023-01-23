@@ -490,7 +490,7 @@ def newExportNowLoad(now: int, servers: List[Server], servers_comm, res: int):
     else:         # cpu usage <= 100%
       tmp = (idle+res)/s.spec
       fps = max_fps * tmp
-    print(fps)
+    # print(fps)
     loads["fps"] += fps
   loads["all"] /= len(servers)
   if count > 0:
