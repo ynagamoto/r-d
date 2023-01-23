@@ -544,7 +544,7 @@ def exportStatus(file_name: str, servers: List[Server], vehicles: List[Vehicle])
 def exportVehiclesResult(file_name: str, servers: List[Server], vehicles: List[Vehicle], res, ap, gnum):
   results = []
   for v in vehicles:
-    sim_time = 1
+    sim_time = 0
     result = {}
     result["vid"] = v.vid
     appe_time = v.comm_list[0].time[0]
@@ -567,10 +567,11 @@ def exportVehiclesResult(file_name: str, servers: List[Server], vehicles: List[V
       # 実行時間を計算して足す
       idle = calc_s.idle_list[sim_time]
       param = 0
-      if idle < 0:
+      if idle < 0:  # cpu usage > 100%
         param = 1/(calc_s.spec-idle)
-      else: # cpu usage <= 100%
-        param = (idle+res)/(calc_s.spec)
+      else:         # cpu usage <= 100%
+        tmp = idle+res
+        param = tmp/calc_s.spec
       delay = calc_s.getDelay2Calc(comm_s, gnum)
       runtime = (ap/param) + delay/1000
       sum_runtime += runtime
