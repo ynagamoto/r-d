@@ -122,9 +122,7 @@ def randomAllocation(sumocfg, servers, servers_comm, vehicles, mig_time, res, gn
   traci.start([sumoBinary, "-c", sumocfg])
 
   now = 0
-  runtime_results = []
-  idle_results = []
-  fps_results = []
+  loads = []
   while traci.simulation.getMinExpectedNumber() > 0:
     # シミュレーション内容
     traci.simulationStep()
@@ -136,22 +134,18 @@ def randomAllocation(sumocfg, servers, servers_comm, vehicles, mig_time, res, gn
     envUpdate(traci, now, servers, vid_list, vehicles)
     allocateRandomServer(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap, cloud)
     # showServersResource(now, servers)
-    
-    runtime_result, idle_result, fps_result = exportNowLoad(now, servers, res, ap)
-    idle_result["cloud"] = cloud.idle_list[now]
-    idle_result["vehicles"] = len(vid_list) - len(servers)
-    runtime_results.append(runtime_result)
-    idle_results.append(idle_result)
-    fps_results.append(fps_result)
+
+    load = newExportNowLoad(now, servers, servers_comm, res)
+    load["cloud"] = cloud.idle_list[now]
+    load["vehicles"] = len(vid_list) - len(servers)
+    loads.append(load)
 
   # 結果の収集
-  file_name = "random-runtime.csv"
-  exportResult(file_name, runtime_results)
-  file_name = "random-idle.csv"
-  exportResult(file_name, idle_results)
-  file_name = "random-fps.csv"
-  exportResult(file_name, fps_results)
-  file_name = "random-service.csv"
+  file_name = "teian-runtime.csv"
+  exportVehiclesResult(file_name, servers, vehicles, res, ap, gnum)
+  file_name = "teian-load.csv"
+  exportResult(file_name, loads)
+  file_name = "teian-service.csv"
   exportStatus(file_name, servers, vehicles)
   traci.close()
 
