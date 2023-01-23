@@ -284,7 +284,7 @@ if __name__ == "__main__":
   vnum = 1000
   run(sumocfg)
   sim_time, emission = load_emission()
-  sim_time += 1
+  sim_time += 2
   servers = load_servers_json(sim_time)
   # cloud
   cloud = Server("cloud", "cloud", [0, 0], 200, sim_time)
