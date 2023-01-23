@@ -141,11 +141,11 @@ def randomAllocation(sumocfg, servers, servers_comm, vehicles, mig_time, res, gn
     loads.append(load)
 
   # 結果の収集
-  file_name = "teian-runtime.csv"
+  file_name = "random-runtime.csv"
   exportVehiclesResult(file_name, servers, vehicles, res, ap, gnum)
-  file_name = "teian-load.csv"
+  file_name = "random-load.csv"
   exportResult(file_name, loads)
-  file_name = "teian-service.csv"
+  file_name = "random-service.csv"
   exportStatus(file_name, servers, vehicles)
   traci.close()
 
