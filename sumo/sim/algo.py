@@ -485,13 +485,19 @@ def newExportNowLoad(now: int, servers: List[Server], servers_comm, res: int):
     idle = s.idle_list[now]
     fps = 0
     if idle < 0:  # cpu usage > 100%
-      fps = max_fps * (res/(s.spec-idle))
+      tmp = res/(s.spec-idle)
+      fps = max_fps * tmp
     else:         # cpu usage <= 100%
-      fps = max_fps * (idle+res/s.spec)
+      tmp = (idle+res)/s.spec
+      fps = max_fps * tmp
+    print(fps)
     loads["fps"] += fps
   loads["all"] /= len(servers)
   if count > 0:
+    # print(f"sum: {loads['fps']}, count: {count}, ave: {loads['fps']/count}")
     loads["fps"] /= count
+  else:
+    print("--- not execute task ---")
   return loads 
   
 def exportResult(file_name: str, result):
