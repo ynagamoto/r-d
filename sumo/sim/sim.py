@@ -15,7 +15,7 @@ import traci
 from server import Server, Task
 from vehicle import Vehicle
 from tools import load_emission, load_servers_json, load_vehicles, setServersComm, showServersResource
-from algo import loadAllocation, kizon, kizonLoad, envUpdate, exportNowLoad, exportResult, newExportNowLoad, exportStatus, exportVehiclesResult, allocateRandomServer
+from algo import loadAllocation, kizon, kizonLoad, envUpdate, exportNowLoad, exportResult, newExportNowLoad, exportStatus, exportVehiclesResult, allocateRandomServer, exportOverRate
 
 def run(sumocfg):
   sumoBinary = "sumo"
@@ -147,6 +147,8 @@ def randomAllocation(sumocfg, servers, servers_comm, vehicles, mig_time, res, gn
   exportResult(file_name, loads)
   file_name = "random-service.csv"
   exportStatus(file_name, servers, vehicles)
+  file_name = "random-over.csv"
+  exportOverRate(file_name, loads)
   traci.close()
 
 
@@ -202,6 +204,8 @@ def presend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, c
   exportResult(file_name, loads)
   file_name = "teian-service.csv"
   exportStatus(file_name, servers, vehicles)
+  file_name = "teian-over.csv"
+  exportOverRate(file_name, loads)
   traci.close()
 
 
@@ -235,6 +239,8 @@ def kizonPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, 
   exportResult(file_name, loads)
   file_name = "kizon-service.csv"
   exportStatus(file_name, servers, vehicles)
+  file_name = "kizon-over.csv"
+  exportOverRate(file_name, loads)
   traci.close()
 
 def kizonFix(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, cloud):
@@ -260,12 +266,14 @@ def kizonFix(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, 
     loads.append(load)
 
   # 結果の収集
-  file_name = "kizon-runtime.csv"
+  file_name = "kizon-fix-runtime.csv"
   exportVehiclesResult(file_name, servers, vehicles, res, ap, gnum)
-  file_name = "kizon-load.csv"
+  file_name = "kizon-fix-load.csv"
   exportResult(file_name, loads)
-  file_name = "kizon-service.csv"
+  file_name = "kizon-fix-servce.csv"
   exportStatus(file_name, servers, vehicles)
+  file_name = "kizon-fix-over.csv"
+  exportOverRate(file_name, loads)
   traci.close()
 
 

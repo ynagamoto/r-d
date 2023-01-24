@@ -583,3 +583,32 @@ def exportVehiclesResult(file_name: str, servers: List[Server], vehicles: List[V
 
   df = pandas.json_normalize(results)
   df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
+
+def exportOverRate(file_name, loads_list):
+  sum_usage = 0
+  sum_over = 0
+  count = 0
+  # 同時通信数が100台以上のときを集める
+  for loads in loads_list:
+    if loads["comm"] < 100:
+      continue
+    count += 1
+    # 使用率，超過率を集める
+    usage = 0
+    over = 0
+    tmp = 0
+    for key, body in loads.items():
+      if not "mec" in key:
+        continue
+      tmp += 1
+      usage += body
+      if body > 1:
+        over += (body - 1)
+    sum_usage += (usage/tmp)
+    sum_over += (over/tmp)
+  result = {}
+  result["usage"] = sum_usage / count
+  result["over"] = sum_over / count
+
+  df = pandas.json_normalize(result)
+  df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
