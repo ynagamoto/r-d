@@ -8,6 +8,8 @@ import itertools
 import pandas
 import csv
 
+from statistics import variance
+
 # RSUの計算資源を t = beg ~ t = end まで確保できるかどうかチェック
 def checkServerResource(beg: int, end:int, server: Server) -> bool:
   tmp_dict = server.idle_list[beg:end+1]
@@ -587,7 +589,10 @@ def exportVehiclesResult(file_name: str, servers: List[Server], vehicles: List[V
 def exportOverRate(file_name, loads_list):
   sum_usage = 0
   sum_over = 0
+  over_count = 0
   count = 0
+  var_list = []
+  sum_var = 0
   # 同時通信数が100台以上のときを集める
   for loads in loads_list:
     if loads["comm"] < 100:
@@ -596,19 +601,27 @@ def exportOverRate(file_name, loads_list):
     # 使用率，超過率を集める
     usage = 0
     over = 0
-    tmp = 0
+    tmp_count = 0
+    tmp_list = []
     for key, body in loads.items():
       if not "mec" in key:
         continue
-      tmp += 1
+      tmp_count += 1
       usage += body
       if body > 1:
         over += (body - 1)
-    sum_usage += (usage/tmp)
-    sum_over += (over/tmp)
+        over_count += 1
+      tmp_list.append(body)
+    sum_usage += (usage/tmp_count)
+    sum_over += (over/tmp_count)
+    # 使用率の分散
+    sum_var += variance(tmp_list)
+    var_list.append({f"{tmp_count}": variance(tmp_list)})
   result = {}
   result["usage"] = sum_usage / count
   result["over"] = sum_over / count
+  result["var"] = sum_var / count
+  result["over-count"] = over_count / count
 
   df = pandas.json_normalize(result)
   df.to_csv(file_name, index=False, encoding='utf-8', quoting=csv.QUOTE_ALL)
