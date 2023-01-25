@@ -15,7 +15,7 @@ import traci
 from server import Server, Task
 from vehicle import Vehicle
 from tools import load_emission, load_servers_json, load_vehicles, setServersComm, showServersResource
-from algo import loadAllocation, kizon, kizonLoad, envUpdate, exportNowLoad, exportResult, newExportNowLoad, exportStatus, exportVehiclesResult, allocateRandomServer, exportOverRate
+from algo import loadAllocation, kizon, kizonLoad, envUpdate, exportNowLoad, exportResult, newExportNowLoad, exportStatus, exportVehiclesResult, allocateRandomServer, exportOverRate, loadOnly
 
 def run(sumocfg):
   sumoBinary = "sumo"
@@ -276,6 +276,41 @@ def kizonFix(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, 
   exportOverRate(file_name, loads)
   traci.close()
 
+def loadOnlyPresend(sumocfg, servers, servers_comm, vehicles, mig_time, res, gnum, ap, cloud):
+  sumoBinary = "sumo"
+  # sumoBinary = "sumo-gui"
+  traci.start([sumoBinary, "-c", sumocfg])
+
+  now = 0
+  loads= []
+  while traci.simulation.getMinExpectedNumber() > 0:
+    # シミュレーション内容
+    traci.simulationStep()
+    
+    now = int(traci.simulation.getTime())
+    vid_list = traci.vehicle.getIDList()
+    print(f"now: {now}, vehicles: {len(vid_list)-len(servers)}")
+
+    envUpdate(traci, now, servers, vid_list, vehicles)
+    loadOnly(now, servers, vehicles, vid_list, servers_comm, mig_time, res, gnum, ap, cloud)
+    # showServersResource(now, servers)
+    
+    load = newExportNowLoad(now, servers, servers_comm, res)
+    load["cloud"] = cloud.idle_list[now]
+    load["vehicles"] = len(vid_list) - len(servers)
+    loads.append(load)
+
+  # 結果の収集
+  file_name = "loadonly-runtime.csv"
+  exportVehiclesResult(file_name, servers, vehicles, res, ap, gnum)
+  file_name = "loadonly-load.csv"
+  exportResult(file_name, loads)
+  file_name = "loadonly-service.csv"
+  exportStatus(file_name, servers, vehicles)
+  file_name = "loadonly-over.csv"
+  exportOverRate(file_name, loads)
+  traci.close()
+
 
 if __name__ == "__main__":
   sumocfg = "sim.sumocfg"
@@ -296,6 +331,8 @@ if __name__ == "__main__":
   # kizonPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
   # kizonFix(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
   # randomAllocation(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
+  # loadOnlyPresend(sumocfg, servers, setServersComm(sim_time, servers, vehicles), vehicles, mig_time, res, gnum, ap, cloud)
+
 
 """
 if __name__ == "__main__":

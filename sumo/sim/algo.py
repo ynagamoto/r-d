@@ -112,6 +112,68 @@ def loadAllocation(now: int, servers: List[Server], vehicles: List[Vehicle], vid
       locate_server.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
       v.setCalcServer(locate_sid, beg, end)
 
+def loadOnly(now: int, servers: List[Server], vehicles: List[Vehicle], vid_list: List[str], servers_comm: Dict[int ,List[str]], mig_time: int, res: int, gnum: int, ap: float, cloud: Server):
+  # 混雑度取得
+  jams = getTrafficJams(now, servers_comm, servers) # 混雑度大きい順
+  revers_jams = list(reversed(jams)) # 混雑度が小さい順
+  # 混雑度から再配置の優先順位を取得
+  mig_priority, need_list = checkMigNeed(now, mig_time, vid_list, vehicles, jams)
+  # mig_priority, need_list = checkMigNeed(now, mig_time, vid_list, vehicles, revers_jams)
+  # print(f"\n---now: {now}, comm_num: {getNowCommNum(now, servers_comm)}")
+  for sid in mig_priority:      # 優先度が高い順から再配置計算
+    # print(f"sid: {sid}")
+    for tmp in need_list[sid]:  # tmp[0] -> Comm, tmp[1] -> Vehicle
+      comm = tmp[0]
+      v = tmp[1]
+      # print(f"  vid: {v.vid}, beg: {comm.time[0]}, end: {comm.time[1]}")
+      beg, end = int(comm.time[0]), int(comm.time[1])
+      next_sid, flag = v.getNextSid(now)
+      if not flag: # マップから消える
+        continue
+      tmp_list = list(filter(lambda s: s.sid == next_sid, servers))
+      next_s = tmp_list[0]
+      # 再配置先の計算
+      # beg ~ end で再配置可能な計算資源のリソース予約状況と通信遅延を取得
+      loads = getServersLoads(now, comm.time, res, servers)
+
+      # 配置できる計算資源がない
+      if len(loads) == 0:
+        # cloud に配置
+        mig_fin = now+mig_time-1
+        s_delay = next_s.getDelay2Calc(cloud, gnum)
+        cloud.resReserv(v.vid, res/2, s_delay, now, mig_fin, "mig")
+        cloud.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
+        v.setCalcServer(cloud.sid, beg, end)
+        print("----- Resource Error: Not enough capacity. now: {now}, vid: {v.vid}. -----")
+
+      # 遅延を足してソート
+      inds = {}
+      for sid, load in loads.items():
+        s_list = list(filter(lambda s: s.sid == sid, servers))
+        calc = s_list[0]
+        inds[sid] = (ap/load)
+
+      # 合計が最小のものを調べる
+      sorted_inds = sorted(inds.items(), key = lambda ind: ind[1])
+      locate_sid = sorted_inds[0][0]
+      """
+      locate_sid = ""
+      for sid, _ in sorted_inds:
+        locate_sid = sid
+        break
+      """
+
+      # sid からサーバーを取得
+      tmp_list= list(filter(lambda server: server.sid == locate_sid, servers))
+      locate_server = tmp_list[0]
+      s_delay = next_s.getDelay2Calc(locate_server, gnum)
+
+      # リソース予約
+      # VM起動中は半分の負荷
+      mig_fin = now+mig_time-1
+      locate_server.resReserv(v.vid, res/2, s_delay, now, mig_fin, "mig")
+      locate_server.resReserv(v.vid, res, s_delay, mig_fin+1, end, "ready")
+      v.setCalcServer(locate_sid, beg, end)
 
 # 環境の更新
 def envUpdate(traci, now: int, servers: List[Server], vid_list: List[str], vehicles: List[Vehicle]):
